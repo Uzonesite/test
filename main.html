@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>uZone • Main</title>
+
+  <style>
+    :root{
+      --bg: #ffffff;
+      --ink: #111018;
+      --muted: rgba(17,16,24,.62);
+
+      --pink: #b00b55;
+      --purple: #6d28d9;
+      --blue: #8bd3ff;
+
+      --card: rgba(255,255,255,.86);
+      --border: rgba(17,16,24,.10);
+      --shadow: 0 18px 60px rgba(17,16,24,.10);
+
+      --radius: 18px;
+      --radius2: 14px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        radial-gradient(900px 500px at 15% 0%, rgba(139,211,255,.25), transparent 60%),
+        radial-gradient(900px 500px at 85% 10%, rgba(176,11,85,.12), transparent 55%),
+        radial-gradient(900px 500px at 60% 100%, rgba(109,40,217,.12), transparent 55%),
+        var(--bg);
+      color:var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    button{ font:inherit; }
+
+    /* --- Top tabs --- */
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,.72);
+      border-bottom: 1px solid rgba(17,16,24,.08);
+    }
+
+    .topbar{
+      width: min(1120px, 92vw);
+      margin: 0 auto;
+      padding: 12px 0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 14px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 140px;
+    }
+    .brand img{
+      width:34px;height:34px;
+      border-radius:10px;
+      border:1px solid rgba(17,16,24,.08);
+      background: rgba(255,255,255,.6);
+      object-fit: cover;
+    }
+    .brand .btxt{
+      line-height:1.05;
+      display:grid;
+      gap:2px;
+    }
+    .brand .btxt b{ font-size:14px; letter-spacing:.2px; }
+    .brand .btxt span{ font-size:12px; color:var(--muted); }
+
+    .tabs{
+      display:flex;
+      gap:8px;
+      padding:6px;
+      border-radius: 999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.72);
+      box-shadow: 0 14px 40px rgba(17,16,24,.06);
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tab{
+      flex: 0 0 auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid transparent;
+      color: rgba(17,16,24,.80);
+      background: transparent;
+      cursor:pointer;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+      user-select:none;
+      white-space:nowrap;
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .tab:hover{ transform: translateY(-1px); background: rgba(139,211,255,.20); }
+    .tab:active{ transform: translateY(0px); }
+    .tab.active{
+      background: linear-gradient(135deg, rgba(176,11,85,.12), rgba(109,40,217,.10));
+      border-color: rgba(176,11,85,.22);
+      box-shadow: 0 12px 30px rgba(176,11,85,.10);
+    }
+    .tab .dot{
+      width:8px;height:8px;border-radius:999px;
+      background: rgba(17,16,24,.25);
+    }
+    .tab.active .dot{
+      background: var(--pink);
+      box-shadow: 0 0 0 4px rgba(176,11,85,.14);
+    }
+
+    .rightActions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 120px;
+      justify-content:flex-end;
+    }
+    .chip{
+      display:none;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.75);
+      font-size:12px;
+      font-weight:800;
+      color: rgba(17,16,24,.75);
+      white-space:nowrap;
+    }
+    .chip .cDot{ width:8px;height:8px;border-radius:999px;background: rgba(17,16,24,.22); }
+    .chip.on{ display:inline-flex; }
+    .chip.on .cDot{ background: rgba(40,180,120,.9); box-shadow: 0 0 0 4px rgba(40,180,120,.12); }
+
+    /* --- Layout --- */
+    main{
+      width: min(1120px, 92vw);
+      margin: 14px auto 40px auto;
+      display:grid;
+      gap: 14px;
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1.3fr .9fr;
+      gap: 14px;
+      align-items:start;
+    }
+    @media (max-width: 980px){
+      .grid2{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.80);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardInner{ padding: 16px; }
+
+    .hRow{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    h1,h2,h3{ margin:0; }
+    .h1{
+      font-size: 18px;
+      letter-spacing: .2px;
+    }
+    .sub{
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      margin-top: 6px;
+    }
+
+    /* --- Banner --- */
+    .banner{
+      position:relative;
+      border-radius: var(--radius);
+      overflow:hidden;
+      border: 1px solid rgba(17,16,24,.10);
+      background:
+        radial-gradient(600px 250px at 10% 40%, rgba(139,211,255,.55), transparent 60%),
+        radial-gradient(600px 250px at 60% 10%, rgba(109,40,217,.22), transparent 55%),
+        radial-gradient(600px 250px at 90% 70%, rgba(176,11,85,.22), transparent 55%),
+        rgba(255,255,255,.72);
+      box-shadow: 0 22px 70px rgba(17,16,24,.10);
+      padding: 16px;
+    }
+    .bannerTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap:wrap;
+    }
+    .banner h2{
+      font-size: 18px;
+      letter-spacing: .2px;
+    }
+    .banner p{
+      margin:6px 0 0 0;
+      color: rgba(17,16,24,.70);
+      font-size: 13px;
+      line-height:1.4;
+      max-width: 60ch;
+    }
+    .banner .miniBtns{
+      display:flex; gap:10px; flex-wrap:wrap;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(17,16,24,.12);
+      background: rgba(255,255,255,.78);
+      cursor:pointer;
+      font-weight: 900;
+      font-size: 13px;
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(176,11,85,.25);
+      box-shadow: 0 14px 38px rgba(176,11,85,.10);
+    }
+    .btn.primary{
+      border-color: rgba(176,11,85,.28);
+      background: linear-gradient(135deg, rgba(176,11,85,.14), rgba(109,40,217,.10));
+    }
+
+    /* --- Map --- */
+    .mapWrap{
+      display:grid;
+      gap: 12px;
+    }
+    .mapBox{
+      border:1px solid rgba(17,16,24,.10);
+      border-radius: var(--radius);
+      overflow:hidden;
+      background: rgba(255,255,255,.72);
+      min-height: 420px;
+    }
+    #map{
+      width:100%;
+      height:420px;
+    }
+    @media (max-width: 520px){
+      #map{ height: 360px; }
+      .mapBox{ min-height: 360px; }
+    }
+
+    /* --- Events list --- */
+    .controls{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-top: 2px;
+    }
+    .search{
+      flex: 1 1 260px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.82);
+    }
+    .search input{
+      border:none;
+      outline:none;
+      width:100%;
+      font-size: 14px;
+      background: transparent;
+      color: var(--ink);
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.70);
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(17,16,24,.70);
+      white-space:nowrap;
+    }
+    .pill .pDot{ width:8px;height:8px;border-radius:999px;background: rgba(17,16,24,.25); }
+    .pill.hot .pDot{ background: var(--pink); box-shadow: 0 0 0 4px rgba(176,11,85,.12); }
+
+    .eventGrid{
+      display:grid;
+      gap: 12px;
+    }
+    .eventCard{
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.84);
+      border-radius: var(--radius2);
+      padding: 12px;
+      display:grid;
+      gap: 10px;
+    }
+    .eventTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 10px;
+    }
+    .eventTitle{
+      font-size: 14px;
+      font-weight: 950;
+      letter-spacing: .2px;
+      margin:0;
+    }
+    .badge{
+      flex: 0 0 auto;
+      font-size: 12px;
+      font-weight: 900;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(17,16,24,.10);
+      background: rgba(139,211,255,.18);
+      color: rgba(17,16,24,.78);
+      white-space:nowrap;
+    }
+    .badge.invite{
+      background: rgba(176,11,85,.10);
+      border-color: rgba(176,11,85,.20);
+      color: rgba(176,11,85,.92);
+    }
+
+    .meta{
+      display:grid;
+      gap: 4px;
+      color: rgba(17,16,24,.72);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .meta b{ color: rgba(17,16,24,.82); }
+
+    .tags{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+    .tag{
+      font-size: 12px;
+      font-weight: 900;
+      padding: 6px 9px;
+      border-radius: 999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.72);
+      color: rgba(17,16,24,.72);
+    }
+
+    .actions{
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .miniLink{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.74);
+      font-weight: 950;
+      font-size: 13px;
+      cursor:pointer;
+    }
+    .miniLink:hover{
+      border-color: rgba(176,11,85,.22);
+      box-shadow: 0 12px 30px rgba(176,11,85,.10);
+    }
+
+    .empty{
+      padding: 18px 12px;
+      border-radius: var(--radius2);
+      border: 1px dashed rgba(17,16,24,.18);
+      background: rgba(255,255,255,.70);
+      color: rgba(17,16,24,.65);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    footer{
+      width: min(1120px, 92vw);
+      margin: 10px auto 30px auto;
+      color: rgba(17,16,24,.60);
+      font-size: 12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    footer a{ text-decoration: underline; text-decoration-color: rgba(176,11,85,.35); }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="topbar">
+      <a class="brand" href="main.html" aria-label="uZone main">
+        <img src="logo.png" alt="uZone logo" />
+        <div class="btxt">
+          <b>uZone</b>
+          <span id="hello">Loading…</span>
+        </div>
+      </a>
+
+      <nav class="tabs" aria-label="Top tabs">
+        <button class="tab active" type="button" data-go="main.html">
+          <span class="dot"></span> Main
+        </button>
+        <button class="tab" type="button" data-go="post_event.html">
+          <span class="dot"></span> Post
+        </button>
+        <button class="tab" type="button" data-go="profile.html">
+          <span class="dot"></span> Profile
+        </button>
+        <button class="tab" type="button" data-go="index.html">
+          <span class="dot"></span> Sign in
+        </button>
+      </nav>
+
+      <div class="rightActions">
+        <span class="chip" id="onlineChip"><span class="cDot"></span><span>Online</span></span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Banner / Ad slot -->
+    <section class="banner" aria-label="Banner">
+      <div class="bannerTop">
+        <div>
+          <h2>What’s going on today?</h2>
+          <p>
+            Clean map + clean cards. Tap an event to see details, apply, attend, and rate the vibe.
+          </p>
+        </div>
+        <div class="miniBtns">
+          <a class="btn primary" href="post_event.html">Post an event</a>
+          <a class="btn" href="events.html" title="Optional: your existing events feed page">All events</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid2">
+      <!-- Map -->
+      <section class="card mapWrap" aria-label="Map">
+        <div class="cardInner">
+          <div class="hRow">
+            <div>
+              <h1 class="h1">Map</h1>
+              <div class="sub">Pins show events with a saved location.</div>
+            </div>
+            <span class="pill hot" title="Live map + live list">
+              <span class="pDot"></span> Live
+            </span>
+          </div>
+        </div>
+
+        <div class="mapBox">
+          <div id="map" role="application" aria-label="Events map"></div>
+        </div>
+      </section>
+
+      <!-- Events list -->
+      <section class="card" aria-label="Events list">
+        <div class="cardInner">
+          <div class="hRow">
+            <div>
+              <h1 class="h1">Events</h1>
+              <div class="sub">Newest first. Search by title, location, or tags.</div>
+            </div>
+            <span class="pill" id="countPill"><span class="pDot"></span><span id="countText">0</span></span>
+          </div>
+
+          <div class="controls">
+            <div class="search" role="search">
+              <span style="opacity:.6; font-weight:900;">⌕</span>
+              <input id="search" placeholder="Search events…" autocomplete="off" />
+            </div>
+            <button class="btn" id="refreshBtn" type="button">Refresh</button>
+          </div>
+        </div>
+
+        <div class="cardInner" style="padding-top:0;">
+          <div class="eventGrid" id="eventGrid"></div>
+          <div class="empty" id="empty" style="display:none;">
+            No events found. Try a different search — or be the first to post.
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <div>Having issues? <a href="mailto:report@uzone.ca?subject=Uzone%20Issue">report@uzone.ca</a></div>
+    <div>© uZone</div>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import {
+      getFirestore, collection, getDocs, getDoc, doc, query, orderBy
+    } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    // --- Firebase (matches your existing config style) ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_k18vbiBsLhQB7PzgEVT9PEI_30Mu0kg",
+      authDomain: "uzone-6148d.firebaseapp.com",
+      databaseURL: "https://uzone-6148d-default-rtdb.firebaseio.com",
+      projectId: "uzone-6148d",
+      storageBucket: "uzone-6148d.firebasestorage.app",
+      messagingSenderId: "88783701381",
+      appId: "1:88783701381:web:4f6c4b1ad8b26d6fa6f0ec",
+      measurementId: "G-HKL5246YMC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // --- Tabs ---
+    document.querySelectorAll(".tab[data-go]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const to = btn.getAttribute("data-go");
+        if (to) window.location.href = to;
+      });
+    });
+
+    // --- UI refs ---
+    const hello = document.getElementById("hello");
+    const onlineChip = document.getElementById("onlineChip");
+
+    const grid = document.getElementById("eventGrid");
+    const empty = document.getElementById("empty");
+    const searchEl = document.getElementById("search");
+    const refreshBtn = document.getElementById("refreshBtn");
+    const countText = document.getElementById("countText");
+
+    // --- Helpers ---
+    function esc(s){ return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+    function tsToDate(v){
+      try{
+        if (!v) return null;
+        if (v?.toDate) return v.toDate();
+        if (typeof v === "number") return new Date(v);
+        return null;
+      } catch { return null; }
+    }
+
+    function fmtDate(yyyyMmDd){
+      if (!yyyyMmDd) return "";
+      const [y,m,d] = String(yyyyMmDd).split("-").map(Number);
+      if (!y || !m || !d) return String(yyyyMmDd);
+      const dt = new Date(y, m-1, d);
+      return dt.toLocaleDateString(undefined, { month:"short", day:"numeric" });
+    }
+
+    function fmtWhen(data){
+      const sd = data.startDate || "";
+      const st = data.startTime || "";
+      const ed = data.endDate || "";
+      const et = data.endTime || "";
+      const start = [fmtDate(sd), st].filter(Boolean).join(" • ");
+      const end = [fmtDate(ed), et].filter(Boolean).join(" • ");
+      if (!start && !end) return "Time TBD";
+      if (start && !end) return start;
+      if (!start && end) return end;
+      return `${start} → ${end}`;
+    }
+
+    function pickTags(ev){
+      const t = Array.isArray(ev.tags) ? ev.tags : [];
+      return t.map(x => String(x || "").trim()).filter(Boolean);
+    }
+
+    // Best-effort lat/lng getter so old/new events still show
+    function pickLatLng(ev){
+      const candidates = [
+        // direct fields
+        [ev.lat, ev.lng],
+        [ev.latitude, ev.longitude],
+        [ev.locationLat, ev.locationLng],
+        [ev.locLat, ev.locLng],
+        // nested
+        [ev.coords?.lat, ev.coords?.lng],
+        [ev.geo?.lat, ev.geo?.lng],
+        [ev.geo?.latitude, ev.geo?.longitude],
+        [ev.location?.lat, ev.location?.lng],
+      ];
+
+      for (const [a,b] of candidates){
+        const lat = Number(a), lng = Number(b);
+        if (Number.isFinite(lat) && Number.isFinite(lng)) return { lat, lng };
+      }
+
+      // Firestore GeoPoint
+      if (ev?.geopoint && typeof ev.geopoint.latitude === "number"){
+        return { lat: ev.geopoint.latitude, lng: ev.geopoint.longitude };
+      }
+
+      return null;
+    }
+
+    // --- Map ---
+    const MAPS_API_KEY = "PASTE_YOUR_GOOGLE_MAPS_API_KEY_HERE";
+    const MAP_ID = "f4ab270f6c4fc6deeed4fa00"; // same id you already use on post_event
+
+    let gmap = null;
+    let info = null;
+    let markers = []; // { marker, id }
+
+    function loadGoogleMaps(){
+      return new Promise((resolve, reject) => {
+        if (window.google?.maps) return resolve();
+        const s = document.createElement("script");
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(MAPS_API_KEY)}&libraries=marker,places`;
+        s.async = true;
+        s.defer = true;
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error("Failed to load Google Maps script."));
+        document.head.appendChild(s);
+      });
+    }
+
+    async function initMap(){
+      await loadGoogleMaps();
+
+      const defaultCenter = { lat: 45.4215, lng: -75.6972 }; // Ottawa default
+      gmap = new google.maps.Map(document.getElementById("map"), {
+        center: defaultCenter,
+        zoom: 12,
+        mapId: MAP_ID,
+        clickableIcons: false,
+        gestureHandling: "greedy",
+      });
+
+      info = new google.maps.InfoWindow();
+    }
+
+    function clearMarkers(){
+      for (const m of markers){
+        try{ m.marker.map = null; }catch(_){}
+      }
+      markers = [];
+    }
+
+    function addMarkerForEvent(ev){
+      if (!gmap || !window.google?.maps?.marker) return;
+
+      const ll = pickLatLng(ev);
+      if (!ll) return;
+
+      const title = (ev.name || "Event").toString();
+      const when = fmtWhen(ev);
+      const invite = !!ev.inviteOnly;
+
+      const pin = document.createElement("div");
+      pin.style.width = "14px";
+      pin.style.height = "14px";
+      pin.style.borderRadius = "999px";
+      pin.style.background = invite ? "rgba(176,11,85,.95)" : "rgba(109,40,217,.85)";
+      pin.style.boxShadow = invite
+        ? "0 0 0 5px rgba(176,11,85,.16)"
+        : "0 0 0 5px rgba(109,40,217,.14)";
+
+      const marker = new google.maps.marker.AdvancedMarkerElement({
+        map: gmap,
+        position: ll,
+        title,
+        content: pin,
+      });
+
+      marker.addListener("gmp-click", () => {
+        const html = `
+          <div style="font-family: Arial; padding: 6px 4px; max-width: 240px;">
+            <div style="font-weight:900; margin-bottom:4px;">${esc(title)}</div>
+            <div style="font-size:12px; opacity:.8; margin-bottom:6px;">${esc(when)}</div>
+            <a href="event.html?id=${encodeURIComponent(ev.id)}"
+               style="display:inline-block; font-size:12px; font-weight:900; text-decoration:none; color:#b00b55;">
+              Open →
+            </a>
+          </div>`;
+        info.setContent(html);
+        info.setPosition(ll);
+        info.open({ map: gmap });
+      });
+
+      markers.push({ marker, id: ev.id });
+    }
+
+    // --- Events ---
+    let currentUser = null;
+    let allEvents = []; // {id, ...data}
+
+    function renderEvents(){
+      const q = (searchEl.value || "").trim().toLowerCase();
+      const filtered = !q ? allEvents : allEvents.filter(ev => {
+        const tags = pickTags(ev).join(" ");
+        const hay = [ev.name, ev.location, tags].map(x => (x || "").toString().toLowerCase()).join(" | ");
+        return hay.includes(q);
+      });
+
+      countText.textContent = String(filtered.length);
+
+      grid.innerHTML = "";
+      empty.style.display = filtered.length ? "none" : "block";
+
+      for (const ev of filtered){
+        const invite = !!ev.inviteOnly;
+        const when = fmtWhen(ev);
+        const tags = pickTags(ev);
+
+        const el = document.createElement("article");
+        el.className = "eventCard";
+        el.innerHTML = `
+          <div class="eventTop">
+            <h3 class="eventTitle">${esc(ev.name || "Untitled")}</h3>
+            <span class="badge ${invite ? "invite" : ""}">${invite ? "Invite-only" : "Public"}</span>
+          </div>
+
+          <div class="meta">
+            <div><b>When:</b> ${esc(when)}</div>
+            <div><b>Where:</b> ${esc(ev.location || "—")}</div>
+          </div>
+
+          ${tags.length ? `<div class="tags">${tags.slice(0,5).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
+
+          <div class="actions">
+            <a class="miniLink" href="event.html?id=${encodeURIComponent(ev.id)}">Open</a>
+            <button class="miniLink" type="button" data-zoom="${esc(ev.id)}">Zoom pin</button>
+          </div>
+        `;
+        grid.appendChild(el);
+      }
+
+      // zoom pin buttons
+      grid.querySelectorAll("button[data-zoom]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-zoom");
+          const ev = allEvents.find(e => e.id === id);
+          if (!ev || !gmap) return;
+
+          const ll = pickLatLng(ev);
+          if (!ll) return;
+
+          gmap.panTo(ll);
+          gmap.setZoom(Math.max(gmap.getZoom() || 12, 15));
+        });
+      });
+    }
+
+    function pickCreatedAtMs(ev){
+      const d = tsToDate(ev.createdAt || ev.created || ev.timestamp || ev.time);
+      return d ? d.getTime() : 0;
+    }
+
+    async function loadEvents(){
+      // Try newest-first (requires index if you enforce orderBy). If it errors, fallback to unordered.
+      let snap;
+      try{
+        snap = await getDocs(query(collection(db, "events"), orderBy("createdAt", "desc")));
+      } catch (_){
+        snap = await getDocs(collection(db, "events"));
+      }
+
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...(d.data() || {}) }));
+
+      // Ensure newest-first even in fallback
+      arr.sort((a,b) => pickCreatedAtMs(b) - pickCreatedAtMs(a));
+
+      allEvents = arr;
+
+      // markers
+      clearMarkers();
+      for (const ev of allEvents) addMarkerForEvent(ev);
+
+      renderEvents();
+    }
+
+    refreshBtn.addEventListener("click", () => loadEvents().catch(console.error));
+    searchEl.addEventListener("input", () => renderEvents());
+
+    // --- Auth gate + init ---
+    onAuthStateChanged(auth, async (user) => {
+      if (!user){
+        window.location.href = "index.html";
+        return;
+      }
+
+      currentUser = user;
+
+      // Hello text
+      let displayName = user.displayName?.trim() || "";
+      try{
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()){
+          const data = snap.data() || {};
+          if (typeof data.name === "string" && data.name.trim()) displayName = data.name.trim();
+        }
+      } catch(_) {}
+
+      hello.textContent = displayName ? `Hey, ${displayName}` : "Welcome back";
+      onlineChip.classList.add("on");
+
+      try{ await initMap(); } catch(e){
+        console.error(e);
+        document.getElementById("map").innerHTML =
+          `<div style="padding:16px; color: rgba(17,16,24,.72); font-size:13px;">
+            Map unavailable. Add your Google Maps API key in <b>MAPS_API_KEY</b>.
+          </div>`;
+      }
+
+      await loadEvents().catch(console.error);
+    });
+  </script>
+</body>
+</html>
