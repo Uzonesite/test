@@ -38,6 +38,7 @@
 
     a{ color:inherit; text-decoration:none; }
     button{ font:inherit; }
+    img{ max-width:100%; display:block; }
 
     /* --- Top tabs --- */
     header{
@@ -64,6 +65,7 @@
       align-items:center;
       gap:10px;
       min-width: 140px;
+      flex: 0 0 auto;
     }
     .brand img{
       width:34px;height:34px;
@@ -90,6 +92,7 @@
       box-shadow: 0 14px 40px rgba(17,16,24,.06);
       overflow:auto;
       -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
     }
     .tab{
       flex: 0 0 auto;
@@ -108,6 +111,7 @@
       white-space:nowrap;
       font-weight: 800;
       font-size: 13px;
+      scroll-snap-align: start;
     }
     .tab:hover{ transform: translateY(-1px); background: rgba(139,211,255,.20); }
     .tab:active{ transform: translateY(0px); }
@@ -125,29 +129,30 @@
       box-shadow: 0 0 0 4px rgba(176,11,85,.14);
     }
 
-    .rightActions{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 120px;
-      justify-content:flex-end;
+    /* Mobile header layout + “tab selector” fix */
+    @media (max-width: 700px){
+      .topbar{
+        flex-wrap:wrap;
+        gap:10px;
+      }
+      .brand{
+        min-width: unset;
+        flex: 1 1 auto;
+      }
+      .brand .btxt span{
+        max-width: 40vw;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+      }
+      .tabs{
+        width: 100%;
+        flex: 1 1 100%;
+      }
+      .tab{
+        padding:10px 12px;
+      }
     }
-    .chip{
-      display:none;
-      align-items:center;
-      gap:8px;
-      padding:8px 10px;
-      border-radius:999px;
-      border:1px solid rgba(17,16,24,.10);
-      background: rgba(255,255,255,.75);
-      font-size:12px;
-      font-weight:800;
-      color: rgba(17,16,24,.75);
-      white-space:nowrap;
-    }
-    .chip .cDot{ width:8px;height:8px;border-radius:999px;background: rgba(17,16,24,.22); }
-    .chip.on{ display:inline-flex; }
-    .chip.on .cDot{ background: rgba(40,180,120,.9); box-shadow: 0 0 0 4px rgba(40,180,120,.12); }
 
     /* --- Layout --- */
     main{
@@ -166,6 +171,8 @@
     @media (max-width: 980px){
       .grid2{ grid-template-columns: 1fr; }
     }
+
+    .stack{ display:grid; gap: 14px; }
 
     .card{
       border:1px solid rgba(17,16,24,.10);
@@ -255,35 +262,13 @@
       background: linear-gradient(135deg, rgba(176,11,85,.14), rgba(109,40,217,.10));
     }
 
-    /* --- Map --- */
-    .mapWrap{
-      display:grid;
-      gap: 12px;
-    }
-    .mapBox{
-      border:1px solid rgba(17,16,24,.10);
-      border-radius: var(--radius);
-      overflow:hidden;
-      background: rgba(255,255,255,.72);
-      min-height: 420px;
-    }
-    #map{
-      width:100%;
-      height:420px;
-    }
-    @media (max-width: 520px){
-      #map{ height: 360px; }
-      .mapBox{ min-height: 360px; }
-    }
-
-    /* --- Events list --- */
-    .controls{
+    /* --- Search bubble (above map) --- */
+    .searchBubble{
       display:flex;
       gap:10px;
       align-items:center;
       justify-content:space-between;
       flex-wrap:wrap;
-      margin-top: 2px;
     }
     .search{
       flex: 1 1 260px;
@@ -303,22 +288,60 @@
       background: transparent;
       color: var(--ink);
     }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(17,16,24,.10);
-      background: rgba(255,255,255,.70);
-      font-size: 12px;
-      font-weight: 900;
-      color: rgba(17,16,24,.70);
-      white-space:nowrap;
-    }
-    .pill .pDot{ width:8px;height:8px;border-radius:999px;background: rgba(17,16,24,.25); }
-    .pill.hot .pDot{ background: var(--pink); box-shadow: 0 0 0 4px rgba(176,11,85,.12); }
 
+    /* --- Map --- */
+    .mapBox{
+      border:1px solid rgba(17,16,24,.10);
+      border-radius: var(--radius);
+      overflow:hidden;
+      background: rgba(255,255,255,.72);
+      min-height: 420px;
+    }
+    #map{ width:100%; height:420px; }
+    @media (max-width: 520px){
+      #map{ height: 360px; }
+      .mapBox{ min-height: 360px; }
+    }
+
+    /* --- Glow/Pulse pins (map.html style) --- */
+    .pinWrap{ position:relative; width:1px; height:1px; overflow: visible; }
+    .glow-pin{
+      position:absolute;
+      left:0; top:0;
+      width:16px; height:16px;
+      border-radius:999px;
+      background: var(--pink);
+      box-shadow:
+        0 0 10px var(--pink),
+        0 0 22px rgba(176,11,85,.55),
+        0 0 46px rgba(176,11,85,.30);
+      transform: translate(-50%, -50%);
+    }
+    .glow-pulse{
+      position:absolute;
+      left:0; top:0;
+      width:46px; height:46px;
+      border-radius:999px;
+      border:2px solid rgba(176,11,85,.30);
+      transform: translate(-50%, -50%);
+      animation: pulse 1.6s ease-out infinite;
+      pointer-events:none;
+    }
+    @keyframes pulse{
+      0%{opacity:.85; transform: translate(-50%,-50%) scale(.35);}
+      100%{opacity:0; transform: translate(-50%,-50%) scale(1.15);}
+    }
+
+    /* ✅ Make InfoWindow fit mobile */
+    .gm-style-iw{ padding:0 !important; }
+    .gm-style-iw-d{ overflow:hidden !important; }
+    .gm-style-iw-c{
+      max-width: 86vw !important;
+      border-radius: 16px !important;
+    }
+    .gm-ui-hover-effect{ display:none !important; }
+
+    /* --- Event cards --- */
     .eventGrid{
       display:grid;
       gap: 12px;
@@ -357,6 +380,11 @@
     .badge.invite{
       background: rgba(176,11,85,.10);
       border-color: rgba(176,11,85,.20);
+      color: rgba(176,11,85,.92);
+    }
+    .badge.hl{
+      background: linear-gradient(135deg, rgba(176,11,85,.12), rgba(109,40,217,.10));
+      border-color: rgba(176,11,85,.22);
       color: rgba(176,11,85,.92);
     }
 
@@ -453,14 +481,7 @@
         <button class="tab" type="button" data-go="profile.html">
           <span class="dot"></span> Profile
         </button>
-        <button class="tab" type="button" data-go="index.html">
-          <span class="dot"></span> Sign in
-        </button>
       </nav>
-
-      <div class="rightActions">
-        <span class="chip" id="onlineChip"><span class="cDot"></span><span>Online</span></span>
-      </div>
     </div>
   </header>
 
@@ -471,63 +492,93 @@
         <div>
           <h2>What’s going on today?</h2>
           <p>
-            Clean map + clean cards. Tap an event to see details, apply, attend, and rate the vibe.
+            Clean map + clean cards. Tap an event to see details.
           </p>
         </div>
         <div class="miniBtns">
           <a class="btn primary" href="post_event.html">Post an event</a>
-          <a class="btn" href="events.html" title="Optional: your existing events feed page">All events</a>
         </div>
       </div>
     </section>
 
+    <!-- Map + Highlighted (right bubble) -->
     <section class="grid2">
-      <!-- Map -->
-      <section class="card mapWrap" aria-label="Map">
+      <div class="stack">
+        <!-- Search bubble ABOVE the map -->
+        <section class="card" aria-label="Search bubble">
+          <div class="cardInner">
+            <div class="searchBubble">
+              <div>
+                <h1 class="h1">Search</h1>
+                <div class="sub">Filter events by title, location, or tags.</div>
+              </div>
+              <div class="search" role="search" style="max-width: 520px; width: 100%;">
+                <span style="opacity:.6; font-weight:900;">⌕</span>
+                <input id="search" placeholder="Search events…" autocomplete="off" />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Map -->
+        <section class="card" aria-label="Map">
+          <div class="cardInner">
+            <div class="hRow">
+              <div>
+                <h1 class="h1">Map</h1>
+                <div class="sub">Pins show events with a saved location.</div>
+              </div>
+              <button class="btn" id="refreshBtn" type="button">Refresh</button>
+            </div>
+          </div>
+
+          <div class="mapBox">
+            <div id="map" role="application" aria-label="Events map"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Highlighted events (replaces old Events bubble on the right) -->
+      <section class="card" aria-label="Highlighted events">
         <div class="cardInner">
           <div class="hRow">
             <div>
-              <h1 class="h1">Map</h1>
-              <div class="sub">Pins show events with a saved location.</div>
+              <h1 class="h1">Highlighted</h1>
+              <div class="sub">Admin-picked events.</div>
             </div>
-            <span class="pill hot" title="Live map + live list">
-              <span class="pDot"></span> Live
-            </span>
-          </div>
-        </div>
-
-        <div class="mapBox">
-          <div id="map" role="application" aria-label="Events map"></div>
-        </div>
-      </section>
-
-      <!-- Events list -->
-      <section class="card" aria-label="Events list">
-        <div class="cardInner">
-          <div class="hRow">
-            <div>
-              <h1 class="h1">Events</h1>
-              <div class="sub">Newest first. Search by title, location, or tags.</div>
-            </div>
-            <span class="pill" id="countPill"><span class="pDot"></span><span id="countText">0</span></span>
-          </div>
-
-          <div class="controls">
-            <div class="search" role="search">
-              <span style="opacity:.6; font-weight:900;">⌕</span>
-              <input id="search" placeholder="Search events…" autocomplete="off" />
-            </div>
-            <button class="btn" id="refreshBtn" type="button">Refresh</button>
+            <span class="badge hl" title="Only events flagged by admin">Featured</span>
           </div>
         </div>
 
         <div class="cardInner" style="padding-top:0;">
-          <div class="eventGrid" id="eventGrid"></div>
-          <div class="empty" id="empty" style="display:none;">
-            No events found. Try a different search — or be the first to post.
+          <div class="eventGrid" id="highlightGrid"></div>
+          <div class="empty" id="highlightEmpty" style="display:none;">
+            No highlighted events right now.
           </div>
         </div>
       </section>
+    </section>
+
+    <!-- All events list UNDER the map -->
+    <section class="card" aria-label="All events list">
+      <div class="cardInner">
+        <div class="hRow">
+          <div>
+            <h1 class="h1">All Events</h1>
+            <div class="sub">Newest first.</div>
+          </div>
+          <span class="badge" title="Matching search">
+            <span id="countText">0</span>
+          </span>
+        </div>
+      </div>
+
+      <div class="cardInner" style="padding-top:0;">
+        <div class="eventGrid" id="eventGrid"></div>
+        <div class="empty" id="empty" style="display:none;">
+          No events found. Try a different search — or be the first to post.
+        </div>
+      </div>
     </section>
   </main>
 
@@ -543,7 +594,7 @@
       getFirestore, collection, getDocs, getDoc, doc, query, orderBy
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-    // --- Firebase (matches your existing config style) ---
+    // --- Firebase ---
     const firebaseConfig = {
       apiKey: "AIzaSyD_k18vbiBsLhQB7PzgEVT9PEI_30Mu0kg",
       authDomain: "uzone-6148d.firebaseapp.com",
@@ -560,22 +611,32 @@
     const db = getFirestore(app);
 
     // --- Tabs ---
+    function scrollActiveTabIntoView(){
+      const tabs = document.querySelector(".tabs");
+      const active = document.querySelector(".tab.active");
+      if (!tabs || !active) return;
+      // keep active tab visible on mobile
+      active.scrollIntoView({ behavior: "instant", inline: "center", block: "nearest" });
+    }
     document.querySelectorAll(".tab[data-go]").forEach(btn => {
       btn.addEventListener("click", () => {
         const to = btn.getAttribute("data-go");
         if (to) window.location.href = to;
       });
     });
+    scrollActiveTabIntoView();
 
     // --- UI refs ---
     const hello = document.getElementById("hello");
-    const onlineChip = document.getElementById("onlineChip");
 
     const grid = document.getElementById("eventGrid");
     const empty = document.getElementById("empty");
     const searchEl = document.getElementById("search");
     const refreshBtn = document.getElementById("refreshBtn");
     const countText = document.getElementById("countText");
+
+    const highlightGrid = document.getElementById("highlightGrid");
+    const highlightEmpty = document.getElementById("highlightEmpty");
 
     // --- Helpers ---
     function esc(s){ return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
@@ -615,15 +676,17 @@
       return t.map(x => String(x || "").trim()).filter(Boolean);
     }
 
+    function isHighlighted(ev){
+      return ev?.highlighted === true || ev?.isHighlighted === true || ev?.featured === true || ev?.adminHighlighted === true;
+    }
+
     // Best-effort lat/lng getter so old/new events still show
     function pickLatLng(ev){
       const candidates = [
-        // direct fields
         [ev.lat, ev.lng],
         [ev.latitude, ev.longitude],
         [ev.locationLat, ev.locationLng],
         [ev.locLat, ev.locLng],
-        // nested
         [ev.coords?.lat, ev.coords?.lng],
         [ev.geo?.lat, ev.geo?.lng],
         [ev.geo?.latitude, ev.geo?.longitude],
@@ -643,25 +706,42 @@
       return null;
     }
 
+    function pickCreatedAtMs(ev){
+      const d = tsToDate(ev.createdAt || ev.created || ev.timestamp || ev.time);
+      return d ? d.getTime() : 0;
+    }
+
     // --- Map ---
     const MAPS_API_KEY = "AIzaSyCt8UPeNwhR4mPoQgWUoYxUE2UrlKYL6UE";
-    const MAP_ID = "f4ab270f6c4fc6deeed4fa00"; // same id you already use on post_event
+    const MAP_ID = "f4ab270f6c4fc6deeed4fa00";
 
     let gmap = null;
     let info = null;
-    let markers = []; // { marker, id }
+    let markers = []; // AdvancedMarkerElement instances
 
     function loadGoogleMaps(){
       return new Promise((resolve, reject) => {
-        if (window.google?.maps) return resolve();
+        if (window.google?.maps?.Map && window.google?.maps?.marker?.AdvancedMarkerElement) return resolve();
         const s = document.createElement("script");
-        s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(MAPS_API_KEY)}&libraries=marker,places`;
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(MAPS_API_KEY)}&libraries=marker,places&v=weekly`;
         s.async = true;
         s.defer = true;
         s.onload = () => resolve();
         s.onerror = () => reject(new Error("Failed to load Google Maps script."));
         document.head.appendChild(s);
       });
+    }
+
+    function buildPingPinEl(){
+      const wrap = document.createElement("div");
+      wrap.className = "pinWrap";
+      const pulse = document.createElement("div");
+      pulse.className = "glow-pulse";
+      const dot = document.createElement("div");
+      dot.className = "glow-pin";
+      wrap.appendChild(pulse);
+      wrap.appendChild(dot);
+      return wrap;
     }
 
     async function initMap(){
@@ -676,63 +756,137 @@
         gestureHandling: "greedy",
       });
 
-      info = new google.maps.InfoWindow();
+      info = new google.maps.InfoWindow({});
     }
 
     function clearMarkers(){
       for (const m of markers){
-        try{ m.marker.map = null; }catch(_){}
+        try{ m.map = null; }catch(_){}
       }
       markers = [];
     }
 
+    function openInfo(marker, ev){
+      const ll = pickLatLng(ev);
+      if (!ll) return;
+
+      const when = esc(fmtWhen(ev));
+      const where = esc(ev.location || "—");
+      const title = esc(ev.name || "Event");
+      const badgeText = ev.inviteOnly ? "Invite-only" : "Public";
+
+      const html = `
+        <div style="font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; width:min(270px,82vw); max-width:82vw; padding:12px; color: rgba(20,20,24,.92); position:relative;">
+          <button type="button" id="iwCloseBtn"
+            style="position:absolute; top:10px; right:10px; width:30px; height:30px; border-radius:999px; border:1px solid rgba(0,0,0,.12); background: rgba(255,255,255,.92); color: rgba(20,20,24,.92); font-weight:900; cursor:pointer; display:flex; align-items:center; justify-content:center; line-height:1; box-shadow: 0 10px 24px rgba(0,0,0,.12);">
+            ✕
+          </button>
+
+          <div style="display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; background: rgba(0,0,0,.06); border:1px solid rgba(0,0,0,.08); font-size:12px; color: rgba(20,20,24,.80); white-space:nowrap; max-width: calc(100% - 44px); overflow:hidden; text-overflow:ellipsis;">
+            <span style="width:7px;height:7px;border-radius:999px; background: var(--pink); box-shadow: 0 0 0 4px rgba(176,11,85,.16); flex:0 0 auto;"></span>
+            ${badgeText}
+          </div>
+
+          <h3 style="margin:10px 0 6px 0; font-size:15px; line-height:1.2; font-weight:900; padding-right:40px;">
+            ${title}
+          </h3>
+
+          <div style="font-size:12px; color: rgba(20,20,24,.74); line-height:1.35; word-break: break-word;">
+            <b>When:</b> ${when}<br>
+            <b>Where:</b> ${where}
+          </div>
+
+          <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+            <a href="event.html?id=${encodeURIComponent(ev.id)}"
+              style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:9px 10px; border-radius:12px; border:1px solid rgba(176,11,85,.35); background: linear-gradient(135deg, rgba(176,11,85,.95), rgba(176,11,85,.65)); color:#fff; font-weight:900; text-decoration:none; flex:1 1 auto; min-width:110px;">
+              Open
+            </a>
+            <button type="button" id="iwZoomBtn"
+              style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:9px 10px; border-radius:12px; border:1px solid rgba(0,0,0,.12); background: rgba(255,255,255,.88); color: rgba(20,20,24,.92); font-weight:900; cursor:pointer; flex:1 1 auto; min-width:110px;">
+              Zoom
+            </button>
+          </div>
+        </div>
+      `;
+
+      info.setContent(html);
+      info.open({ map: gmap, anchor: marker });
+
+      google.maps.event.addListenerOnce(info, "domready", () => {
+        const close = document.getElementById("iwCloseBtn");
+        if (close) close.onclick = () => info.close();
+
+        const zoom = document.getElementById("iwZoomBtn");
+        if (zoom) zoom.onclick = () => {
+          gmap.panTo(ll);
+          gmap.setZoom(Math.max(gmap.getZoom() || 12, 16));
+        };
+      });
+    }
+
     function addMarkerForEvent(ev){
-      if (!gmap || !window.google?.maps?.marker) return;
+      if (!gmap || !window.google?.maps?.marker?.AdvancedMarkerElement) return;
 
       const ll = pickLatLng(ev);
       if (!ll) return;
 
-      const title = (ev.name || "Event").toString();
-      const when = fmtWhen(ev);
-      const invite = !!ev.inviteOnly;
-
-      const pin = document.createElement("div");
-      pin.style.width = "14px";
-      pin.style.height = "14px";
-      pin.style.borderRadius = "999px";
-      pin.style.background = invite ? "rgba(176,11,85,.95)" : "rgba(109,40,217,.85)";
-      pin.style.boxShadow = invite
-        ? "0 0 0 5px rgba(176,11,85,.16)"
-        : "0 0 0 5px rgba(109,40,217,.14)";
-
       const marker = new google.maps.marker.AdvancedMarkerElement({
         map: gmap,
         position: ll,
-        title,
-        content: pin,
+        title: (ev.name || "Event").toString(),
+        content: buildPingPinEl(),
       });
 
-      marker.addListener("gmp-click", () => {
-        const html = `
-          <div style="font-family: Arial; padding: 6px 4px; max-width: 240px;">
-            <div style="font-weight:900; margin-bottom:4px;">${esc(title)}</div>
-            <div style="font-size:12px; opacity:.8; margin-bottom:6px;">${esc(when)}</div>
-            <a href="event.html?id=${encodeURIComponent(ev.id)}"
-               style="display:inline-block; font-size:12px; font-weight:900; text-decoration:none; color:#b00b55;">
-              Open →
-            </a>
-          </div>`;
-        info.setContent(html);
-        info.setPosition(ll);
-        info.open({ map: gmap });
-      });
-
-      markers.push({ marker, id: ev.id });
+      marker.addListener("gmp-click", () => openInfo(marker, ev));
+      markers.push(marker);
     }
 
     // --- Events ---
-    let currentUser = null;
     let allEvents = []; // {id, ...data}
+
+    function renderHighlighted(){
+      const highlighted = allEvents.filter(isHighlighted);
+      highlightGrid.innerHTML = "";
+      highlightEmpty.style.display = highlighted.length ? "none" : "block";
+
+      // show a few (keeps bubble clean)
+      const show = highlighted.slice(0, 6);
+
+      for (const ev of show){
+        const invite = !!ev.inviteOnly;
+        const when = fmtWhen(ev);
+
+        const el = document.createElement("article");
+        el.className = "eventCard";
+        el.innerHTML = `
+          <div class="eventTop">
+            <h3 class="eventTitle">${esc(ev.name || "Untitled")}</h3>
+            <span class="badge hl">Highlighted</span>
+          </div>
+          <div class="meta">
+            <div><b>When:</b> ${esc(when)}</div>
+            <div><b>Where:</b> ${esc(ev.location || "—")}</div>
+          </div>
+          <div class="actions">
+            <a class="miniLink" href="event.html?id=${encodeURIComponent(ev.id)}">Open</a>
+            <button class="miniLink" type="button" data-zoom="${esc(ev.id)}">Zoom pin</button>
+          </div>
+        `;
+        highlightGrid.appendChild(el);
+      }
+
+      highlightGrid.querySelectorAll("button[data-zoom]").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.getAttribute("data-zoom");
+          const ev = allEvents.find(e => e.id === id);
+          if (!ev || !gmap) return;
+          const ll = pickLatLng(ev);
+          if (!ll) return;
+          gmap.panTo(ll);
+          gmap.setZoom(Math.max(gmap.getZoom() || 12, 16));
+        });
+      });
+    }
 
     function renderEvents(){
       const q = (searchEl.value || "").trim().toLowerCase();
@@ -775,7 +929,6 @@
         grid.appendChild(el);
       }
 
-      // zoom pin buttons
       grid.querySelectorAll("button[data-zoom]").forEach(btn => {
         btn.addEventListener("click", () => {
           const id = btn.getAttribute("data-zoom");
@@ -791,13 +944,7 @@
       });
     }
 
-    function pickCreatedAtMs(ev){
-      const d = tsToDate(ev.createdAt || ev.created || ev.timestamp || ev.time);
-      return d ? d.getTime() : 0;
-    }
-
     async function loadEvents(){
-      // Try newest-first (requires index if you enforce orderBy). If it errors, fallback to unordered.
       let snap;
       try{
         snap = await getDocs(query(collection(db, "events"), orderBy("createdAt", "desc")));
@@ -808,15 +955,14 @@
       const arr = [];
       snap.forEach(d => arr.push({ id: d.id, ...(d.data() || {}) }));
 
-      // Ensure newest-first even in fallback
       arr.sort((a,b) => pickCreatedAtMs(b) - pickCreatedAtMs(a));
-
       allEvents = arr;
 
       // markers
       clearMarkers();
       for (const ev of allEvents) addMarkerForEvent(ev);
 
+      renderHighlighted();
       renderEvents();
     }
 
@@ -830,8 +976,6 @@
         return;
       }
 
-      currentUser = user;
-
       // Hello text
       let displayName = user.displayName?.trim() || "";
       try{
@@ -843,9 +987,10 @@
       } catch(_) {}
 
       hello.textContent = displayName ? `Hey, ${displayName}` : "Welcome back";
-      onlineChip.classList.add("on");
 
-      try{ await initMap(); } catch(e){
+      try{
+        await initMap();
+      } catch(e){
         console.error(e);
         document.getElementById("map").innerHTML =
           `<div style="padding:16px; color: rgba(17,16,24,.72); font-size:13px;">
