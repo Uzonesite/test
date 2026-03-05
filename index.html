@@ -479,7 +479,7 @@
           await ensurePublicId(user, displayName);
 
           setMsg("Account created! Redirecting…", "ok");
-          window.location.href = "hub.html";
+          window.location.href = "main.html";
         } else {
           await signInWithEmailAndPassword(auth, email, password);
 
@@ -488,7 +488,7 @@
           }
 
           setMsg("Logged in! Redirecting…", "ok");
-          window.location.href = "hub.html";
+          window.location.href = "main.html";
         }
       } catch (err) {
         setMsg(friendlyAuthError(err), "error");
