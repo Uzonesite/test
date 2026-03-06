@@ -1343,7 +1343,10 @@
                 <div class="placeShell">
                   <span class="placeIcon" aria-hidden="true">⌕</span>
                   <div class="placeWrap">
-                    <gmp-place-autocomplete id="locationAutocomplete"></gmp-place-autocomplete>
+                    <div class="locationSearchWrap">
+                    <span class="locationSearchIcon">⌕</span>
+                    <input id="locationAutocomplete" class="locationSearchInput" type="text" placeholder="Search for an address" autocomplete="off" />
+                  </div>
                   </div>
                 </div>
               </div>
@@ -1460,6 +1463,8 @@
     const coverPreview = document.getElementById("coverPreview");
     const titleInput = document.getElementById("titleInput");
     const locationAutocompleteEl = document.getElementById("locationAutocomplete");
+    let placesAutocomplete = null;
+    let placesReady = false;
     const locationInput = document.getElementById("locationInput");
     const pickedLocationLabel = document.getElementById("pickedLocationLabel");
     const dateInput = document.getElementById("dateInput");
@@ -1982,6 +1987,7 @@
       locationInput.value = "";
       latInput.value = "";
       lngInput.value = "";
+      if (locationAutocompleteEl) locationAutocompleteEl.value = "";
       pickedLocationLabel.textContent = "No location picked yet.";
       updateCoverPreview(null, "");
       clearPicked();
@@ -2086,39 +2092,56 @@
           setPicked(lat, lng, label, true);
         });
 
-        if (locationAutocompleteEl && !locationAutocompleteEl.dataset.boundSelect){
-          locationAutocompleteEl.dataset.boundSelect = "true";
-          locationAutocompleteEl.addEventListener("gmp-select", async (e) => {
+        if (locationAutocompleteEl && !placesReady && google.maps.places?.Autocomplete){
+          placesAutocomplete = new google.maps.places.Autocomplete(locationAutocompleteEl, {
+            fields: ["formatted_address", "geometry", "name"],
+            types: ["geocode"]
+          });
+          placesReady = true;
+
+          placesAutocomplete.addListener("place_changed", async () => {
             try{
               await ensureMapReady();
               refreshPostMap(false);
 
-              const place = e.placePrediction?.toPlace?.() ?? e.place;
-              if (!place) return;
-
-              if (typeof place.fetchFields === "function") {
-                await place.fetchFields({ fields: ["displayName", "formattedAddress", "location"] });
-              }
-
-              const label = place.formattedAddress || place.displayName || "";
-              const loc = place.location;
+              const place = placesAutocomplete.getPlace();
+              const label = place?.formatted_address || place?.name || locationAutocompleteEl.value.trim();
+              const loc = place?.geometry?.location;
 
               if (loc){
-                requestAnimationFrame(() => {
-                  setPicked(loc.lat(), loc.lng(), label, true);
-                  refreshPostMap(false);
-                });
+                setPicked(loc.lat(), loc.lng(), label, true);
+                locationAutocompleteEl.value = label;
                 setStatus(postStatus, "Location picked.", "success");
                 return;
               }
 
               if (label){
                 await searchAddress(label);
+                locationAutocompleteEl.value = label;
+                return;
               }
+
+              setStatus(postStatus, "Choose a location from the list or type a more specific address.", "error");
             } catch (err){
               console.error(err);
               setStatus(postStatus, "Couldn’t use that address. Try another one.", "error");
             }
+          });
+
+          locationAutocompleteEl.addEventListener("keydown", async (e) => {
+            if (e.key !== "Enter") return;
+            e.preventDefault();
+            const raw = locationAutocompleteEl.value.trim();
+            if (!raw) return;
+            await searchAddress(raw);
+          });
+
+          locationAutocompleteEl.addEventListener("blur", async () => {
+            const raw = locationAutocompleteEl.value.trim();
+            if (!raw) return;
+            if (raw === locationInput.value.trim()) return;
+            if (latInput.value && lngInput.value) return;
+            await searchAddress(raw);
           });
         }
       }
@@ -2136,6 +2159,7 @@
       latInput.value = String(niceLat);
       lngInput.value = String(niceLng);
       locationInput.value = label || locationInput.value.trim() || "Pinned location";
+      if (locationAutocompleteEl) locationAutocompleteEl.value = locationInput.value;
       pickedLocationLabel.textContent = locationInput.value;
 
       const pos = { lat: niceLat, lng: niceLng };
@@ -2202,6 +2226,7 @@
       latInput.value = "";
       lngInput.value = "";
       locationInput.value = "";
+      if (locationAutocompleteEl) locationAutocompleteEl.value = "";
       pickedLocationLabel.textContent = "No location picked yet.";
 
       if (gmarker){
