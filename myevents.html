@@ -72,11 +72,12 @@
       display:flex;
       align-items:center;
       gap:10px;
-      min-width: 140px;
+      min-width:140px;
     }
 
     .brand img{
-      width:34px;height:34px;
+      width:34px;
+      height:34px;
       border-radius:10px;
       border:1px solid rgba(17,16,24,.08);
       background: rgba(255,255,255,.6);
@@ -825,8 +826,7 @@
     }
 
     .input,
-    .textarea,
-    .select{
+    .textarea{
       width:100%;
       border:1px solid rgba(17,16,24,.10);
       background: rgba(255,255,255,.84);
@@ -843,8 +843,7 @@
     }
 
     .input:focus,
-    .textarea:focus,
-    .select:focus{
+    .textarea:focus{
       border-color: rgba(176,11,85,.30);
       box-shadow: 0 0 0 4px rgba(176,11,85,.08);
     }
@@ -929,6 +928,43 @@
       .mapCanvas{ height:260px; }
     }
 
+    .pickedLocation{
+      padding:10px 12px;
+      border-radius:14px;
+      background: rgba(17,16,24,.06);
+      border:1px solid rgba(17,16,24,.08);
+      color: rgba(17,16,24,.78);
+      font-size:13px;
+      line-height:1.4;
+      word-break:break-word;
+    }
+
+    .attendeeSection{
+      display:grid;
+      gap:10px;
+    }
+
+    .attendeeHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .attendeeCount{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:900;
+      background: rgba(17,16,24,.06);
+      border:1px solid rgba(17,16,24,.08);
+      color: rgba(17,16,24,.78);
+    }
+
     .attendeeList{
       display:flex;
       flex-wrap:wrap;
@@ -943,25 +979,60 @@
       padding:8px 10px;
       border-radius:999px;
       border:1px solid rgba(17,16,24,.10);
-      background: rgba(255,255,255,.86);
+      background: rgba(255,255,255,.84);
       font-size:12px;
       font-weight:900;
-      color: rgba(17,16,24,.80);
+      color: rgba(17,16,24,.78);
       max-width:100%;
     }
 
-    .attendeeChip .dot{
-      width:8px;
-      height:8px;
+    .attendeeAvatar{
+      width:20px;
+      height:20px;
       border-radius:999px;
-      background: var(--green);
-      box-shadow: 0 0 0 4px rgba(88,201,154,.16);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      font-weight:1000;
+      color:#fff;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
       flex:0 0 auto;
     }
 
-    .sectionStack{
-      display:grid;
-      gap:14px;
+    .attendeeEmpty{
+      font-size:13px;
+      color: rgba(17,16,24,.62);
+      line-height:1.45;
+    }
+
+    .pinWrap{ position:relative; width:1px; height:1px; overflow: visible; }
+    .glow-pin{
+      position:absolute;
+      left:0; top:0;
+      width:16px; height:16px;
+      border-radius:999px;
+      background: var(--pink);
+      box-shadow:
+        0 0 10px var(--pink),
+        0 0 22px rgba(176,11,85,.55),
+        0 0 46px rgba(176,11,85,.30);
+      transform: translate(-50%, -50%);
+    }
+    .glow-pulse{
+      position:absolute;
+      left:0; top:0;
+      width:46px; height:46px;
+      border-radius:999px;
+      border:2px solid rgba(176,11,85,.30);
+      transform: translate(-50%, -50%);
+      animation: pulse 1.6s ease-out infinite;
+      pointer-events:none;
+    }
+
+    @keyframes pulse{
+      0%{opacity:.85; transform: translate(-50%,-50%) scale(.35);}
+      100%{opacity:0; transform: translate(-50%,-50%) scale(1.15);}
     }
 
     .hidden{ display:none !important; }
@@ -1100,44 +1171,39 @@
           <div class="kv" id="eventModalKV"></div>
         </div>
 
-        <div class="sectionStack">
-          <div class="card">
-            <div class="cardInner">
-              <div class="hRow">
+        <div class="card">
+          <div class="cardInner">
+            <div class="attendeeSection">
+              <div class="attendeeHead">
                 <div>
                   <h1 class="h1" style="font-size:16px;">Who’s going</h1>
                   <div class="sub">Attendees for this event.</div>
                 </div>
-                <span class="pill light">
-                  <span class="dot" style="background: var(--green); box-shadow: 0 0 0 4px rgba(88,201,154,.16);"></span>
-                  <span id="eventModalAttendeeCount">0</span>
-                </span>
+                <span class="attendeeCount" id="eventModalAttendeeCount">0</span>
               </div>
-            </div>
-            <div class="cardInner" style="padding-top:0;">
               <div class="attendeeList" id="eventModalAttendees"></div>
             </div>
           </div>
+        </div>
 
-          <div class="card">
-            <div class="cardInner">
-              <div class="hRow">
-                <div>
-                  <h1 class="h1" style="font-size:16px;">Description</h1>
-                  <div class="sub">Full event details.</div>
-                </div>
-                <div class="miniBtns">
-                  <button class="btn" id="eventModalMapBtn" type="button">Open in Events</button>
-                  <button class="btn primary hidden" id="eventModalEditBtn" type="button">Edit</button>
-                  <button class="btn danger hidden" id="eventModalDeleteBtn" type="button">Delete</button>
-                  <button class="btn primary" id="eventModalRegisterBtn" type="button">Register</button>
-                </div>
+        <div class="card">
+          <div class="cardInner">
+            <div class="hRow">
+              <div>
+                <h1 class="h1" style="font-size:16px;">Description</h1>
+                <div class="sub">Full event details.</div>
+              </div>
+              <div class="miniBtns">
+                <button class="btn" id="eventModalOpenEventsBtn" type="button">Open in Events</button>
+                <button class="btn primary hidden" id="eventModalEditBtn" type="button">Edit</button>
+                <button class="btn danger hidden" id="eventModalDeleteBtn" type="button">Delete</button>
+                <button class="btn primary" id="eventModalRegisterBtn" type="button">Register</button>
               </div>
             </div>
-            <div class="cardInner" style="padding-top:0;">
-              <div class="statusBox" id="eventModalStatus">Ready.</div>
-              <div style="margin-top:12px; color:rgba(17,16,24,.78); font-size:14px; line-height:1.55;" id="eventModalDesc">—</div>
-            </div>
+          </div>
+          <div class="cardInner" style="padding-top:0;">
+            <div class="statusBox" id="eventModalStatus">Ready.</div>
+            <div style="margin-top:12px; color:rgba(17,16,24,.78); font-size:14px; line-height:1.55;" id="eventModalDesc">—</div>
           </div>
         </div>
       </div>
@@ -1151,7 +1217,7 @@
       <div class="modalTop">
         <div>
           <h3 class="modalTitle" id="postModalTitle">Post an event</h3>
-          <div class="modalSub" id="postModalSub">Upload a cover image, fill in the details, and search the address or click the map.</div>
+          <div class="modalSub" id="postModalSub">Add your event details, search the address as you type, use your location, or tap the map to pin it.</div>
         </div>
         <button class="closeBtn" id="postModalCloseBtn" type="button" aria-label="Close">×</button>
       </div>
@@ -1159,27 +1225,23 @@
       <div class="modalBody">
         <form id="postForm" class="formGrid" novalidate>
           <div class="uploadBox">
-            <div class="preview" id="coverPreview">
-              <div class="previewFallback">Cover preview</div>
-            </div>
-
             <div class="field">
               <label for="coverInput">Cover image</label>
               <input class="input" id="coverInput" type="file" accept="image/*" />
-              <div class="helper">Optional. JPG, PNG, WEBP, etc.</div>
+            </div>
+            <div class="preview" id="coverPreview">
+              <div class="previewFallback">Cover preview</div>
             </div>
           </div>
 
           <div class="row2">
             <div class="field">
-              <label for="titleInput">Title</label>
-              <input class="input" id="titleInput" maxlength="90" placeholder="Event title" required />
+              <label for="titleInput">Event title</label>
+              <input class="input" id="titleInput" maxlength="120" placeholder="Movie night" required />
             </div>
-
             <div class="field">
               <label for="tagsInput">Tags</label>
-              <input class="input" id="tagsInput" maxlength="160" placeholder="party, music, sports, food" />
-              <div class="helper">Comma separated.</div>
+              <input class="input" id="tagsInput" maxlength="160" placeholder="fun, social, campus" />
             </div>
           </div>
 
@@ -1188,7 +1250,6 @@
               <label for="dateInput">Date</label>
               <input class="input" id="dateInput" type="date" required />
             </div>
-
             <div class="field">
               <label for="timeInput">Time</label>
               <input class="input" id="timeInput" type="time" required />
@@ -1197,7 +1258,7 @@
 
           <div class="field">
             <label for="descInput">Description</label>
-            <textarea class="textarea" id="descInput" maxlength="1000" placeholder="What should people know?" required></textarea>
+            <textarea class="textarea" id="descInput" maxlength="4000" placeholder="What’s happening?"></textarea>
           </div>
 
           <label class="checkRow">
@@ -1207,39 +1268,26 @@
 
           <div class="mapPicker">
             <div class="mapPickerTop">
-              <div class="row2">
-                <div class="field">
-                  <label for="locationSearchInput">Search address</label>
-                  <input class="input" id="locationSearchInput" maxlength="160" placeholder="Search an address…" />
-                </div>
-                <div class="field">
-                  <label for="locationInput">Chosen location</label>
-                  <input class="input" id="locationInput" maxlength="160" placeholder="Selected address or place" required />
-                </div>
-              </div>
-
-              <div class="row2">
-                <div class="field">
-                  <label for="latInput">Latitude</label>
-                  <input class="input" id="latInput" type="number" step="any" placeholder="45.4215" />
-                </div>
-                <div class="field">
-                  <label for="lngInput">Longitude</label>
-                  <input class="input" id="lngInput" type="number" step="any" placeholder="-75.6972" />
-                </div>
+              <div class="field">
+                <label for="locationSearchInput">Location</label>
+                <input class="input" id="locationSearchInput" maxlength="160" placeholder="Start typing an address…" autocomplete="off" />
               </div>
 
               <div class="mapPickerBtns">
-                <button class="btn" id="searchAddressBtn" type="button">Search address</button>
                 <button class="btn" id="useMyLocationBtn" type="button">Use my location</button>
                 <button class="btn" id="clearLocationBtn" type="button">Clear pin</button>
               </div>
 
-              <div class="helper">Search an address, choose from autocomplete, use your location, or click the map to drop a pin.</div>
+              <div class="pickedLocation" id="pickedLocationLabel">No location picked yet.</div>
+              <div class="helper">Search for an address, choose an autocomplete result, or tap the map to drop the pin.</div>
             </div>
 
             <div id="postMap" class="mapCanvas" aria-label="Location picker map"></div>
           </div>
+
+          <input id="locationInput" type="hidden" />
+          <input id="latInput" type="hidden" />
+          <input id="lngInput" type="hidden" />
 
           <div class="miniBtns">
             <button class="btn primary" id="submitPostBtn" type="submit">Post event</button>
@@ -1317,7 +1365,7 @@
     const eventModalDesc = document.getElementById("eventModalDesc");
     const eventModalStatus = document.getElementById("eventModalStatus");
     const eventModalRegisterBtn = document.getElementById("eventModalRegisterBtn");
-    const eventModalMapBtn = document.getElementById("eventModalMapBtn");
+    const eventModalOpenEventsBtn = document.getElementById("eventModalOpenEventsBtn");
     const eventModalEditBtn = document.getElementById("eventModalEditBtn");
     const eventModalDeleteBtn = document.getElementById("eventModalDeleteBtn");
     const eventModalAttendees = document.getElementById("eventModalAttendees");
@@ -1339,6 +1387,7 @@
     const titleInput = document.getElementById("titleInput");
     const locationSearchInput = document.getElementById("locationSearchInput");
     const locationInput = document.getElementById("locationInput");
+    const pickedLocationLabel = document.getElementById("pickedLocationLabel");
     const dateInput = document.getElementById("dateInput");
     const timeInput = document.getElementById("timeInput");
     const latInput = document.getElementById("latInput");
@@ -1346,7 +1395,6 @@
     const tagsInput = document.getElementById("tagsInput");
     const descInput = document.getElementById("descInput");
     const inviteOnlyInput = document.getElementById("inviteOnlyInput");
-    const searchAddressBtn = document.getElementById("searchAddressBtn");
     const useMyLocationBtn = document.getElementById("useMyLocationBtn");
     const clearLocationBtn = document.getElementById("clearLocationBtn");
 
@@ -1354,187 +1402,96 @@
     let currentUserDisplayName = "";
     let allEvents = [];
     let currentModalEvent = null;
-    let currentCoverFile = null;
     let editingEventId = null;
+    let currentCoverFile = null;
 
+    let mapsReadyPromise = null;
     let gmap = null;
     let gmarker = null;
-    let geocoder = null;
     let autocomplete = null;
-    let mapsReadyPromise = null;
+    let geocoder = null;
 
-    function scrollActiveTabIntoView(){
-      const active = document.querySelector(".tab.active");
-      if (!active) return;
-      active.scrollIntoView({ behavior: "instant", inline: "center", block: "nearest" });
-    }
-
-    document.querySelectorAll(".tab[data-go]").forEach(btn => {
+    document.querySelectorAll("[data-go]").forEach(btn => {
       btn.addEventListener("click", () => {
-        const to = btn.getAttribute("data-go");
-        if (to) window.location.href = to;
+        const href = btn.getAttribute("data-go");
+        if (href) window.location.href = href;
       });
     });
 
-    scrollActiveTabIntoView();
-
     function esc(value){
       return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
     }
 
-    function setStatus(el, text, type = ""){
-      el.textContent = text;
-      el.className = "statusBox" + (type ? ` ${type}` : "");
-    }
-
-    function uniqueStrings(arr){
-      return [...new Set((Array.isArray(arr) ? arr : [])
-        .map(x => String(x ?? "").trim())
-        .filter(Boolean)
-      )];
-    }
-
-    function safeNumber(value){
-      const n = Number(value);
+    function safeNumber(v){
+      const n = Number(v);
       return Number.isFinite(n) ? n : null;
     }
 
+    function uniqueStrings(arr){
+      return [...new Set((Array.isArray(arr) ? arr : []).map(x => String(x || "").trim()).filter(Boolean))];
+    }
+
+    function parseTagsInput(value){
+      return uniqueStrings(String(value || "").split(","));
+    }
+
     function pickTitle(ev){
-      return (ev?.name || ev?.title || "Untitled event").toString().trim() || "Untitled event";
+      return ev?.name || ev?.title || "Untitled";
     }
 
     function pickDescription(ev){
-      return (ev?.description || ev?.desc || ev?.details || "").toString().trim();
-    }
-
-    function pickWhere(ev){
-      return (ev?.location || ev?.place || ev?.address || "—").toString().trim() || "—";
-    }
-
-    function pickHost(ev){
-      return (
-        ev?.hostName ||
-        ev?.createdByName ||
-        ev?.ownerName ||
-        ev?.posterName ||
-        ev?.displayName ||
-        ""
-      ).toString().trim();
+      return ev?.description || ev?.desc || "";
     }
 
     function pickImage(ev){
-      return (ev?.coverUrl || ev?.imageUrl || ev?.photoUrl || ev?.img || "").toString().trim();
+      return ev?.coverUrl || ev?.imageUrl || "";
+    }
+
+    function pickHost(ev){
+      return ev?.hostName || ev?.ownerName || ev?.createdByName || "";
+    }
+
+    function pickLocation(ev){
+      return ev?.location || ev?.place || ev?.address || "";
     }
 
     function pickTags(ev){
-      if (Array.isArray(ev?.tags)) return uniqueStrings(ev.tags);
-      if (typeof ev?.tags === "string") return uniqueStrings(ev.tags.split(","));
-      if (typeof ev?.tag === "string") return uniqueStrings(ev.tag.split(","));
-      return [];
+      return Array.isArray(ev?.tags) ? ev.tags.filter(Boolean) : [];
     }
 
     function pickCreatedAtMs(ev){
-      const v = ev?.createdAt;
-      if (!v) return 0;
-      if (typeof v?.toMillis === "function") return v.toMillis();
-      if (typeof v?.seconds === "number") return v.seconds * 1000;
-      const n = Number(v);
-      return Number.isFinite(n) ? n : 0;
-    }
-
-    function pickEventDateObj(ev){
-      const startDate = (ev?.startDate || ev?.date || "").toString().trim();
-      const startTime = (ev?.startTime || ev?.time || "").toString().trim();
-
-      if (startDate && startTime){
-        const dt = new Date(`${startDate}T${startTime}`);
-        if (!Number.isNaN(dt.getTime())) return dt;
-      }
-
-      if (startDate){
-        const dt = new Date(startDate);
-        if (!Number.isNaN(dt.getTime())) return dt;
-      }
-
-      const maybe =
-        ev?.startsAt ||
-        ev?.startAt ||
-        ev?.eventDate ||
-        ev?.datetime ||
-        ev?.dateTime ||
-        null;
-
-      if (maybe?.toDate) return maybe.toDate();
-
-      if (typeof maybe?.seconds === "number"){
-        const dt = new Date(maybe.seconds * 1000);
-        if (!Number.isNaN(dt.getTime())) return dt;
-      }
-
-      if (typeof maybe === "number"){
-        const dt = new Date(maybe);
-        if (!Number.isNaN(dt.getTime())) return dt;
-      }
-
-      if (typeof maybe === "string"){
-        const dt = new Date(maybe);
-        if (!Number.isNaN(dt.getTime())) return dt;
-      }
-
-      return null;
+      const c = ev?.createdAt;
+      if (c?.toMillis) return c.toMillis();
+      if (typeof c?.seconds === "number") return c.seconds * 1000;
+      const updated = ev?.updatedAt;
+      if (updated?.toMillis) return updated.toMillis();
+      if (typeof updated?.seconds === "number") return updated.seconds * 1000;
+      return 0;
     }
 
     function fmtWhen(ev){
-      const dt = pickEventDateObj(ev);
-      const endDate = (ev?.endDate || "").toString().trim();
-      const endTime = (ev?.endTime || "").toString().trim();
-
-      if (!dt) {
-        const d = (ev?.startDate || ev?.date || "").toString().trim();
-        const t = (ev?.startTime || ev?.time || "").toString().trim();
-        const startText = [d, t].filter(Boolean).join(" • ") || "—";
-        const endText = [endDate, endTime].filter(Boolean).join(" • ");
-        return endText ? `${startText} → ${endText}` : startText;
-      }
-
-      const startText = dt.toLocaleString([], {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-        hour: "numeric",
-        minute: "2-digit"
-      });
-
-      if (!endDate && !endTime) return startText;
-
-      const maybeEnd = endDate
-        ? new Date(`${endDate}T${endTime || "00:00"}`)
-        : null;
-
-      if (maybeEnd && !Number.isNaN(maybeEnd.getTime())){
-        const endText = maybeEnd.toLocaleString([], {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-          hour: "numeric",
-          minute: "2-digit"
-        });
-        return `${startText} → ${endText}`;
-      }
-
-      return `${startText} → ${[endDate, endTime].filter(Boolean).join(" • ")}`;
+      const date = ev?.date || ev?.startDate || "";
+      const time = ev?.time || ev?.startTime || "";
+      return [date, time].filter(Boolean).join(" • ") || "—";
     }
 
-    function attendeeData(ev){
+    function pickLatLng(ev){
+      const lat = safeNumber(ev?.lat ?? ev?.latitude);
+      const lng = safeNumber(ev?.lng ?? ev?.longitude);
+      if (lat === null || lng === null) return null;
+      return { lat, lng };
+    }
+
+    function buildAttendeeData(ev){
       const ids = uniqueStrings(ev?.attendeeIds || []);
       const names = uniqueStrings(ev?.attendeeNames || []);
       const count = Math.max(
-        Number.isFinite(Number(ev?.attendeeCount)) ? Number(ev.attendeeCount) : 0,
+        typeof ev?.attendeeCount === "number" ? ev.attendeeCount : 0,
         ids.length,
         names.length
       );
@@ -1542,223 +1499,59 @@
     }
 
     function userIsRegisteredForEvent(ev){
-      if (!currentUser) return false;
-      return attendeeData(ev).ids.includes(currentUser.uid);
+      if (!currentUser || !ev) return false;
+      const ids = uniqueStrings(ev.attendeeIds || []);
+      return ids.includes(currentUser.uid);
     }
 
     function eventIsPostedByUser(ev){
-      if (!currentUser) return false;
-
-      const uid = currentUser.uid;
-      const possibleIds = [
-        ev?.uid,
-        ev?.userId,
-        ev?.ownerId,
-        ev?.ownerUid,
-        ev?.hostUid,
-        ev?.createdBy,
-        ev?.createdByUid,
-        ev?.creatorId,
-        ev?.posterUid,
-        ev?.postedBy
-      ].map(x => String(x ?? "").trim()).filter(Boolean);
-
-      if (possibleIds.includes(uid)) return true;
-
-      const emails = [
-        ev?.email,
-        ev?.ownerEmail,
-        ev?.createdByEmail,
-        ev?.posterEmail,
-        ev?.hostEmail
-      ].map(x => String(x ?? "").trim().toLowerCase()).filter(Boolean);
-
-      if (currentUser.email && emails.includes(currentUser.email.toLowerCase())) return true;
-
-      return false;
+      if (!currentUser || !ev) return false;
+      const candidates = [
+        ev.hostUid,
+        ev.ownerUid,
+        ev.uid,
+        ev.createdByUid,
+        ev.userId,
+        ev.ownerId
+      ].map(x => String(x || ""));
+      return candidates.includes(currentUser.uid);
     }
 
     function matchesSearch(ev, q){
       if (!q) return true;
       const hay = [
         pickTitle(ev),
-        pickWhere(ev),
-        pickHost(ev),
+        pickLocation(ev),
         pickDescription(ev),
-        ...pickTags(ev)
-      ].join(" | ").toLowerCase();
+        pickHost(ev),
+        ...(pickTags(ev))
+      ].join(" ").toLowerCase();
       return hay.includes(q);
     }
 
-    function storeCardHTML(ev, mode){
-      const title = esc(pickTitle(ev));
-      const img = pickImage(ev);
-      const when = esc(fmtWhen(ev));
-      const where = esc(pickWhere(ev));
-      const host = pickHost(ev);
-      const desc = pickDescription(ev);
-      const tags = pickTags(ev);
-      const data = attendeeData(ev);
-      const isRegistered = userIsRegisteredForEvent(ev);
-
-      const leftPill = mode === "posted"
-        ? `<span class="pill dark pinkDot"><span class="dot"></span>Posted by you</span>`
-        : `<span class="pill dark"><span class="dot"></span>Registered</span>`;
-
-      const rightPill = `<span class="pill dark"><span class="dot"></span>${data.count} going</span>`;
-
-      return `
-        <article class="eventCard" data-open-card="${esc(ev.id)}" tabindex="0" role="button" aria-label="Open ${title}">
-          <div class="eventMedia">
-            ${img ? `<img src="${esc(img)}" alt="${title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();">` : ""}
-            <div class="mediaOverlay">
-              ${leftPill}
-              ${rightPill}
-            </div>
-          </div>
-
-          <div class="eventBody">
-            <div>
-              <h3 class="eventTitle">${title}</h3>
-              <div class="meta" style="margin-top:8px;">
-                <div><b>When:</b> ${when}</div>
-                <div><b>Where:</b> ${where}</div>
-                ${host ? `<div><b>Host:</b> ${esc(host)}</div>` : ""}
-              </div>
-            </div>
-
-            ${desc ? `<div class="descClamp">${esc(desc)}</div>` : ""}
-            ${tags.length ? `<div class="tags">${tags.slice(0,6).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
-
-            <div class="actions">
-              <button class="miniLink" type="button" data-open-events="${esc(ev.id)}">Open in Events</button>
-              <button class="miniLink ${isRegistered ? "danger" : "primary"}" type="button" data-register="${esc(ev.id)}">${isRegistered ? "Unregister" : "Register"}</button>
-            </div>
-          </div>
-        </article>
-      `;
+    function setStatus(el, text, tone = ""){
+      el.textContent = text;
+      el.className = "statusBox";
+      if (tone) el.classList.add(tone);
     }
 
-    function renderAttendees(ev){
-      const data = attendeeData(ev);
-      const names = data.names.length ? data.names : [];
-      eventModalAttendeeCount.textContent = String(data.count);
-
-      if (!names.length && !data.count){
-        eventModalAttendees.innerHTML = `<div class="helper">No one is registered yet.</div>`;
-        return;
-      }
-
-      if (!names.length && data.count){
-        eventModalAttendees.innerHTML = `<div class="helper">${data.count} people are going.</div>`;
-        return;
-      }
-
-      eventModalAttendees.innerHTML = names.map(name => `
-        <span class="attendeeChip">
-          <span class="dot"></span>
-          <span>${esc(name)}</span>
-        </span>
-      `).join("");
+    function initials(name){
+      const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+      if (!parts.length) return "?";
+      if (parts.length === 1) return parts[0].slice(0, 1).toUpperCase();
+      return (parts[0][0] + parts[1][0]).toUpperCase();
     }
 
-    function updateEventModalRegisterButton(ev){
-      const isRegistered = userIsRegisteredForEvent(ev);
-      eventModalRegisterBtn.textContent = isRegistered ? "Unregister" : "Register";
-      eventModalRegisterBtn.className = `btn ${isRegistered ? "danger" : "primary"}`;
-    }
-
-    function updateOwnerActions(ev){
-      const mine = eventIsPostedByUser(ev);
-      eventModalEditBtn.classList.toggle("hidden", !mine);
-      eventModalDeleteBtn.classList.toggle("hidden", !mine);
-    }
-
-    function openEventModal(ev){
-      currentModalEvent = ev;
-
-      const img = pickImage(ev);
-      const title = pickTitle(ev);
-      const host = pickHost(ev);
-      const invite = ev?.inviteOnly ? "Invite-only" : "Public";
-      const tags = pickTags(ev);
-      const data = attendeeData(ev);
-
-      eventModalTitle.textContent = title;
-      eventModalSub.textContent = host ? `Hosted by ${host} • ${invite}` : `Event details • ${invite}`;
-      eventModalDesc.textContent = pickDescription(ev) || "No description yet.";
-
-      eventModalMedia.innerHTML = img
-        ? `<img src="${esc(img)}" alt="${esc(title)}" referrerpolicy="no-referrer" onerror="this.parentElement.innerHTML='<div class=&quot;modalMediaFallback&quot;>No image</div>';">`
-        : `<div class="modalMediaFallback">No image</div>`;
-
-      eventModalKV.innerHTML = `
-        <div class="kvItem">
-          <b>When</b>
-          <span>${esc(fmtWhen(ev))}</span>
-        </div>
-        <div class="kvItem">
-          <b>Where</b>
-          <span>${esc(pickWhere(ev))}</span>
-        </div>
-        <div class="kvItem">
-          <b>Going</b>
-          <span>${data.count}</span>
-        </div>
-        <div class="kvItem">
-          <b>Tags</b>
-          <span>${esc(tags.join(", ") || "—")}</span>
-        </div>
-      `;
-
-      renderAttendees(ev);
-      updateEventModalRegisterButton(ev);
-      updateOwnerActions(ev);
-      setStatus(eventModalStatus, "Ready.");
-      eventModal.classList.add("show");
-      eventModal.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeEventModal(){
-      eventModal.classList.remove("show");
-      eventModal.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-      currentModalEvent = null;
-    }
-
-    function openPostModal(mode = "create"){
-      postModalTitle.textContent = mode === "edit" ? "Edit event" : "Post an event";
-      postModalSub.textContent = mode === "edit"
-        ? "Update the details, cover image, and location for your event."
-        : "Upload a cover image, fill in the details, and search the address or click the map.";
-      submitPostBtn.textContent = mode === "edit" ? "Save changes" : "Post event";
-      postModal.classList.add("show");
-      postModal.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-      ensureMapReady().catch(err => {
-        console.error(err);
-        setStatus(postStatus, err?.message || "Could not load map.", "error");
-      });
-    }
-
-    function closePostModal(){
-      postModal.classList.remove("show");
-      postModal.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-    }
-
-    function resetPostForm(){
-      postForm.reset();
-      currentCoverFile = null;
-      editingEventId = null;
-      coverPreview.innerHTML = `<div class="previewFallback">Cover preview</div>`;
-      locationSearchInput.value = "";
-      locationInput.value = "";
-      latInput.value = "";
-      lngInput.value = "";
-      setStatus(postStatus, "Ready.");
-      clearPicked();
+    function buildPingPinEl(){
+      const wrap = document.createElement("div");
+      wrap.className = "pinWrap";
+      const pulse = document.createElement("div");
+      pulse.className = "glow-pulse";
+      const dot = document.createElement("div");
+      dot.className = "glow-pin";
+      wrap.appendChild(pulse);
+      wrap.appendChild(dot);
+      return wrap;
     }
 
     function updateCoverPreview(file, existingUrl = ""){
@@ -1776,14 +1569,67 @@
 
     function replaceLocalEvent(updated){
       const idx = allEvents.findIndex(x => x.id === updated.id);
-      if (idx >= 0) allEvents[idx] = { ...allEvents[idx], ...updated };
-      else allEvents.unshift(updated);
+      if (idx >= 0){
+        const attendeeData = buildAttendeeData(updated);
+        allEvents[idx] = { ...allEvents[idx], ...updated, attendeeCount: attendeeData.count };
+      } else {
+        const attendeeData = buildAttendeeData(updated);
+        allEvents.unshift({ ...updated, attendeeCount: attendeeData.count });
+      }
       return allEvents.find(x => x.id === updated.id);
     }
 
     function removeLocalEvent(eventId){
       allEvents = allEvents.filter(ev => ev.id !== eventId);
       if (currentModalEvent?.id === eventId) currentModalEvent = null;
+    }
+
+    function storeCardHTML(ev){
+      const title = esc(pickTitle(ev));
+      const when = esc(fmtWhen(ev));
+      const where = esc(pickLocation(ev) || "—");
+      const invite = !!ev.inviteOnly;
+      const tags = pickTags(ev);
+      const img = pickImage(ev);
+      const desc = pickDescription(ev);
+      const host = pickHost(ev);
+      const attendeeData = buildAttendeeData(ev);
+      const isRegistered = userIsRegisteredForEvent(ev);
+
+      const pillLeft = invite
+        ? `<span class="pill dark pinkDot"><span class="dot"></span>Invite-only</span>`
+        : `<span class="pill dark"><span class="dot" style="background: rgba(255,255,255,.85); box-shadow: 0 0 0 4px rgba(255,255,255,.12);"></span>Public</span>`;
+
+      return `
+        <article class="eventCard" data-open-card="${esc(ev.id)}" tabindex="0" role="button" aria-label="Open ${title}">
+          <div class="eventMedia">
+            ${img ? `<img src="${esc(img)}" alt="${title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();">` : ""}
+            <div class="mediaOverlay">
+              ${pillLeft}
+            </div>
+          </div>
+
+          <div class="eventBody">
+            <div>
+              <h3 class="eventTitle">${title}</h3>
+              <div class="meta" style="margin-top:8px;">
+                <div><b>When:</b> ${when}</div>
+                <div><b>Where:</b> ${where}</div>
+                ${host ? `<div><b>Host:</b> ${esc(host)}</div>` : ""}
+                <div><b>Going:</b> ${attendeeData.count}</div>
+              </div>
+            </div>
+
+            ${desc ? `<div class="descClamp">${esc(desc)}</div>` : ""}
+            ${tags.length ? `<div class="tags">${tags.slice(0,6).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
+
+            <div class="actions">
+              <button class="miniLink" type="button" data-open-events="${esc(ev.id)}">Open in Events</button>
+              <button class="miniLink ${isRegistered ? "danger" : "primary"}" type="button" data-register="${esc(ev.id)}">${isRegistered ? "Unregister" : "Register"}</button>
+            </div>
+          </div>
+        </article>
+      `;
     }
 
     function render(){
@@ -1808,8 +1654,8 @@
       postedEmpty.classList.toggle("hidden", posted.length > 0);
       registeredEmpty.classList.toggle("hidden", registered.length > 0);
 
-      posted.forEach(ev => postedGrid.insertAdjacentHTML("beforeend", storeCardHTML(ev, "posted")));
-      registered.forEach(ev => registeredGrid.insertAdjacentHTML("beforeend", storeCardHTML(ev, "registered")));
+      posted.forEach(ev => postedGrid.insertAdjacentHTML("beforeend", storeCardHTML(ev)));
+      registered.forEach(ev => registeredGrid.insertAdjacentHTML("beforeend", storeCardHTML(ev)));
 
       wireCards();
     }
@@ -1856,9 +1702,110 @@
       });
     }
 
+    function closeEventModal(){
+      eventModal.classList.remove("show");
+      eventModal.setAttribute("aria-hidden", "true");
+    }
+
+    function renderAttendees(ev){
+      const attendeeData = buildAttendeeData(ev);
+      eventModalAttendeeCount.textContent = `${attendeeData.count}`;
+
+      if (!attendeeData.names.length){
+        eventModalAttendees.innerHTML = `<div class="attendeeEmpty">No one registered yet.</div>`;
+        return;
+      }
+
+      eventModalAttendees.innerHTML = attendeeData.names.map(name => `
+        <span class="attendeeChip">
+          <span class="attendeeAvatar">${esc(initials(name))}</span>
+          <span>${esc(name)}</span>
+        </span>
+      `).join("");
+    }
+
+    function updateModalRegisterButton(ev){
+      const isPosted = eventIsPostedByUser(ev);
+      const isRegistered = userIsRegisteredForEvent(ev);
+
+      eventModalEditBtn.classList.toggle("hidden", !isPosted);
+      eventModalDeleteBtn.classList.toggle("hidden", !isPosted);
+
+      eventModalRegisterBtn.textContent = isRegistered ? "Unregister" : "Register";
+      eventModalRegisterBtn.classList.toggle("danger", isRegistered);
+      eventModalRegisterBtn.classList.toggle("primary", !isRegistered);
+    }
+
+    function openEventModal(ev){
+      currentModalEvent = ev;
+
+      const title = pickTitle(ev);
+      const host = pickHost(ev);
+      const img = pickImage(ev);
+      const desc = pickDescription(ev);
+      const when = fmtWhen(ev);
+      const where = pickLocation(ev);
+      const tags = pickTags(ev);
+
+      eventModalTitle.textContent = title;
+      eventModalSub.textContent = host ? `Hosted by ${host}` : "Event details";
+      eventModalDesc.textContent = desc || "No description added.";
+
+      eventModalMedia.innerHTML = img
+        ? `<img src="${esc(img)}" alt="${esc(title)}" referrerpolicy="no-referrer" onerror="this.remove(); this.parentElement.innerHTML='<div class=&quot;modalMediaFallback&quot;>Image unavailable</div>';">`
+        : `<div class="modalMediaFallback">No cover image</div>`;
+
+      eventModalKV.innerHTML = `
+        <div class="kvItem">
+          <b>When</b>
+          <span>${esc(when || "—")}</span>
+        </div>
+        <div class="kvItem">
+          <b>Where</b>
+          <span>${esc(where || "—")}</span>
+        </div>
+        ${host ? `
+          <div class="kvItem">
+            <b>Host</b>
+            <span>${esc(host)}</span>
+          </div>
+        ` : ""}
+        <div class="kvItem">
+          <b>Type</b>
+          <span>${ev.inviteOnly ? "Invite-only" : "Public"}</span>
+        </div>
+        ${tags.length ? `
+          <div class="kvItem">
+            <b>Tags</b>
+            <span>${esc(tags.join(", "))}</span>
+          </div>
+        ` : ""}
+      `;
+
+      renderAttendees(ev);
+      updateModalRegisterButton(ev);
+      setStatus(eventModalStatus, "Ready.");
+
+      eventModal.classList.add("show");
+      eventModal.setAttribute("aria-hidden", "false");
+    }
+
+    eventModalBackdrop.addEventListener("click", closeEventModal);
+    eventModalCloseBtn.addEventListener("click", closeEventModal);
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && eventModal.classList.contains("show")) closeEventModal();
+      if (e.key === "Escape" && postModal.classList.contains("show")) closePostModal();
+    });
+
+    eventModalOpenEventsBtn.addEventListener("click", () => {
+      window.location.href = "events.html";
+    });
+
     async function toggleEventRegistration(eventId, shouldRegister){
       if (!currentUser) throw new Error("Not signed in.");
 
+      const displayName = currentUserDisplayName || currentUser.displayName || currentUser.email?.split("@")[0] || "Someone";
       const eventRef = doc(db, "events", eventId);
 
       const updated = await runTransaction(db, async (transaction) => {
@@ -1867,13 +1814,12 @@
 
         const ev = { id: snap.id, ...(snap.data() || {}) };
 
-        const ids = uniqueStrings(ev.attendeeIds || []);
-        const names = uniqueStrings(ev.attendeeNames || []);
-        const wasRegistered = ids.includes(currentUser.uid);
-        const displayName = currentUserDisplayName || currentUser.email?.split("@")[0] || "User";
+        const attendeeIds = uniqueStrings(ev.attendeeIds || []);
+        const attendeeNames = uniqueStrings(ev.attendeeNames || []);
+        const wasRegistered = attendeeIds.includes(currentUser.uid);
 
-        let nextIds = [...ids];
-        let nextNames = [...names];
+        let nextIds = [...attendeeIds];
+        let nextNames = [...attendeeNames];
 
         if (shouldRegister && !wasRegistered){
           nextIds.push(currentUser.uid);
@@ -1893,8 +1839,7 @@
         const nextData = {
           attendeeIds: nextIds,
           attendeeNames: nextNames,
-          attendeeCount: nextCount,
-          updatedAt: serverTimestamp()
+          attendeeCount: nextCount
         };
 
         transaction.update(eventRef, nextData);
@@ -1914,306 +1859,33 @@
 
     async function quickToggleRegister(eventId, btn = null){
       const ev = allEvents.find(x => x.id === eventId);
-      if (!ev || !currentUser) return;
+      if (!ev) return;
 
       const alreadyRegistered = userIsRegisteredForEvent(ev);
+      if (btn) btn.disabled = true;
 
       try{
-        if (btn) btn.disabled = true;
-
         const updated = alreadyRegistered
           ? await unregisterEvent(eventId)
           : await registerEvent(eventId);
 
-        if (currentModalEvent && currentModalEvent.id === eventId){
+        if (currentModalEvent?.id === eventId && updated){
           currentModalEvent = { ...updated };
-          updateEventModalRegisterButton(currentModalEvent);
           renderAttendees(currentModalEvent);
-          setStatus(
-            eventModalStatus,
-            alreadyRegistered ? "You’re no longer registered for this event." : "You’re registered for this event.",
-            "success"
-          );
+          updateModalRegisterButton(currentModalEvent);
+          setStatus(eventModalStatus, alreadyRegistered ? "You’re no longer registered for this event." : "You’re registered for this event.", "success");
         }
 
         render();
       } catch (err){
         console.error(err);
-        if (currentModalEvent && currentModalEvent.id === eventId){
-          setStatus(
-            eventModalStatus,
-            alreadyRegistered ? "Couldn’t unregister right now." : "Couldn’t register right now.",
-            "error"
-          );
-          updateEventModalRegisterButton(currentModalEvent);
+        if (currentModalEvent?.id === eventId){
+          setStatus(eventModalStatus, alreadyRegistered ? "Couldn’t unregister right now." : "Couldn’t register right now.", "error");
         }
       } finally {
         if (btn) btn.disabled = false;
       }
     }
-
-    async function loadEvents(){
-      let snap;
-      try{
-        snap = await getDocs(query(collection(db, "events"), orderBy("createdAt", "desc")));
-      } catch (_) {
-        snap = await getDocs(collection(db, "events"));
-      }
-
-      const arr = [];
-      snap.forEach(d => arr.push({ id: d.id, ...(d.data() || {}) }));
-      arr.sort((a, b) => pickCreatedAtMs(b) - pickCreatedAtMs(a));
-      allEvents = arr;
-      render();
-    }
-
-    async function uploadCoverIfNeeded(file){
-      if (!file) return "";
-
-      const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "") || "jpg";
-      const path = `event-covers/${currentUser.uid}/${Date.now()}.${ext}`;
-      const storageRef = ref(storage, path);
-      await uploadBytes(storageRef, file);
-      return await getDownloadURL(storageRef);
-    }
-
-    function parseTagsInput(value){
-      return uniqueStrings(
-        String(value || "")
-          .split(",")
-          .map(x => x.trim())
-          .filter(Boolean)
-      ).slice(0, 20);
-    }
-
-    function buildEventPayload(existingImageUrl = ""){
-      const title = titleInput.value.trim();
-      const location = locationInput.value.trim();
-      const date = dateInput.value;
-      const time = timeInput.value;
-      const desc = descInput.value.trim();
-      const lat = safeNumber(latInput.value);
-      const lng = safeNumber(lngInput.value);
-      const tags = parseTagsInput(tagsInput.value);
-      const inviteOnly = !!inviteOnlyInput.checked;
-
-      if (!title) throw new Error("Please add a title.");
-      if (!location) throw new Error("Please add a location.");
-      if (!date) throw new Error("Please add a date.");
-      if (!time) throw new Error("Please add a time.");
-      if (lat === null || lng === null) throw new Error("Please choose a location by searching an address, using your location, or clicking the map.");
-
-      const displayName = currentUserDisplayName || currentUser.email?.split("@")[0] || "User";
-
-      return {
-        name: title,
-        title,
-        location,
-        place: location,
-        address: location,
-        date,
-        time,
-        startDate: date,
-        startTime: time,
-        description: desc,
-        desc,
-        tags,
-        inviteOnly,
-        lat,
-        lng,
-        latitude: lat,
-        longitude: lng,
-        hostUid: currentUser.uid,
-        ownerUid: currentUser.uid,
-        uid: currentUser.uid,
-        createdByUid: currentUser.uid,
-        userId: currentUser.uid,
-        ownerId: currentUser.uid,
-        hostName: displayName,
-        ownerName: displayName,
-        createdByName: displayName,
-        email: currentUser.email || "",
-        ownerEmail: currentUser.email || "",
-        createdByEmail: currentUser.email || "",
-        attendeeIds: editingEventId ? undefined : [],
-        attendeeNames: editingEventId ? undefined : [],
-        attendeeCount: editingEventId ? undefined : 0,
-        coverUrl: existingImageUrl || undefined,
-        imageUrl: existingImageUrl || undefined,
-        updatedAt: serverTimestamp()
-      };
-    }
-
-    async function createEvent(){
-      if (!currentUser) throw new Error("Not signed in.");
-
-      let imageUrl = "";
-      if (currentCoverFile){
-        setStatus(postStatus, "Uploading cover image...");
-        imageUrl = await uploadCoverIfNeeded(currentCoverFile);
-      }
-
-      const payload = buildEventPayload(imageUrl);
-      payload.attendeeIds = [];
-      payload.attendeeNames = [];
-      payload.attendeeCount = 0;
-      payload.createdAt = serverTimestamp();
-
-      Object.keys(payload).forEach(key => {
-        if (payload[key] === undefined) delete payload[key];
-      });
-
-      const refDoc = await addDoc(collection(db, "events"), payload);
-      return { id: refDoc.id, ...payload, imageUrl, coverUrl: imageUrl };
-    }
-
-    async function updateEvent(eventId){
-      if (!currentUser) throw new Error("Not signed in.");
-      const existing = allEvents.find(ev => ev.id === eventId);
-      if (!existing) throw new Error("Event not found.");
-      if (!eventIsPostedByUser(existing)) throw new Error("You can only edit your own event.");
-
-      let imageUrl = pickImage(existing);
-      if (currentCoverFile){
-        setStatus(postStatus, "Uploading new cover image...");
-        imageUrl = await uploadCoverIfNeeded(currentCoverFile);
-      }
-
-      const payload = buildEventPayload(imageUrl);
-      payload.coverUrl = imageUrl || "";
-      payload.imageUrl = imageUrl || "";
-
-      if (existing.attendeeIds && payload.attendeeIds === undefined){
-        payload.attendeeIds = existing.attendeeIds;
-      }
-      if (existing.attendeeNames && payload.attendeeNames === undefined){
-        payload.attendeeNames = existing.attendeeNames;
-      }
-      if (typeof existing.attendeeCount !== "undefined" && payload.attendeeCount === undefined){
-        payload.attendeeCount = existing.attendeeCount;
-      }
-
-      Object.keys(payload).forEach(key => {
-        if (payload[key] === undefined) delete payload[key];
-      });
-
-      await updateDoc(doc(db, "events", eventId), payload);
-      return replaceLocalEvent({ ...existing, ...payload });
-    }
-
-    async function deleteCurrentEvent(){
-      if (!currentModalEvent) return;
-      const ev = currentModalEvent;
-      if (!eventIsPostedByUser(ev)) return;
-
-      const ok = confirm(`Delete "${pickTitle(ev)}"? This can’t be undone.`);
-      if (!ok) return;
-
-      eventModalDeleteBtn.disabled = true;
-      eventModalEditBtn.disabled = true;
-      eventModalRegisterBtn.disabled = true;
-      setStatus(eventModalStatus, "Deleting event...");
-
-      try{
-        await deleteDoc(doc(db, "events", ev.id));
-        removeLocalEvent(ev.id);
-        render();
-        closeEventModal();
-      } catch (err){
-        console.error(err);
-        setStatus(eventModalStatus, err?.message || "Could not delete event right now.", "error");
-      } finally {
-        eventModalDeleteBtn.disabled = false;
-        eventModalEditBtn.disabled = false;
-        eventModalRegisterBtn.disabled = false;
-      }
-    }
-
-    function populateFormForEdit(ev){
-      resetPostForm();
-      editingEventId = ev.id;
-      titleInput.value = pickTitle(ev);
-      locationInput.value = pickWhere(ev);
-      locationSearchInput.value = pickWhere(ev);
-      dateInput.value = (ev?.startDate || ev?.date || "").toString().trim();
-      timeInput.value = (ev?.startTime || ev?.time || "").toString().trim();
-      descInput.value = pickDescription(ev);
-      tagsInput.value = pickTags(ev).join(", ");
-      inviteOnlyInput.checked = !!ev?.inviteOnly;
-
-      const lat = safeNumber(ev?.lat ?? ev?.latitude);
-      const lng = safeNumber(ev?.lng ?? ev?.longitude);
-      if (lat !== null) latInput.value = String(lat);
-      if (lng !== null) lngInput.value = String(lng);
-
-      updateCoverPreview(null, pickImage(ev));
-      if (lat !== null && lng !== null){
-        ensureMapReady().then(() => setPicked(lat, lng, pickWhere(ev), true)).catch(console.error);
-      }
-
-      setStatus(postStatus, "Editing event.");
-      openPostModal("edit");
-    }
-
-    coverInput.addEventListener("change", () => {
-      currentCoverFile = coverInput.files?.[0] || null;
-      updateCoverPreview(currentCoverFile, currentCoverFile ? "" : "");
-    });
-
-    openPostBtn.addEventListener("click", () => {
-      resetPostForm();
-      openPostModal("create");
-    });
-
-    cancelPostBtn.addEventListener("click", () => closePostModal());
-    postModalCloseBtn.addEventListener("click", () => closePostModal());
-    postModalBackdrop.addEventListener("click", () => closePostModal());
-
-    eventModalCloseBtn.addEventListener("click", () => closeEventModal());
-    eventModalBackdrop.addEventListener("click", () => closeEventModal());
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape"){
-        if (postModal.classList.contains("show")) closePostModal();
-        if (eventModal.classList.contains("show")) closeEventModal();
-      }
-    });
-
-    postForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-
-      submitPostBtn.disabled = true;
-      setStatus(postStatus, editingEventId ? "Saving changes..." : "Posting event...");
-
-      try{
-        if (editingEventId){
-          await updateEvent(editingEventId);
-          setStatus(postStatus, "Event updated.", "success");
-        } else {
-          await createEvent();
-          setStatus(postStatus, "Event posted.", "success");
-        }
-
-        await loadEvents();
-        closePostModal();
-
-        if (currentModalEvent && editingEventId){
-          const fresh = allEvents.find(ev => ev.id === editingEventId);
-          if (fresh) openEventModal(fresh);
-        }
-
-        resetPostForm();
-      } catch (err){
-        console.error(err);
-        setStatus(postStatus, err?.message || "Could not save event right now.", "error");
-      } finally {
-        submitPostBtn.disabled = false;
-      }
-    });
-
-    eventModalMapBtn.addEventListener("click", () => {
-      window.location.href = "events.html";
-    });
 
     eventModalRegisterBtn.addEventListener("click", async () => {
       if (!currentModalEvent) return;
@@ -2225,17 +1897,52 @@
       }
     });
 
-    eventModalEditBtn.addEventListener("click", () => {
-      if (!currentModalEvent) return;
-      populateFormForEdit(currentModalEvent);
+    function resetPostForm(){
+      editingEventId = null;
+      currentCoverFile = null;
+
+      postModalTitle.textContent = "Post an event";
+      postModalSub.textContent = "Add your event details, search the address as you type, use your location, or tap the map to pin it.";
+      submitPostBtn.textContent = "Post event";
+
+      postForm.reset();
+      locationInput.value = "";
+      latInput.value = "";
+      lngInput.value = "";
+      pickedLocationLabel.textContent = "No location picked yet.";
+      updateCoverPreview(null, "");
+      clearPicked();
+      setStatus(postStatus, "Ready.");
+    }
+
+    function openPostModal(){
+      postModal.classList.add("show");
+      postModal.setAttribute("aria-hidden", "false");
+      ensureMapReady().catch(err => {
+        console.error(err);
+        setStatus(postStatus, "Could not load the map right now.", "error");
+      });
+    }
+
+    function closePostModal(){
+      postModal.classList.remove("show");
+      postModal.setAttribute("aria-hidden", "true");
+    }
+
+    openPostBtn.addEventListener("click", () => {
+      resetPostForm();
+      openPostModal();
     });
 
-    eventModalDeleteBtn.addEventListener("click", () => {
-      deleteCurrentEvent().catch(console.error);
-    });
+    postModalBackdrop.addEventListener("click", closePostModal);
+    postModalCloseBtn.addEventListener("click", closePostModal);
+    cancelPostBtn.addEventListener("click", closePostModal);
 
-    refreshBtn.addEventListener("click", () => loadEvents().catch(console.error));
-    searchEl.addEventListener("input", render);
+    coverInput.addEventListener("change", () => {
+      currentCoverFile = coverInput.files?.[0] || null;
+      const existing = editingEventId ? pickImage(allEvents.find(ev => ev.id === editingEventId)) : "";
+      updateCoverPreview(currentCoverFile, existing);
+    });
 
     async function loadGoogleMaps(){
       if (window.google?.maps?.Map) return;
@@ -2251,7 +1958,7 @@
 
         const s = document.createElement("script");
         s.dataset.googleMaps = "true";
-        s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(MAPS_API_KEY)}&libraries=places&v=weekly&loading=async`;
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(MAPS_API_KEY)}&libraries=marker,places&v=weekly&loading=async`;
         s.async = true;
         s.defer = true;
         s.onload = () => resolve();
@@ -2321,28 +2028,57 @@
 
       latInput.value = String(niceLat);
       lngInput.value = String(niceLng);
-      if (label) locationInput.value = label;
+      locationInput.value = label || locationInput.value.trim() || "Pinned location";
+      pickedLocationLabel.textContent = locationInput.value;
 
       const pos = { lat: niceLat, lng: niceLng };
 
       if (!gmarker){
-        gmarker = new google.maps.Marker({
-          position: pos,
-          map: gmap,
-          draggable: true
-        });
+        if (window.google?.maps?.marker?.AdvancedMarkerElement){
+          gmarker = new google.maps.marker.AdvancedMarkerElement({
+            map: gmap,
+            position: pos,
+            title: "Picked location",
+            content: buildPingPinEl(),
+            gmpDraggable: true
+          });
 
-        gmarker.addListener("dragend", async () => {
-          const p = gmarker.getPosition();
-          if (!p) return;
-          const nextLat = p.lat();
-          const nextLng = p.lng();
-          const nextLabel = await reverseGeocode(nextLat, nextLng) || locationInput.value.trim() || "Pinned location";
-          setPicked(nextLat, nextLng, nextLabel, false);
-        });
+          gmarker.addListener("dragend", async (e) => {
+            const dragPos = e?.latLng || gmarker.position;
+            const nextLat = Number(dragPos?.lat ?? dragPos?.lat?.());
+            const nextLng = Number(dragPos?.lng ?? dragPos?.lng?.());
+            if (!Number.isFinite(nextLat) || !Number.isFinite(nextLng)) return;
+            const nextLabel = await reverseGeocode(nextLat, nextLng) || locationInput.value.trim() || "Pinned location";
+            setPicked(nextLat, nextLng, nextLabel, false);
+          });
+        } else {
+          gmarker = new google.maps.Marker({
+            position: pos,
+            map: gmap,
+            draggable: true
+          });
+
+          gmarker.addListener("dragend", async () => {
+            const p = gmarker.getPosition();
+            if (!p) return;
+            const nextLat = p.lat();
+            const nextLng = p.lng();
+            const nextLabel = await reverseGeocode(nextLat, nextLng) || locationInput.value.trim() || "Pinned location";
+            setPicked(nextLat, nextLng, nextLabel, false);
+          });
+        }
       } else {
-        gmarker.setPosition(pos);
-        if (!gmarker.getMap()) gmarker.setMap(gmap);
+        if ("position" in gmarker){
+          gmarker.position = pos;
+        } else if (typeof gmarker.setPosition === "function"){
+          gmarker.setPosition(pos);
+        }
+
+        if ("map" in gmarker){
+          gmarker.map = gmap;
+        } else if (typeof gmarker.setMap === "function" && !gmarker.getMap()){
+          gmarker.setMap(gmap);
+        }
       }
 
       if (gmap){
@@ -2355,7 +2091,13 @@
     function clearPicked(){
       latInput.value = "";
       lngInput.value = "";
-      if (gmarker) gmarker.setMap(null);
+      locationInput.value = "";
+      pickedLocationLabel.textContent = "No location picked yet.";
+
+      if (gmarker){
+        if ("map" in gmarker) gmarker.map = null;
+        else if (typeof gmarker.setMap === "function") gmarker.setMap(null);
+      }
       gmarker = null;
     }
 
@@ -2377,7 +2119,6 @@
       }
 
       await ensureMapReady();
-
       setStatus(postStatus, "Searching address...");
 
       geocoder.geocode({ address: q }, (results, status) => {
@@ -2386,79 +2127,307 @@
           return;
         }
 
-        const first = results[0];
-        const loc = first.geometry?.location;
+        const result = results[0];
+        const loc = result.geometry?.location;
         if (!loc){
-          setStatus(postStatus, "That result didn’t include coordinates.", "error");
+          setStatus(postStatus, "That address didn’t return a map point.", "error");
           return;
         }
 
-        const label = first.formatted_address || q;
-        setPicked(loc.lat(), loc.lng(), label, true);
-        locationSearchInput.value = label;
-        setStatus(postStatus, "Location selected.", "success");
+        setPicked(loc.lat(), loc.lng(), result.formatted_address || q, true);
+        setStatus(postStatus, "Location picked.", "success");
       });
     }
 
-    searchAddressBtn.addEventListener("click", () => {
-      searchAddress().catch(console.error);
-    });
-
-    locationSearchInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter"){
+    locationSearchInput.addEventListener("keydown", async (e) => {
+      if (e.key === "Enter" && !autocomplete){
         e.preventDefault();
-        searchAddress().catch(console.error);
+        await searchAddress();
       }
     });
 
-    useMyLocationBtn.addEventListener("click", () => {
+    useMyLocationBtn.addEventListener("click", async () => {
       if (!navigator.geolocation){
-        setStatus(postStatus, "Geolocation isn’t supported on this device.", "error");
+        setStatus(postStatus, "Geolocation isn’t available in this browser.", "error");
         return;
       }
 
+      useMyLocationBtn.disabled = true;
       setStatus(postStatus, "Getting your location...");
 
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          const label = await reverseGeocode(lat, lng) || "My location";
-          setPicked(lat, lng, label, true);
-          locationSearchInput.value = label;
-          setStatus(postStatus, "Location selected.", "success");
+          try{
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const label = await reverseGeocode(lat, lng) || "My current location";
+            setPicked(lat, lng, label, true);
+            setStatus(postStatus, "Location picked.", "success");
+          } catch (err){
+            console.error(err);
+            setStatus(postStatus, "Couldn’t use your location right now.", "error");
+          } finally {
+            useMyLocationBtn.disabled = false;
+          }
         },
-        () => {
-          setStatus(postStatus, "Couldn’t get your location.", "error");
+        (err) => {
+          console.error(err);
+          setStatus(postStatus, "Couldn’t access your location.", "error");
+          useMyLocationBtn.disabled = false;
         },
-        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
     });
 
     clearLocationBtn.addEventListener("click", () => {
-      locationSearchInput.value = "";
-      locationInput.value = "";
       clearPicked();
       setStatus(postStatus, "Location cleared.");
-      if (gmap){
-        gmap.setCenter(DEFAULT_CENTER);
-        gmap.setZoom(12);
+    });
+
+    function buildEventPayload(existingImageUrl = ""){
+      const title = titleInput.value.trim();
+      const location = locationInput.value.trim();
+      const date = dateInput.value;
+      const time = timeInput.value;
+      const desc = descInput.value.trim();
+      const lat = safeNumber(latInput.value);
+      const lng = safeNumber(lngInput.value);
+      const tags = parseTagsInput(tagsInput.value);
+      const inviteOnly = !!inviteOnlyInput.checked;
+
+      if (!title) throw new Error("Please add a title.");
+      if (!location) throw new Error("Please choose a location.");
+      if (!date) throw new Error("Please add a date.");
+      if (!time) throw new Error("Please add a time.");
+      if (lat === null || lng === null) throw new Error("Please choose a location by searching, using your location, or clicking the map.");
+
+      const displayName = currentUserDisplayName || currentUser.email?.split("@")[0] || "User";
+
+      return {
+        name: title,
+        title,
+        location,
+        place: location,
+        address: location,
+        date,
+        time,
+        startDate: date,
+        startTime: time,
+        description: desc,
+        desc,
+        tags,
+        inviteOnly,
+        lat,
+        lng,
+        latitude: lat,
+        longitude: lng,
+        hostUid: currentUser.uid,
+        ownerUid: currentUser.uid,
+        uid: currentUser.uid,
+        createdByUid: currentUser.uid,
+        userId: currentUser.uid,
+        ownerId: currentUser.uid,
+        hostName: displayName,
+        ownerName: displayName,
+        createdByName: displayName,
+        email: currentUser.email || "",
+        ownerEmail: currentUser.email || "",
+        createdByEmail: currentUser.email || "",
+        attendeeIds: editingEventId ? undefined : [],
+        attendeeNames: editingEventId ? undefined : [],
+        attendeeCount: editingEventId ? undefined : 0,
+        coverUrl: existingImageUrl || undefined,
+        imageUrl: existingImageUrl || undefined,
+        updatedAt: serverTimestamp()
+      };
+    }
+
+    async function uploadCoverIfNeeded(file){
+      if (!file) return "";
+      if (!currentUser) throw new Error("Not signed in.");
+
+      const safeName = `${Date.now()}-${file.name.replace(/[^\w.-]+/g, "_")}`;
+      const path = `event-covers/${currentUser.uid}/${safeName}`;
+      const storageRef = ref(storage, path);
+      await uploadBytes(storageRef, file);
+      return await getDownloadURL(storageRef);
+    }
+
+    async function createEvent(){
+      if (!currentUser) throw new Error("Not signed in.");
+
+      let imageUrl = "";
+      if (currentCoverFile){
+        setStatus(postStatus, "Uploading cover image...");
+        imageUrl = await uploadCoverIfNeeded(currentCoverFile);
+      }
+
+      const payload = buildEventPayload(imageUrl);
+      payload.attendeeIds = [];
+      payload.attendeeNames = [];
+      payload.attendeeCount = 0;
+      payload.createdAt = serverTimestamp();
+
+      Object.keys(payload).forEach(key => {
+        if (payload[key] === undefined) delete payload[key];
+      });
+
+      const refDoc = await addDoc(collection(db, "events"), payload);
+      return { id: refDoc.id, ...payload, imageUrl, coverUrl: imageUrl };
+    }
+
+    async function updateEvent(eventId){
+      if (!currentUser) throw new Error("Not signed in.");
+      const existing = allEvents.find(ev => ev.id === eventId);
+      if (!existing) throw new Error("Event not found.");
+      if (!eventIsPostedByUser(existing)) throw new Error("You can only edit your own event.");
+
+      let imageUrl = pickImage(existing);
+      if (currentCoverFile){
+        setStatus(postStatus, "Uploading new cover image...");
+        imageUrl = await uploadCoverIfNeeded(currentCoverFile);
+      }
+
+      const payload = buildEventPayload(imageUrl);
+      payload.coverUrl = imageUrl || "";
+      payload.imageUrl = imageUrl || "";
+
+      if (existing.attendeeIds && payload.attendeeIds === undefined) payload.attendeeIds = existing.attendeeIds;
+      if (existing.attendeeNames && payload.attendeeNames === undefined) payload.attendeeNames = existing.attendeeNames;
+      if (typeof existing.attendeeCount !== "undefined" && payload.attendeeCount === undefined) payload.attendeeCount = existing.attendeeCount;
+
+      Object.keys(payload).forEach(key => {
+        if (payload[key] === undefined) delete payload[key];
+      });
+
+      await updateDoc(doc(db, "events", eventId), payload);
+      return replaceLocalEvent({ ...existing, ...payload });
+    }
+
+    async function deleteCurrentEvent(){
+      if (!currentModalEvent) return;
+      const ev = currentModalEvent;
+      if (!eventIsPostedByUser(ev)) return;
+
+      const ok = confirm(`Delete "${pickTitle(ev)}"? This can’t be undone.`);
+      if (!ok) return;
+
+      eventModalDeleteBtn.disabled = true;
+      eventModalEditBtn.disabled = true;
+      eventModalRegisterBtn.disabled = true;
+      setStatus(eventModalStatus, "Deleting event...");
+
+      try{
+        await deleteDoc(doc(db, "events", ev.id));
+        removeLocalEvent(ev.id);
+        render();
+        closeEventModal();
+      } catch (err){
+        console.error(err);
+        setStatus(eventModalStatus, err?.message || "Could not delete event right now.", "error");
+      } finally {
+        eventModalDeleteBtn.disabled = false;
+        eventModalEditBtn.disabled = false;
+        eventModalRegisterBtn.disabled = false;
+      }
+    }
+
+    function populateFormForEdit(ev){
+      editingEventId = ev.id;
+      currentCoverFile = null;
+
+      postModalTitle.textContent = "Edit event";
+      postModalSub.textContent = "Update the details, search a new address, use your location, or tap the map to move the pin.";
+      submitPostBtn.textContent = "Save changes";
+
+      titleInput.value = pickTitle(ev);
+      dateInput.value = ev.date || ev.startDate || "";
+      timeInput.value = ev.time || ev.startTime || "";
+      descInput.value = pickDescription(ev);
+      tagsInput.value = pickTags(ev).join(", ");
+      inviteOnlyInput.checked = !!ev.inviteOnly;
+
+      const location = pickLocation(ev);
+      const ll = pickLatLng(ev);
+      locationInput.value = location || "";
+      pickedLocationLabel.textContent = location || "No location picked yet.";
+      latInput.value = ll ? String(ll.lat) : "";
+      lngInput.value = ll ? String(ll.lng) : "";
+      locationSearchInput.value = location || "";
+
+      updateCoverPreview(null, pickImage(ev));
+      openPostModal();
+
+      ensureMapReady().then(() => {
+        if (ll) setPicked(ll.lat, ll.lng, location || "Pinned location", true);
+      }).catch(console.error);
+    }
+
+    postForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      submitPostBtn.disabled = true;
+      setStatus(postStatus, editingEventId ? "Saving changes..." : "Posting event...");
+
+      try{
+        const priorEditingId = editingEventId;
+
+        if (editingEventId){
+          await updateEvent(editingEventId);
+          setStatus(postStatus, "Event updated.", "success");
+        } else {
+          await createEvent();
+          setStatus(postStatus, "Event posted.", "success");
+        }
+
+        await loadEvents();
+
+        if (priorEditingId && currentModalEvent?.id === priorEditingId){
+          const fresh = allEvents.find(ev => ev.id === priorEditingId);
+          if (fresh) openEventModal(fresh);
+        }
+
+        closePostModal();
+        resetPostForm();
+      } catch (err){
+        console.error(err);
+        setStatus(postStatus, err?.message || "Could not save event right now.", "error");
+      } finally {
+        submitPostBtn.disabled = false;
       }
     });
 
-    latInput.addEventListener("change", () => {
-      const lat = safeNumber(latInput.value);
-      const lng = safeNumber(lngInput.value);
-      if (lat === null || lng === null) return;
-      setPicked(lat, lng, locationInput.value.trim(), true);
+    eventModalEditBtn.addEventListener("click", () => {
+      if (!currentModalEvent) return;
+      populateFormForEdit(currentModalEvent);
     });
 
-    lngInput.addEventListener("change", () => {
-      const lat = safeNumber(latInput.value);
-      const lng = safeNumber(lngInput.value);
-      if (lat === null || lng === null) return;
-      setPicked(lat, lng, locationInput.value.trim(), true);
+    eventModalDeleteBtn.addEventListener("click", () => {
+      deleteCurrentEvent().catch(console.error);
     });
+
+    refreshBtn.addEventListener("click", () => loadEvents().catch(console.error));
+    searchEl.addEventListener("input", render);
+
+    async function loadEvents(){
+      let snap;
+      try{
+        snap = await getDocs(query(collection(db, "events"), orderBy("createdAt", "desc")));
+      } catch (_){
+        snap = await getDocs(collection(db, "events"));
+      }
+
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...(d.data() || {}) }));
+      arr.sort((a, b) => pickCreatedAtMs(b) - pickCreatedAtMs(a));
+
+      allEvents = arr.map(ev => {
+        const attendeeData = buildAttendeeData(ev);
+        return { ...ev, attendeeCount: attendeeData.count };
+      });
+
+      render();
+    }
 
     onAuthStateChanged(auth, async (user) => {
       if (!user){
