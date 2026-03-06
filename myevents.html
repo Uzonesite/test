@@ -855,26 +855,68 @@
       box-shadow: 0 0 0 4px rgba(176,11,85,.08);
     }
 
+    .placeShell{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      width:100%;
+      min-height:54px;
+      padding:0 14px;
+      border-radius:18px;
+      border:1px solid rgba(176,11,85,.12);
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.96), rgba(255,255,255,.82)),
+        linear-gradient(135deg, rgba(139,211,255,.16), rgba(176,11,85,.08));
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.8),
+        0 12px 34px rgba(109,40,217,.06);
+      transition: border-color .12s ease, box-shadow .12s ease, transform .12s ease;
+    }
+
+    .placeShell:focus-within{
+      border-color: rgba(176,11,85,.26);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.88),
+        0 0 0 4px rgba(176,11,85,.08),
+        0 14px 38px rgba(109,40,217,.09);
+    }
+
+    .placeIcon{
+      flex:0 0 auto;
+      width:32px;
+      height:32px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:999px;
+      color: var(--pink);
+      background: linear-gradient(135deg, rgba(176,11,85,.14), rgba(109,40,217,.10));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.9);
+      font-size:14px;
+      font-weight:1000;
+    }
+
     .placeWrap{ width:100%; display:block; }
     gmp-place-autocomplete{ width:100%; display:block; }
     gmp-place-autocomplete::part(input){
       width:100%;
-      min-height:48px;
-      padding:12px 13px;
-      border-radius:14px;
-      border:1px solid rgba(17,16,24,.10);
-      background: rgba(255,255,255,.84);
+      min-height:52px;
+      padding:0;
+      border:none;
+      background: transparent;
       color: var(--ink);
       outline:none;
       font:inherit;
       line-height:1.2;
+      box-shadow:none;
     }
     gmp-place-autocomplete::part(input)::placeholder{
-      color: rgba(17,16,24,.48);
+      color: rgba(17,16,24,.44);
     }
     gmp-place-autocomplete::part(input):focus{
-      border-color: rgba(176,11,85,.30);
-      box-shadow: 0 0 0 4px rgba(176,11,85,.08);
+      border:none;
+      box-shadow:none;
+      outline:none;
     }
 
     .helper{
@@ -1298,8 +1340,11 @@
             <div class="mapPickerTop">
               <div class="field">
                 <label for="locationAutocomplete">Location</label>
-                <div class="placeWrap">
-                  <gmp-place-autocomplete id="locationAutocomplete"></gmp-place-autocomplete>
+                <div class="placeShell">
+                  <span class="placeIcon" aria-hidden="true">⌕</span>
+                  <div class="placeWrap">
+                    <gmp-place-autocomplete id="locationAutocomplete"></gmp-place-autocomplete>
+                  </div>
                 </div>
               </div>
 
@@ -1309,7 +1354,7 @@
               </div>
 
               <div class="pickedLocation" id="pickedLocationLabel">No location picked yet.</div>
-              <div class="helper">Search for an address, choose an autocomplete result, or tap the map to drop the pin.</div>
+              <div class="helper">Search an address, pick one from the suggestions, use your location, or tap the map to drop a pin.</div>
             </div>
 
             <div id="postMap" class="mapCanvas" aria-label="Location picker map"></div>
@@ -1437,7 +1482,6 @@
     let mapsReadyPromise = null;
     let gmap = null;
     let gmarker = null;
-    let autocomplete = null;
     let geocoder = null;
 
     document.querySelectorAll("[data-go]").forEach(btn => {
@@ -1948,7 +1992,13 @@
       postModal.classList.add("show");
       postModal.setAttribute("aria-hidden", "false");
       document.body.classList.add("modal-open");
-      ensureMapReady().catch(err => {
+
+      ensureMapReady().then(() => {
+        requestAnimationFrame(() => {
+          setTimeout(() => refreshPostMap(true), 120);
+          setTimeout(() => refreshPostMap(false), 280);
+        });
+      }).catch(err => {
         console.error(err);
         setStatus(postStatus, "Could not load the map right now.", "error");
       });
@@ -2000,6 +2050,20 @@
       return mapsReadyPromise;
     }
 
+    function refreshPostMap(shouldRecenter = false){
+      if (!gmap || !window.google?.maps?.event) return;
+      google.maps.event.trigger(gmap, "resize");
+      const lat = safeNumber(latInput.value);
+      const lng = safeNumber(lngInput.value);
+      if (Number.isFinite(lat) && Number.isFinite(lng)){
+        const picked = { lat, lng };
+        if (shouldRecenter) gmap.panTo(picked);
+        else gmap.setCenter(picked);
+        return;
+      }
+      if (shouldRecenter) gmap.setCenter(DEFAULT_CENTER);
+    }
+
     async function ensureMapReady(){
       await loadGoogleMaps();
 
@@ -2026,6 +2090,9 @@
           locationAutocompleteEl.dataset.boundSelect = "true";
           locationAutocompleteEl.addEventListener("gmp-select", async (e) => {
             try{
+              await ensureMapReady();
+              refreshPostMap(false);
+
               const place = e.placePrediction?.toPlace?.() ?? e.place;
               if (!place) return;
 
@@ -2037,7 +2104,10 @@
               const loc = place.location;
 
               if (loc){
-                setPicked(loc.lat(), loc.lng(), label, true);
+                requestAnimationFrame(() => {
+                  setPicked(loc.lat(), loc.lng(), label, true);
+                  refreshPostMap(false);
+                });
                 setStatus(postStatus, "Location picked.", "success");
                 return;
               }
@@ -2119,9 +2189,12 @@
       }
 
       if (gmap){
-        if (pan) gmap.panTo(pos);
-        else gmap.setCenter(pos);
-        gmap.setZoom(15);
+        requestAnimationFrame(() => {
+          refreshPostMap(false);
+          if (pan) gmap.panTo(pos);
+          else gmap.setCenter(pos);
+          gmap.setZoom(15);
+        });
       }
     }
 
