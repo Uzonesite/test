@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>uZone • Main</title>
+  <title>uZone • Events</title>
 
   <style>
     :root{
@@ -14,17 +14,20 @@
       --pink: #b00b55;
       --purple: #6d28d9;
       --blue: #8bd3ff;
+      --green: #58c99a;
 
-      --card: rgba(255,255,255,.86);
+      --card: rgba(255,255,255,.88);
       --border: rgba(17,16,24,.10);
       --shadow: 0 18px 60px rgba(17,16,24,.10);
 
-      --radius: 18px;
+      --radius: 20px;
       --radius2: 16px;
     }
 
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
+    html{ scroll-behavior:smooth; }
+
     body{
       margin:0;
       background:
@@ -40,11 +43,10 @@
     button{ font:inherit; }
     img{ max-width:100%; display:block; }
 
-    /* --- Header --- */
     header{
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 60;
       backdrop-filter: blur(10px);
       background: rgba(255,255,255,.72);
       border-bottom: 1px solid rgba(17,16,24,.08);
@@ -67,6 +69,7 @@
       gap:10px;
       min-width: 140px;
     }
+
     .brand img{
       width:34px;height:34px;
       border-radius:10px;
@@ -74,11 +77,13 @@
       background: rgba(255,255,255,.6);
       object-fit: cover;
     }
+
     .brand .btxt{
       line-height:1.05;
       display:grid;
       gap:2px;
     }
+
     .brand .btxt b{ font-size:14px; letter-spacing:.2px; }
     .brand .btxt span{ font-size:12px; color:var(--muted); }
 
@@ -96,6 +101,7 @@
       scroll-snap-type: x mandatory;
       max-width: min(560px, 92vw);
     }
+
     .tab{
       flex: 0 0 auto;
       display:inline-flex;
@@ -115,17 +121,19 @@
       font-size: 13px;
       scroll-snap-align: start;
     }
+
     .tab:hover{ transform: translateY(-1px); background: rgba(139,211,255,.20); }
-    .tab:active{ transform: translateY(0px); }
     .tab.active{
       background: linear-gradient(135deg, rgba(176,11,85,.12), rgba(109,40,217,.10));
       border-color: rgba(176,11,85,.22);
       box-shadow: 0 12px 30px rgba(176,11,85,.10);
     }
+
     .tab .dot{
       width:8px;height:8px;border-radius:999px;
       background: rgba(17,16,24,.25);
     }
+
     .tab.active .dot{
       background: var(--pink);
       box-shadow: 0 0 0 4px rgba(176,11,85,.14);
@@ -138,17 +146,18 @@
       gap:2px;
       min-width: 160px;
     }
+
     .version b{
       font-size: 12px;
       letter-spacing:.2px;
     }
+
     .version span{
       font-size: 12px;
       color: var(--muted);
       white-space: nowrap;
     }
 
-    /* Mobile header layout fix */
     @media (max-width: 760px){
       .topbar{
         grid-template-columns: 1fr;
@@ -172,12 +181,11 @@
       }
     }
 
-    /* --- Layout --- */
     main{
       width: min(1120px, 92vw);
-      margin: 14px auto 40px auto;
+      margin: 14px auto 44px auto;
       display:grid;
-      gap: 14px;
+      gap: 18px;
     }
 
     .grid2{
@@ -186,6 +194,7 @@
       gap: 14px;
       align-items:start;
     }
+
     @media (max-width: 980px){
       .grid2{ grid-template-columns: 1fr; }
     }
@@ -199,6 +208,7 @@
       box-shadow: var(--shadow);
       overflow:hidden;
     }
+
     .cardInner{ padding: 16px; }
 
     .hRow{
@@ -207,11 +217,14 @@
       justify-content:space-between;
       gap: 12px;
     }
-    h1,h2,h3{ margin:0; }
+
+    h1,h2,h3,h4{ margin:0; }
+
     .h1{
       font-size: 18px;
       letter-spacing: .2px;
     }
+
     .sub{
       color: var(--muted);
       font-size: 13px;
@@ -219,11 +232,10 @@
       margin-top: 6px;
     }
 
-    /* --- Banner --- */
     .banner{
       position:relative;
       border-radius: var(--radius);
-      overflow:hidden;
+      overflow:visible;
       border: 1px solid rgba(17,16,24,.10);
       background:
         radial-gradient(600px 250px at 10% 40%, rgba(139,211,255,.55), transparent 60%),
@@ -232,7 +244,9 @@
         rgba(255,255,255,.72);
       box-shadow: 0 22px 70px rgba(17,16,24,.10);
       padding: 16px;
+      z-index: 1;
     }
+
     .bannerTop{
       display:flex;
       align-items:flex-start;
@@ -240,10 +254,12 @@
       gap: 12px;
       flex-wrap:wrap;
     }
+
     .banner h2{
       font-size: 18px;
       letter-spacing: .2px;
     }
+
     .banner p{
       margin:6px 0 0 0;
       color: rgba(17,16,24,.70);
@@ -251,9 +267,13 @@
       line-height:1.4;
       max-width: 60ch;
     }
-    .banner .miniBtns{
-      display:flex; gap:10px; flex-wrap:wrap;
+
+    .miniBtns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
     }
+
     .btn{
       display:inline-flex;
       align-items:center;
@@ -270,17 +290,38 @@
       user-select:none;
       white-space:nowrap;
     }
+
     .btn:hover{
       transform: translateY(-1px);
       border-color: rgba(176,11,85,.25);
       box-shadow: 0 14px 38px rgba(176,11,85,.10);
     }
+
     .btn.primary{
       border-color: rgba(176,11,85,.28);
       background: linear-gradient(135deg, rgba(176,11,85,.14), rgba(109,40,217,.10));
     }
 
-    /* --- Search bubble (above map) --- */
+    .sectionDivider{
+      position:relative;
+      height:90px;
+      margin-top:-6px;
+      margin-bottom:-48px;
+      border-radius: 0 0 32px 32px;
+      background:
+        linear-gradient(180deg, rgba(109,40,217,.08), rgba(139,211,255,.06)),
+        rgba(255,255,255,.36);
+      border:1px solid rgba(17,16,24,.06);
+      overflow:visible;
+      z-index:0;
+    }
+
+    .mapOverlap{
+      position:relative;
+      z-index:2;
+      margin-top:-38px;
+    }
+
     .searchBubble{
       display:flex;
       gap:10px;
@@ -288,6 +329,7 @@
       justify-content:space-between;
       flex-wrap:wrap;
     }
+
     .search{
       flex: 1 1 260px;
       display:flex;
@@ -298,6 +340,7 @@
       border: 1px solid rgba(17,16,24,.10);
       background: rgba(255,255,255,.82);
     }
+
     .search input{
       border:none;
       outline:none;
@@ -307,7 +350,6 @@
       color: var(--ink);
     }
 
-    /* --- Map --- */
     .mapBox{
       border:1px solid rgba(17,16,24,.10);
       border-radius: var(--radius);
@@ -315,13 +357,19 @@
       background: rgba(255,255,255,.72);
       min-height: 420px;
     }
-    #map{ width:100%; height:420px; }
+
+    #map{
+      width:100%;
+      height:420px;
+    }
+
     @media (max-width: 520px){
       #map{ height: 360px; }
       .mapBox{ min-height: 360px; }
+      .mapOverlap{ margin-top:-28px; }
+      .sectionDivider{ height:72px; margin-bottom:-34px; }
     }
 
-    /* --- Glow/Pulse pins --- */
     .pinWrap{ position:relative; width:1px; height:1px; overflow: visible; }
     .glow-pin{
       position:absolute;
@@ -345,12 +393,12 @@
       animation: pulse 1.6s ease-out infinite;
       pointer-events:none;
     }
+
     @keyframes pulse{
       0%{opacity:.85; transform: translate(-50%,-50%) scale(.35);}
       100%{opacity:0; transform: translate(-50%,-50%) scale(1.15);}
     }
 
-    /* InfoWindow mobile fit */
     .gm-style-iw{ padding:0 !important; }
     .gm-style-iw-d{ overflow:hidden !important; }
     .gm-style-iw-c{
@@ -359,7 +407,6 @@
     }
     .gm-ui-hover-effect{ display:none !important; }
 
-    /* --- Store-style Event Cards --- */
     .eventGrid{
       display:grid;
       gap: 12px;
@@ -368,6 +415,7 @@
     }
 
     .eventCard{
+      position:relative;
       border:1px solid rgba(17,16,24,.10);
       background: rgba(255,255,255,.86);
       border-radius: var(--radius2);
@@ -377,11 +425,18 @@
       grid-template-rows: auto 1fr;
       min-height: 100%;
       transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+      cursor:pointer;
     }
+
     .eventCard:hover{
       transform: translateY(-1px);
       border-color: rgba(176,11,85,.22);
       box-shadow: 0 22px 64px rgba(176,11,85,.10);
+    }
+
+    .eventCard:focus-visible{
+      outline: 3px solid rgba(176,11,85,.22);
+      outline-offset: 2px;
     }
 
     .eventMedia{
@@ -393,12 +448,14 @@
       aspect-ratio: 16 / 9;
       overflow:hidden;
     }
+
     .eventMedia img{
       width:100%;
       height:100%;
       object-fit: cover;
       display:block;
     }
+
     .eventMedia .mediaOverlay{
       position:absolute;
       inset:auto 10px 10px 10px;
@@ -409,6 +466,7 @@
       justify-content:flex-start;
       pointer-events:none;
     }
+
     .pill{
       pointer-events:none;
       display:inline-flex;
@@ -424,13 +482,18 @@
       backdrop-filter: blur(8px);
       max-width: 100%;
     }
+
     .pill .dot{
       width:8px; height:8px; border-radius:999px;
       background: var(--blue);
       box-shadow: 0 0 0 4px rgba(139,211,255,.18);
       flex: 0 0 auto;
     }
-    .pill.pink .dot{ background: var(--pink); box-shadow: 0 0 0 4px rgba(176,11,85,.18); }
+
+    .pill.pink .dot{
+      background: var(--pink);
+      box-shadow: 0 0 0 4px rgba(176,11,85,.18);
+    }
 
     .eventBody{
       padding: 12px;
@@ -454,6 +517,7 @@
       line-height: 1.35;
       word-break: break-word;
     }
+
     .meta b{ color: rgba(17,16,24,.86); }
 
     .descClamp{
@@ -472,6 +536,7 @@
       gap:6px;
       flex-wrap:wrap;
     }
+
     .tag{
       font-size: 12px;
       font-weight: 900;
@@ -487,6 +552,8 @@
     }
 
     .actions{
+      position:relative;
+      z-index:3;
       display:flex;
       justify-content:space-between;
       gap: 10px;
@@ -509,11 +576,15 @@
       cursor:pointer;
       user-select:none;
       white-space:nowrap;
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
     }
+
     .miniLink:hover{
+      transform: translateY(-1px);
       border-color: rgba(176,11,85,.22);
       box-shadow: 0 12px 30px rgba(176,11,85,.10);
     }
+
     .miniLink.primary{
       border-color: rgba(176,11,85,.28);
       background: linear-gradient(135deg, rgba(176,11,85,.14), rgba(109,40,217,.10));
@@ -531,23 +602,70 @@
 
     footer{
       width: min(1120px, 92vw);
-      margin: 10px auto 30px auto;
-      color: rgba(17,16,24,.60);
-      font-size: 12px;
+      margin: 14px auto 30px auto;
+      padding: 18px;
+      border:1px solid rgba(17,16,24,.08);
+      border-radius: 20px;
+      background:
+        radial-gradient(600px 220px at 10% 0%, rgba(139,211,255,.18), transparent 60%),
+        radial-gradient(600px 220px at 90% 80%, rgba(176,11,85,.10), transparent 60%),
+        rgba(255,255,255,.78);
+      box-shadow: 0 18px 50px rgba(17,16,24,.08);
       display:flex;
+      align-items:center;
       justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      color: rgba(17,16,24,.72);
+    }
+
+    .footerLeft{
+      display:grid;
+      gap:4px;
+    }
+
+    .footerTitle{
+      font-size: 13px;
+      font-weight: 1000;
+      color: rgba(17,16,24,.9);
+    }
+
+    .footerSub{
+      font-size: 12px;
+      color: rgba(17,16,24,.62);
+    }
+
+    .footerActions{
+      display:flex;
+      align-items:center;
       gap:10px;
       flex-wrap:wrap;
     }
-    footer a{ text-decoration: underline; text-decoration-color: rgba(176,11,85,.35); }
 
-    /* --- Modal (for Event + Ping Open) --- */
+    .footerLink{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:9px 12px;
+      border-radius:999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.82);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .footerLink:hover{
+      border-color: rgba(176,11,85,.22);
+      box-shadow: 0 12px 30px rgba(176,11,85,.10);
+    }
+
     .modal{
       position: fixed;
       inset: 0;
       z-index: 2000;
       display:none;
     }
+
     .modal.show{ display:block; }
 
     .modalBackdrop{
@@ -581,6 +699,7 @@
       justify-content:space-between;
       gap: 10px;
     }
+
     .modalTitle{
       margin:0;
       font-size: 16px;
@@ -588,6 +707,7 @@
       letter-spacing:.2px;
       line-height:1.2;
     }
+
     .modalSub{
       margin:6px 0 0 0;
       font-size: 13px;
@@ -596,6 +716,7 @@
       max-width: 70ch;
       word-break: break-word;
     }
+
     .closeBtn{
       flex: 0 0 auto;
       width: 38px;
@@ -610,6 +731,7 @@
       justify-content:center;
       box-shadow: 0 12px 30px rgba(0,0,0,.12);
     }
+
     .closeBtn:hover{
       border-color: rgba(176,11,85,.24);
       box-shadow: 0 16px 42px rgba(176,11,85,.14);
@@ -624,10 +746,11 @@
 
     .modalGrid{
       display:grid;
-      grid-template-columns: 1.1fr .9fr;
+      grid-template-columns: 1.08fr .92fr;
       gap: 14px;
       align-items:start;
     }
+
     @media (max-width: 920px){
       .modalGrid{ grid-template-columns: 1fr; }
     }
@@ -642,11 +765,13 @@
         rgba(17,16,24,.04);
       aspect-ratio: 16 / 9;
     }
+
     .modalMedia img{
       width:100%;
       height:100%;
       object-fit: cover;
     }
+
     .modalMediaFallback{
       width:100%;
       height:100%;
@@ -667,7 +792,7 @@
       box-shadow: 0 18px 50px rgba(17,16,24,.06);
       padding: 14px;
       display:grid;
-      gap: 10px;
+      gap: 12px;
     }
 
     .kv{
@@ -678,16 +803,84 @@
       line-height: 1.35;
       word-break: break-word;
     }
+
     .kvRow{
       display:grid;
       grid-template-columns: 120px 1fr;
       gap: 10px;
       align-items:start;
     }
+
     @media (max-width: 520px){
       .kvRow{ grid-template-columns: 1fr; gap: 4px; }
     }
+
     .kvRow b{ color: rgba(17,16,24,.88); }
+
+    .attendeeSection{
+      display:grid;
+      gap:10px;
+    }
+
+    .attendeeHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .attendeeCount{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 10px;
+      border-radius:999px;
+      font-size: 12px;
+      font-weight: 900;
+      background: rgba(17,16,24,.06);
+      border:1px solid rgba(17,16,24,.08);
+      color: rgba(17,16,24,.78);
+    }
+
+    .attendeeList{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+
+    .attendeeChip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.84);
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(17,16,24,.78);
+    }
+
+    .attendeeAvatar{
+      width:20px;
+      height:20px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      font-weight:1000;
+      color:#fff;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      flex:0 0 auto;
+    }
+
+    .attendeeEmpty{
+      font-size: 13px;
+      color: rgba(17,16,24,.62);
+      line-height: 1.45;
+    }
 
     .modalActions{
       display:flex;
@@ -695,14 +888,20 @@
       flex-wrap:wrap;
       align-items:center;
       justify-content:flex-start;
-      margin-top: 4px;
+      margin-top: 2px;
+    }
+
+    .statusText{
+      font-size: 12px;
+      color: rgba(17,16,24,.62);
+      min-height: 16px;
     }
 
     .hr{
       height:1px;
       background: rgba(17,16,24,.08);
       border:none;
-      margin: 2px 0;
+      margin: 0;
     }
   </style>
 </head>
@@ -738,12 +937,11 @@
   </header>
 
   <main>
-    <!-- Banner / Ad slot -->
     <section class="banner" aria-label="Banner">
       <div class="bannerTop">
         <div>
           <h2>What’s going on today?</h2>
-          <p>Clean map + clean store-style cards. Tap Open to view everything in a popup.</p>
+          <p>Find something nearby, open any card for full details, and register right from the popup.</p>
         </div>
         <div class="miniBtns">
           <a class="btn primary" href="post_event.html">Post an event</a>
@@ -751,27 +949,11 @@
       </div>
     </section>
 
-    <!-- Map + Highlighted (right bubble) -->
-    <section class="grid2">
-      <div class="stack">
-        <!-- Search bubble ABOVE the map -->
-        <section class="card" aria-label="Search bubble">
-          <div class="cardInner">
-            <div class="searchBubble">
-              <div>
-                <h1 class="h1">Search</h1>
-                <div class="sub">Filter events by title, location, or tags.</div>
-              </div>
-              <div class="search" role="search" style="max-width: 520px; width: 100%;">
-                <span style="opacity:.6; font-weight:1000;">⌕</span>
-                <input id="search" placeholder="Search events…" autocomplete="off" />
-              </div>
-            </div>
-          </div>
-        </section>
+    <div class="sectionDivider" aria-hidden="true"></div>
 
-        <!-- Map -->
-        <section class="card" aria-label="Map">
+    <section class="grid2 mapOverlap">
+      <div class="stack">
+        <section class="card" aria-label="Map section" id="mapSection">
           <div class="cardInner">
             <div class="hRow">
               <div>
@@ -785,10 +967,22 @@
           <div class="mapBox">
             <div id="map" role="application" aria-label="Events map"></div>
           </div>
+
+          <div class="cardInner" style="padding-top:14px;">
+            <div class="searchBubble">
+              <div>
+                <h1 class="h1" style="font-size:16px;">Search</h1>
+                <div class="sub">Filter events by title, location, or tags.</div>
+              </div>
+              <div class="search" role="search" style="max-width: 520px; width: 100%;">
+                <span style="opacity:.6; font-weight:1000;">⌕</span>
+                <input id="search" placeholder="Search events…" autocomplete="off" />
+              </div>
+            </div>
+          </div>
         </section>
       </div>
 
-      <!-- Highlighted events -->
       <section class="card" aria-label="Highlighted events">
         <div class="cardInner">
           <div class="hRow">
@@ -796,7 +990,6 @@
               <h1 class="h1">Highlighted</h1>
               <div class="sub">Admin-picked events.</div>
             </div>
-            <!-- Removed Featured / Highlighted badges (per request) -->
           </div>
         </div>
 
@@ -809,7 +1002,6 @@
       </section>
     </section>
 
-    <!-- All events list UNDER the map -->
     <section class="card" aria-label="All events list">
       <div class="cardInner">
         <div class="hRow">
@@ -834,11 +1026,17 @@
   </main>
 
   <footer>
-    <div>Having issues? <a href="mailto:report@uzone.ca?subject=Uzone%20Issue">report@uzone.ca</a></div>
-    <div>© uZone</div>
+    <div class="footerLeft">
+      <div class="footerTitle">uZone</div>
+      <div class="footerSub">Student events, cleaner and easier to browse.</div>
+    </div>
+
+    <div class="footerActions">
+      <a class="footerLink" href="mailto:report@uzone.ca?subject=Uzone%20Issue">Report an issue</a>
+      <span class="footerSub">© uZone</span>
+    </div>
   </footer>
 
-  <!-- Modal (used for BOTH event cards + map pin “Open”) -->
   <div class="modal" id="modal" aria-hidden="true">
     <div class="modalBackdrop" id="modalBackdrop"></div>
 
@@ -853,17 +1051,29 @@
 
       <div class="modalBody">
         <div class="modalGrid">
-          <div class="modalMedia" id="modalMedia">
-            <!-- injected -->
-          </div>
+          <div class="modalMedia" id="modalMedia"></div>
 
           <div class="infoCard">
-            <div class="kv" id="modalKV"><!-- injected --></div>
+            <div class="kv" id="modalKV"></div>
             <hr class="hr" />
+
+            <div class="attendeeSection">
+              <div class="attendeeHead">
+                <h4 style="font-size:14px; font-weight:1000;">Attendees</h4>
+                <span class="attendeeCount" id="modalAttendeeCount">0 going</span>
+              </div>
+              <div class="attendeeList" id="modalAttendeeList"></div>
+              <div class="attendeeEmpty" id="modalAttendeeEmpty">No one has registered yet.</div>
+            </div>
+
+            <hr class="hr" />
+
             <div class="modalActions">
-              <button class="miniLink primary" type="button" id="modalZoomBtn">Zoom pin</button>
+              <button class="miniLink primary" type="button" id="modalRegisterBtn">Register</button>
+              <button class="miniLink" type="button" id="modalShowMapBtn">Show on map</button>
               <button class="miniLink" type="button" id="modalCloseBtn2">Close</button>
             </div>
+            <div class="statusText" id="modalStatus"></div>
           </div>
         </div>
 
@@ -879,10 +1089,17 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
     import {
-      getFirestore, collection, getDocs, getDoc, doc, query, orderBy
+      getFirestore,
+      collection,
+      getDocs,
+      getDoc,
+      doc,
+      query,
+      orderBy,
+      updateDoc,
+      arrayUnion
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-    // --- Firebase ---
     const firebaseConfig = {
       apiKey: "AIzaSyD_k18vbiBsLhQB7PzgEVT9PEI_30Mu0kg",
       authDomain: "uzone-6148d.firebaseapp.com",
@@ -898,33 +1115,16 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // --- Tabs ---
-    function scrollActiveTabIntoView(){
-      const active = document.querySelector(".tab.active");
-      if (!active) return;
-      active.scrollIntoView({ behavior: "instant", inline: "center", block: "nearest" });
-    }
-    document.querySelectorAll(".tab[data-go]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const to = btn.getAttribute("data-go");
-        if (to) window.location.href = to;
-      });
-    });
-    scrollActiveTabIntoView();
-
-    // --- UI refs ---
     const hello = document.getElementById("hello");
-
     const grid = document.getElementById("eventGrid");
     const empty = document.getElementById("empty");
     const searchEl = document.getElementById("search");
     const refreshBtn = document.getElementById("refreshBtn");
     const countText = document.getElementById("countText");
-
     const highlightGrid = document.getElementById("highlightGrid");
     const highlightEmpty = document.getElementById("highlightEmpty");
+    const mapSection = document.getElementById("mapSection");
 
-    // Modal refs
     const modal = document.getElementById("modal");
     const modalBackdrop = document.getElementById("modalBackdrop");
     const modalCloseBtn = document.getElementById("modalCloseBtn");
@@ -933,12 +1133,39 @@
     const modalSub = document.getElementById("modalSub");
     const modalMedia = document.getElementById("modalMedia");
     const modalKV = document.getElementById("modalKV");
-    const modalZoomBtn = document.getElementById("modalZoomBtn");
+    const modalShowMapBtn = document.getElementById("modalShowMapBtn");
+    const modalRegisterBtn = document.getElementById("modalRegisterBtn");
     const modalDescCard = document.getElementById("modalDescCard");
     const modalDesc = document.getElementById("modalDesc");
+    const modalAttendeeCount = document.getElementById("modalAttendeeCount");
+    const modalAttendeeList = document.getElementById("modalAttendeeList");
+    const modalAttendeeEmpty = document.getElementById("modalAttendeeEmpty");
+    const modalStatus = document.getElementById("modalStatus");
 
-    // --- Helpers ---
-    function esc(s){ return String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+    let currentUser = null;
+    let currentModalEvent = null;
+    let currentUserDisplayName = "";
+
+    function scrollActiveTabIntoView(){
+      const active = document.querySelector(".tab.active");
+      if (!active) return;
+      active.scrollIntoView({ behavior: "instant", inline: "center", block: "nearest" });
+    }
+
+    document.querySelectorAll(".tab[data-go]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const to = btn.getAttribute("data-go");
+        if (to) window.location.href = to;
+      });
+    });
+
+    scrollActiveTabIntoView();
+
+    function esc(s){
+      return String(s ?? "").replace(/[&<>"']/g, m => ({
+        '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+      }[m]));
+    }
 
     function tsToDate(v){
       try{
@@ -979,7 +1206,6 @@
       return ev?.highlighted === true || ev?.isHighlighted === true || ev?.featured === true || ev?.adminHighlighted === true;
     }
 
-    // Best-effort lat/lng getter
     function pickLatLng(ev){
       const candidates = [
         [ev.lat, ev.lng],
@@ -1067,13 +1293,90 @@
       return "";
     }
 
-    // --- Modal open/close ---
-    let currentModalEvent = null;
+    function uniqueStrings(list){
+      return [...new Set((Array.isArray(list) ? list : []).map(v => String(v || "").trim()).filter(Boolean))];
+    }
+
+    function buildAttendeeData(ev){
+      const ids = uniqueStrings([
+        ...(Array.isArray(ev.attendeeIds) ? ev.attendeeIds : []),
+        ...(Array.isArray(ev.registeredUserIds) ? ev.registeredUserIds : []),
+        ...(Array.isArray(ev.goerIds) ? ev.goerIds : []),
+      ]);
+
+      const nameBuckets = [];
+
+      if (Array.isArray(ev.attendeeNames)) nameBuckets.push(...ev.attendeeNames);
+      if (Array.isArray(ev.registeredUserNames)) nameBuckets.push(...ev.registeredUserNames);
+      if (Array.isArray(ev.goerNames)) nameBuckets.push(...ev.goerNames);
+      if (Array.isArray(ev.attendees)) {
+        ev.attendees.forEach(item => {
+          if (typeof item === "string") nameBuckets.push(item);
+          else if (item && typeof item === "object") {
+            nameBuckets.push(item.name || item.displayName || item.username || item.email || "");
+          }
+        });
+      }
+      if (Array.isArray(ev.registeredUsers)) {
+        ev.registeredUsers.forEach(item => {
+          if (typeof item === "string") nameBuckets.push(item);
+          else if (item && typeof item === "object") {
+            nameBuckets.push(item.name || item.displayName || item.username || item.email || "");
+          }
+        });
+      }
+      if (Array.isArray(ev.goers)) {
+        ev.goers.forEach(item => {
+          if (typeof item === "string") nameBuckets.push(item);
+          else if (item && typeof item === "object") {
+            nameBuckets.push(item.name || item.displayName || item.username || item.email || "");
+          }
+        });
+      }
+
+      const names = uniqueStrings(nameBuckets);
+      const count = Math.max(names.length, ids.length, Number(ev.attendeeCount) || 0, Number(ev.registeredCount) || 0, Number(ev.goingCount) || 0);
+
+      return { ids, names, count };
+    }
+
+    function userIsRegisteredForEvent(ev){
+      if (!currentUser) return false;
+      const attendeeData = buildAttendeeData(ev);
+      return attendeeData.ids.includes(currentUser.uid);
+    }
+
+    function renderAttendees(ev){
+      const attendeeData = buildAttendeeData(ev);
+      modalAttendeeCount.textContent = `${attendeeData.count} going`;
+
+      if (attendeeData.names.length){
+        modalAttendeeList.innerHTML = attendeeData.names.slice(0, 20).map(name => `
+          <span class="attendeeChip">
+            <span class="attendeeAvatar">${esc((name || "?").trim().charAt(0).toUpperCase() || "?")}</span>
+            <span>${esc(name)}</span>
+          </span>
+        `).join("");
+        modalAttendeeEmpty.style.display = "none";
+      } else {
+        modalAttendeeList.innerHTML = "";
+        modalAttendeeEmpty.style.display = "block";
+      }
+    }
+
+    function updateModalRegisterButton(ev){
+      const alreadyRegistered = userIsRegisteredForEvent(ev);
+      modalRegisterBtn.disabled = alreadyRegistered;
+      modalRegisterBtn.style.opacity = alreadyRegistered ? ".62" : "1";
+      modalRegisterBtn.style.cursor = alreadyRegistered ? "default" : "pointer";
+      modalRegisterBtn.textContent = alreadyRegistered ? "Registered" : "Register";
+    }
 
     function closeModal(){
       modal.classList.remove("show");
       modal.setAttribute("aria-hidden", "true");
       currentModalEvent = null;
+      modalStatus.textContent = "";
     }
 
     function openModalForEvent(ev, sourceLabel = "Event"){
@@ -1094,8 +1397,8 @@
 
       modalTitle.textContent = title;
       modalSub.textContent = `${sourceLabel} • ${invite}`;
+      modalStatus.textContent = "";
 
-      // Media
       modalMedia.innerHTML = "";
       if (img){
         const im = document.createElement("img");
@@ -1111,7 +1414,6 @@
         modalMedia.innerHTML = `<div class="modalMediaFallback">No image available.</div>`;
       }
 
-      // Key/Value rows (show only what exists)
       const rows = [];
       function addRow(label, value){
         const v = (value ?? "").toString().trim();
@@ -1131,7 +1433,6 @@
       addRow("Capacity", cap);
       addRow("RSVP / Link", link);
 
-      // Tags (as a row)
       if (tags.length){
         rows.push(`
           <div class="kvRow">
@@ -1143,7 +1444,6 @@
         `);
       }
 
-      // Highlighted (as info only)
       if (isHighlighted(ev)){
         rows.push(`
           <div class="kvRow">
@@ -1155,7 +1455,6 @@
 
       modalKV.innerHTML = rows.length ? rows.join("") : `<div style="color: rgba(17,16,24,.68);">No extra details available.</div>`;
 
-      // Description
       if (desc){
         modalDescCard.style.display = "grid";
         modalDesc.textContent = desc;
@@ -1164,11 +1463,13 @@
         modalDesc.textContent = "";
       }
 
-      // Zoom pin button
       const ll = pickLatLng(ev);
-      modalZoomBtn.disabled = !ll || !gmap;
-      modalZoomBtn.style.opacity = (!ll || !gmap) ? ".55" : "1";
-      modalZoomBtn.style.cursor = (!ll || !gmap) ? "not-allowed" : "pointer";
+      modalShowMapBtn.disabled = !ll || !gmap;
+      modalShowMapBtn.style.opacity = (!ll || !gmap) ? ".55" : "1";
+      modalShowMapBtn.style.cursor = (!ll || !gmap) ? "not-allowed" : "pointer";
+
+      renderAttendees(ev);
+      updateModalRegisterButton(ev);
 
       modal.classList.add("show");
       modal.setAttribute("aria-hidden", "false");
@@ -1182,15 +1483,68 @@
       if (e.key === "Escape" && modal.classList.contains("show")) closeModal();
     });
 
-    modalZoomBtn.addEventListener("click", () => {
-      if (!currentModalEvent || !gmap) return;
-      const ll = pickLatLng(currentModalEvent);
+    function showEventOnMap(ev){
+      if (!ev || !gmap) return;
+      const ll = pickLatLng(ev);
       if (!ll) return;
       gmap.panTo(ll);
       gmap.setZoom(Math.max(gmap.getZoom() || 12, 16));
+      mapSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    modalShowMapBtn.addEventListener("click", () => {
+      if (!currentModalEvent) return;
+      showEventOnMap(currentModalEvent);
     });
 
-    // --- Map ---
+    async function registerForCurrentEvent(){
+      if (!currentUser || !currentModalEvent) return;
+      if (userIsRegisteredForEvent(currentModalEvent)) return;
+
+      modalRegisterBtn.disabled = true;
+      modalStatus.textContent = "Registering…";
+
+      try{
+        const displayName = currentUserDisplayName || currentUser.displayName || currentUser.email?.split("@")[0] || "Someone";
+
+        await updateDoc(doc(db, "events", currentModalEvent.id), {
+          attendeeIds: arrayUnion(currentUser.uid),
+          attendeeNames: arrayUnion(displayName),
+          attendeeCount: arrayUnion ? undefined : undefined
+        }).catch(async () => {
+          await updateDoc(doc(db, "events", currentModalEvent.id), {
+            attendeeIds: arrayUnion(currentUser.uid),
+            attendeeNames: arrayUnion(displayName)
+          });
+        });
+
+        currentModalEvent = {
+          ...currentModalEvent,
+          attendeeIds: uniqueStrings([...(currentModalEvent.attendeeIds || []), currentUser.uid]),
+          attendeeNames: uniqueStrings([...(currentModalEvent.attendeeNames || []), displayName])
+        };
+
+        const index = allEvents.findIndex(e => e.id === currentModalEvent.id);
+        if (index >= 0){
+          allEvents[index] = {
+            ...allEvents[index],
+            attendeeIds: uniqueStrings([...(allEvents[index].attendeeIds || []), currentUser.uid]),
+            attendeeNames: uniqueStrings([...(allEvents[index].attendeeNames || []), displayName])
+          };
+        }
+
+        renderAttendees(currentModalEvent);
+        updateModalRegisterButton(currentModalEvent);
+        modalStatus.textContent = "You’re registered for this event.";
+      } catch (err){
+        console.error(err);
+        modalStatus.textContent = "Couldn’t register right now.";
+        updateModalRegisterButton(currentModalEvent);
+      }
+    }
+
+    modalRegisterBtn.addEventListener("click", registerForCurrentEvent);
+
     const MAPS_API_KEY = "AIzaSyCt8UPeNwhR4mPoQgWUoYxUE2UrlKYL6UE";
     const MAP_ID = "f4ab270f6c4fc6deeed4fa00";
 
@@ -1226,7 +1580,7 @@
     async function initMap(){
       await loadGoogleMaps();
 
-      const defaultCenter = { lat: 45.4215, lng: -75.6972 }; // Ottawa default
+      const defaultCenter = { lat: 45.4215, lng: -75.6972 };
       gmap = new google.maps.Map(document.getElementById("map"), {
         center: defaultCenter,
         zoom: 12,
@@ -1240,12 +1594,11 @@
 
     function clearMarkers(){
       for (const m of markers){
-        try{ m.map = null; }catch(_){}
+        try{ m.map = null; } catch(_){}
       }
       markers = [];
     }
 
-    // Better-looking "ping" popup + Open uses modal (no page nav)
     function openInfo(marker, ev){
       const ll = pickLatLng(ev);
       if (!ll) return;
@@ -1330,7 +1683,7 @@
                 min-width:110px;
               ">Open</button>
 
-            <button type="button" id="iwZoomBtn"
+            <button type="button" id="iwShowBtn"
               style="
                 display:inline-flex; align-items:center; justify-content:center; gap:8px;
                 padding:9px 10px;
@@ -1342,7 +1695,7 @@
                 cursor:pointer;
                 flex:1 1 auto;
                 min-width:110px;
-              ">Zoom</button>
+              ">Show on map</button>
           </div>
         </div>
       `;
@@ -1354,11 +1707,8 @@
         const close = document.getElementById("iwCloseBtn");
         if (close) close.onclick = () => info.close();
 
-        const zoom = document.getElementById("iwZoomBtn");
-        if (zoom) zoom.onclick = () => {
-          gmap.panTo(ll);
-          gmap.setZoom(Math.max(gmap.getZoom() || 12, 16));
-        };
+        const show = document.getElementById("iwShowBtn");
+        if (show) show.onclick = () => showEventOnMap(ev);
 
         const open = document.getElementById("iwOpenBtn");
         if (open) open.onclick = () => openModalForEvent(ev, "Ping");
@@ -1382,10 +1732,9 @@
       markers.push(marker);
     }
 
-    // --- Events ---
-    let allEvents = []; // {id, ...data}
+    let allEvents = [];
 
-    function storeCardHTML(ev, {compact=false} = {}){
+    function storeCardHTML(ev){
       const title = esc(ev.name || ev.title || "Untitled");
       const when = esc(fmtWhen(ev));
       const where = esc(ev.location || ev.place || ev.address || "—");
@@ -1395,6 +1744,7 @@
       const desc = pickDescription(ev);
       const host = pickHost(ev);
       const price = pickPrice(ev);
+      const attendeeData = buildAttendeeData(ev);
 
       const pillLeft = invite
         ? `<span class="pill pink"><span class="dot"></span>Invite-only</span>`
@@ -1405,7 +1755,7 @@
         : "";
 
       return `
-        <article class="eventCard">
+        <article class="eventCard" data-open-card="${esc(ev.id)}" tabindex="0" role="button" aria-label="Open ${title}">
           <div class="eventMedia">
             ${img ? `<img src="${esc(img)}" alt="${title}" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove();">` : ""}
             <div class="mediaOverlay">
@@ -1421,16 +1771,16 @@
                 <div><b>When:</b> ${when}</div>
                 <div><b>Where:</b> ${where}</div>
                 ${host ? `<div><b>Host:</b> ${esc(host)}</div>` : ""}
+                <div><b>Going:</b> ${attendeeData.count}</div>
               </div>
             </div>
 
             ${desc ? `<div class="descClamp">${esc(desc)}</div>` : ""}
-
             ${tags.length ? `<div class="tags">${tags.slice(0,6).map(t => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
 
             <div class="actions">
-              <button class="miniLink primary" type="button" data-open="${esc(ev.id)}">Open</button>
-              <button class="miniLink" type="button" data-zoom="${esc(ev.id)}">Zoom pin</button>
+              <button class="miniLink" type="button" data-showmap="${esc(ev.id)}">Show on map</button>
+              <button class="miniLink primary" type="button" data-register="${esc(ev.id)}">${userIsRegisteredForEvent(ev) ? "Registered" : "Register"}</button>
             </div>
           </div>
         </article>
@@ -1442,11 +1792,9 @@
       highlightGrid.innerHTML = "";
       highlightEmpty.style.display = highlighted.length ? "none" : "block";
 
-      const show = highlighted.slice(0, 6);
-      for (const ev of show){
-        // No highlighted/featured badges anywhere in this section
-        highlightGrid.insertAdjacentHTML("beforeend", storeCardHTML(ev, {compact:true}));
-      }
+      highlighted.slice(0, 6).forEach(ev => {
+        highlightGrid.insertAdjacentHTML("beforeend", storeCardHTML(ev));
+      });
     }
 
     function renderEvents(){
@@ -1461,35 +1809,81 @@
       });
 
       countText.textContent = String(filtered.length);
-
       grid.innerHTML = "";
       empty.style.display = filtered.length ? "none" : "block";
 
-      for (const ev of filtered){
+      filtered.forEach(ev => {
         grid.insertAdjacentHTML("beforeend", storeCardHTML(ev));
+      });
+    }
+
+    async function quickRegister(eventId){
+      const ev = allEvents.find(e => e.id === eventId);
+      if (!ev || !currentUser || userIsRegisteredForEvent(ev)) return;
+
+      const displayName = currentUserDisplayName || currentUser.displayName || currentUser.email?.split("@")[0] || "Someone";
+
+      try{
+        await updateDoc(doc(db, "events", eventId), {
+          attendeeIds: arrayUnion(currentUser.uid),
+          attendeeNames: arrayUnion(displayName)
+        });
+
+        ev.attendeeIds = uniqueStrings([...(ev.attendeeIds || []), currentUser.uid]);
+        ev.attendeeNames = uniqueStrings([...(ev.attendeeNames || []), displayName]);
+
+        if (currentModalEvent && currentModalEvent.id === eventId){
+          currentModalEvent = { ...ev };
+          renderAttendees(currentModalEvent);
+          updateModalRegisterButton(currentModalEvent);
+          modalStatus.textContent = "You’re registered for this event.";
+        }
+
+        renderHighlighted();
+        renderEvents();
+        wireCardButtons();
+      } catch (err){
+        console.error(err);
       }
     }
 
-    // Single place to wire Open/Zoom buttons (cards)
     function wireCardButtons(){
-      document.querySelectorAll("button[data-zoom]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const id = btn.getAttribute("data-zoom");
-          const ev = allEvents.find(e => e.id === id);
-          if (!ev || !gmap) return;
-          const ll = pickLatLng(ev);
-          if (!ll) return;
-          gmap.panTo(ll);
-          gmap.setZoom(Math.max(gmap.getZoom() || 12, 16));
-        });
-      });
-
-      document.querySelectorAll("button[data-open]").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const id = btn.getAttribute("data-open");
+      document.querySelectorAll("[data-open-card]").forEach(card => {
+        const openCard = () => {
+          const id = card.getAttribute("data-open-card");
           const ev = allEvents.find(e => e.id === id);
           if (!ev) return;
           openModalForEvent(ev, "Event");
+        };
+
+        card.addEventListener("click", (e) => {
+          if (e.target.closest("[data-showmap]") || e.target.closest("[data-register]")) return;
+          openCard();
+        });
+
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openCard();
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-showmap]").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute("data-showmap");
+          const ev = allEvents.find(x => x.id === id);
+          if (!ev) return;
+          showEventOnMap(ev);
+        });
+      });
+
+      document.querySelectorAll("[data-register]").forEach(btn => {
+        btn.addEventListener("click", async (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute("data-register");
+          await quickRegister(id);
         });
       });
     }
@@ -1504,11 +1898,9 @@
 
       const arr = [];
       snap.forEach(d => arr.push({ id: d.id, ...(d.data() || {}) }));
-
       arr.sort((a,b) => pickCreatedAtMs(b) - pickCreatedAtMs(a));
       allEvents = arr;
 
-      // markers
       clearMarkers();
       for (const ev of allEvents) addMarkerForEvent(ev);
 
@@ -1518,16 +1910,19 @@
     }
 
     refreshBtn.addEventListener("click", () => loadEvents().catch(console.error));
-    searchEl.addEventListener("input", () => { renderEvents(); wireCardButtons(); });
+    searchEl.addEventListener("input", () => {
+      renderEvents();
+      wireCardButtons();
+    });
 
-    // --- Auth gate + init ---
     onAuthStateChanged(auth, async (user) => {
       if (!user){
         window.location.href = "index.html";
         return;
       }
 
-      // Hello text
+      currentUser = user;
+
       let displayName = user.displayName?.trim() || "";
       try{
         const snap = await getDoc(doc(db, "users", user.uid));
@@ -1537,6 +1932,7 @@
         }
       } catch(_) {}
 
+      currentUserDisplayName = displayName || user.email?.split("@")[0] || "User";
       hello.textContent = displayName ? `Hey, ${displayName}` : "Welcome back";
 
       try{
