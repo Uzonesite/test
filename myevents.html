@@ -8,6 +8,7 @@
   <style>
     :root{
       --bg: #f8f7ff;
+      --bg2: #fcfbff;
       --ink: #111018;
       --muted: rgba(17,16,24,.62);
 
@@ -24,6 +25,7 @@
       --radius2: 16px;
       --danger: #c6285d;
       --success: #2f9e6f;
+      --dangerDeep: #8c184a;
     }
 
     *{ box-sizing:border-box; }
@@ -639,7 +641,7 @@
 
     .modalPanel{
       position:relative;
-      width:min(920px, 92vw);
+      width:min(960px, 92vw);
       margin:26px auto;
       border-radius:22px;
       border:1px solid rgba(255,255,255,.20);
@@ -793,7 +795,7 @@
     .statusBox.error{
       background: rgba(176,11,85,.08);
       border-color: rgba(176,11,85,.18);
-      color: #8c184a;
+      color: var(--dangerDeep);
     }
 
     .formGrid{
@@ -886,13 +888,80 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      overflow:hidden;
     }
 
     .preview img{
       width:100%;
       height:100%;
       object-fit:cover;
+    }
+
+    .mapPicker{
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.74);
+      border-radius:16px;
+      overflow:hidden;
+    }
+
+    .mapPickerTop{
+      padding:12px;
+      display:grid;
+      gap:10px;
+      border-bottom:1px solid rgba(17,16,24,.08);
+    }
+
+    .mapPickerBtns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .mapCanvas{
+      width:100%;
+      height:320px;
+      background:
+        radial-gradient(700px 300px at 20% 20%, rgba(139,211,255,.30), transparent 55%),
+        radial-gradient(700px 300px at 85% 70%, rgba(176,11,85,.10), transparent 58%),
+        rgba(17,16,24,.04);
+    }
+
+    @media (max-width: 520px){
+      .mapCanvas{ height:260px; }
+    }
+
+    .attendeeList{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:flex-start;
+    }
+
+    .attendeeChip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.86);
+      font-size:12px;
+      font-weight:900;
+      color: rgba(17,16,24,.80);
+      max-width:100%;
+    }
+
+    .attendeeChip .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(88,201,154,.16);
+      flex:0 0 auto;
+    }
+
+    .sectionStack{
+      display:grid;
+      gap:14px;
     }
 
     .hidden{ display:none !important; }
@@ -934,7 +1003,7 @@
       <div class="bannerTop">
         <div>
           <h2>My Events</h2>
-          <p>See the events you posted, the ones you’re registered for, and post a new event without leaving the page.</p>
+          <p>See the events you posted, the ones you’re registered for, post a new one, and edit your own events without leaving the page.</p>
         </div>
         <div class="miniBtns">
           <button class="btn primary" id="openPostBtn" type="button">Post an event</button>
@@ -948,7 +1017,7 @@
         <div class="searchBubble">
           <div>
             <h1 class="h1" style="font-size:16px;">Search</h1>
-            <div class="sub">Filter your posted and registered events by title, location, description, or tags.</div>
+            <div class="sub">Filter your posted and registered events by title, location, description, host, or tags.</div>
           </div>
           <div class="search" role="search">
             <span style="opacity:.6; font-weight:1000;">⌕</span>
@@ -964,7 +1033,7 @@
           <div class="hRow">
             <div>
               <h1 class="h1">Posted by you</h1>
-              <div class="sub">Events you created.</div>
+              <div class="sub">Events you created. Open one to edit or delete it.</div>
             </div>
             <span class="pill light">
               <span class="dot" style="background: rgba(17,16,24,.35); box-shadow:none;"></span>
@@ -1028,40 +1097,61 @@
       <div class="modalBody">
         <div class="modalGrid">
           <div class="modalMedia" id="eventModalMedia"></div>
-
           <div class="kv" id="eventModalKV"></div>
         </div>
 
-        <div class="card">
-          <div class="cardInner">
-            <div class="hRow">
-              <div>
-                <h1 class="h1" style="font-size:16px;">Description</h1>
-                <div class="sub">Full event details.</div>
-              </div>
-              <div class="miniBtns">
-                <button class="btn" id="eventModalMapBtn" type="button">Open in Events</button>
-                <button class="btn primary" id="eventModalRegisterBtn" type="button">Register</button>
+        <div class="sectionStack">
+          <div class="card">
+            <div class="cardInner">
+              <div class="hRow">
+                <div>
+                  <h1 class="h1" style="font-size:16px;">Who’s going</h1>
+                  <div class="sub">Attendees for this event.</div>
+                </div>
+                <span class="pill light">
+                  <span class="dot" style="background: var(--green); box-shadow: 0 0 0 4px rgba(88,201,154,.16);"></span>
+                  <span id="eventModalAttendeeCount">0</span>
+                </span>
               </div>
             </div>
+            <div class="cardInner" style="padding-top:0;">
+              <div class="attendeeList" id="eventModalAttendees"></div>
+            </div>
           </div>
-          <div class="cardInner" style="padding-top:0;">
-            <div class="statusBox" id="eventModalStatus">Ready.</div>
-            <div style="margin-top:12px; color:rgba(17,16,24,.78); font-size:14px; line-height:1.55;" id="eventModalDesc">—</div>
+
+          <div class="card">
+            <div class="cardInner">
+              <div class="hRow">
+                <div>
+                  <h1 class="h1" style="font-size:16px;">Description</h1>
+                  <div class="sub">Full event details.</div>
+                </div>
+                <div class="miniBtns">
+                  <button class="btn" id="eventModalMapBtn" type="button">Open in Events</button>
+                  <button class="btn primary hidden" id="eventModalEditBtn" type="button">Edit</button>
+                  <button class="btn danger hidden" id="eventModalDeleteBtn" type="button">Delete</button>
+                  <button class="btn primary" id="eventModalRegisterBtn" type="button">Register</button>
+                </div>
+              </div>
+            </div>
+            <div class="cardInner" style="padding-top:0;">
+              <div class="statusBox" id="eventModalStatus">Ready.</div>
+              <div style="margin-top:12px; color:rgba(17,16,24,.78); font-size:14px; line-height:1.55;" id="eventModalDesc">—</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Post modal -->
+  <!-- Post/Edit modal -->
   <div class="modal" id="postModal" aria-hidden="true">
     <div class="modalBackdrop" id="postModalBackdrop"></div>
     <div class="modalPanel" role="dialog" aria-modal="true" aria-labelledby="postModalTitle">
       <div class="modalTop">
         <div>
           <h3 class="modalTitle" id="postModalTitle">Post an event</h3>
-          <div class="modalSub">Upload a cover image and fill in the details below.</div>
+          <div class="modalSub" id="postModalSub">Upload a cover image, fill in the details, and search the address or click the map.</div>
         </div>
         <button class="closeBtn" id="postModalCloseBtn" type="button" aria-label="Close">×</button>
       </div>
@@ -1087,8 +1177,9 @@
             </div>
 
             <div class="field">
-              <label for="locationInput">Location</label>
-              <input class="input" id="locationInput" maxlength="120" placeholder="Where is it?" required />
+              <label for="tagsInput">Tags</label>
+              <input class="input" id="tagsInput" maxlength="160" placeholder="party, music, sports, food" />
+              <div class="helper">Comma separated.</div>
             </div>
           </div>
 
@@ -1104,24 +1195,6 @@
             </div>
           </div>
 
-          <div class="row2">
-            <div class="field">
-              <label for="latInput">Latitude</label>
-              <input class="input" id="latInput" type="number" step="any" placeholder="45.4215" />
-            </div>
-
-            <div class="field">
-              <label for="lngInput">Longitude</label>
-              <input class="input" id="lngInput" type="number" step="any" placeholder="-75.6972" />
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="tagsInput">Tags</label>
-            <input class="input" id="tagsInput" maxlength="160" placeholder="party, music, sports, food" />
-            <div class="helper">Comma separated.</div>
-          </div>
-
           <div class="field">
             <label for="descInput">Description</label>
             <textarea class="textarea" id="descInput" maxlength="1000" placeholder="What should people know?" required></textarea>
@@ -1132,12 +1205,48 @@
             <span>Invite-only event</span>
           </label>
 
+          <div class="mapPicker">
+            <div class="mapPickerTop">
+              <div class="row2">
+                <div class="field">
+                  <label for="locationSearchInput">Search address</label>
+                  <input class="input" id="locationSearchInput" maxlength="160" placeholder="Search an address…" />
+                </div>
+                <div class="field">
+                  <label for="locationInput">Chosen location</label>
+                  <input class="input" id="locationInput" maxlength="160" placeholder="Selected address or place" required />
+                </div>
+              </div>
+
+              <div class="row2">
+                <div class="field">
+                  <label for="latInput">Latitude</label>
+                  <input class="input" id="latInput" type="number" step="any" placeholder="45.4215" />
+                </div>
+                <div class="field">
+                  <label for="lngInput">Longitude</label>
+                  <input class="input" id="lngInput" type="number" step="any" placeholder="-75.6972" />
+                </div>
+              </div>
+
+              <div class="mapPickerBtns">
+                <button class="btn" id="searchAddressBtn" type="button">Search address</button>
+                <button class="btn" id="useMyLocationBtn" type="button">Use my location</button>
+                <button class="btn" id="clearLocationBtn" type="button">Clear pin</button>
+              </div>
+
+              <div class="helper">Search an address, choose from autocomplete, use your location, or click the map to drop a pin.</div>
+            </div>
+
+            <div id="postMap" class="mapCanvas" aria-label="Location picker map"></div>
+          </div>
+
           <div class="miniBtns">
             <button class="btn primary" id="submitPostBtn" type="submit">Post event</button>
             <button class="btn" id="cancelPostBtn" type="button">Cancel</button>
           </div>
 
-          <div class="statusBox" id="postStatus">Ready to post.</div>
+          <div class="statusBox" id="postStatus">Ready.</div>
         </form>
       </div>
     </div>
@@ -1156,7 +1265,9 @@
       query,
       orderBy,
       runTransaction,
-      serverTimestamp
+      serverTimestamp,
+      updateDoc,
+      deleteDoc
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
     import {
       getStorage,
@@ -1175,6 +1286,10 @@
       appId: "1:88783701381:web:4f6c4b1ad8b26d6fa6f0ec",
       measurementId: "G-HKL5246YMC"
     };
+
+    const MAPS_API_KEY = "AIzaSyCt8UPeNwhR4mPoQgWUoYxUE2UrlKYL6UE";
+    const MAP_ID = "f4ab270f6c4fc6deeed4fa00";
+    const DEFAULT_CENTER = { lat: 45.4215, lng: -75.6972 };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
@@ -1203,10 +1318,16 @@
     const eventModalStatus = document.getElementById("eventModalStatus");
     const eventModalRegisterBtn = document.getElementById("eventModalRegisterBtn");
     const eventModalMapBtn = document.getElementById("eventModalMapBtn");
+    const eventModalEditBtn = document.getElementById("eventModalEditBtn");
+    const eventModalDeleteBtn = document.getElementById("eventModalDeleteBtn");
+    const eventModalAttendees = document.getElementById("eventModalAttendees");
+    const eventModalAttendeeCount = document.getElementById("eventModalAttendeeCount");
 
     const postModal = document.getElementById("postModal");
     const postModalBackdrop = document.getElementById("postModalBackdrop");
     const postModalCloseBtn = document.getElementById("postModalCloseBtn");
+    const postModalTitle = document.getElementById("postModalTitle");
+    const postModalSub = document.getElementById("postModalSub");
     const openPostBtn = document.getElementById("openPostBtn");
     const cancelPostBtn = document.getElementById("cancelPostBtn");
     const postForm = document.getElementById("postForm");
@@ -1216,6 +1337,7 @@
     const coverInput = document.getElementById("coverInput");
     const coverPreview = document.getElementById("coverPreview");
     const titleInput = document.getElementById("titleInput");
+    const locationSearchInput = document.getElementById("locationSearchInput");
     const locationInput = document.getElementById("locationInput");
     const dateInput = document.getElementById("dateInput");
     const timeInput = document.getElementById("timeInput");
@@ -1224,12 +1346,22 @@
     const tagsInput = document.getElementById("tagsInput");
     const descInput = document.getElementById("descInput");
     const inviteOnlyInput = document.getElementById("inviteOnlyInput");
+    const searchAddressBtn = document.getElementById("searchAddressBtn");
+    const useMyLocationBtn = document.getElementById("useMyLocationBtn");
+    const clearLocationBtn = document.getElementById("clearLocationBtn");
 
     let currentUser = null;
     let currentUserDisplayName = "";
     let allEvents = [];
     let currentModalEvent = null;
     let currentCoverFile = null;
+    let editingEventId = null;
+
+    let gmap = null;
+    let gmarker = null;
+    let geocoder = null;
+    let autocomplete = null;
+    let mapsReadyPromise = null;
 
     function scrollActiveTabIntoView(){
       const active = document.querySelector(".tab.active");
@@ -1273,7 +1405,7 @@
     }
 
     function pickTitle(ev){
-      return (ev?.name || ev?.title || "Untitled event").toString();
+      return (ev?.name || ev?.title || "Untitled event").toString().trim() || "Untitled event";
     }
 
     function pickDescription(ev){
@@ -1281,11 +1413,18 @@
     }
 
     function pickWhere(ev){
-      return (ev?.location || ev?.place || ev?.address || "—").toString();
+      return (ev?.location || ev?.place || ev?.address || "—").toString().trim() || "—";
     }
 
     function pickHost(ev){
-      return (ev?.hostName || ev?.createdByName || ev?.ownerName || ev?.posterName || "").toString().trim();
+      return (
+        ev?.hostName ||
+        ev?.createdByName ||
+        ev?.ownerName ||
+        ev?.posterName ||
+        ev?.displayName ||
+        ""
+      ).toString().trim();
     }
 
     function pickImage(ev){
@@ -1309,8 +1448,16 @@
     }
 
     function pickEventDateObj(ev){
-      if (ev?.date && ev?.time){
-        const dt = new Date(`${ev.date}T${ev.time}`);
+      const startDate = (ev?.startDate || ev?.date || "").toString().trim();
+      const startTime = (ev?.startTime || ev?.time || "").toString().trim();
+
+      if (startDate && startTime){
+        const dt = new Date(`${startDate}T${startTime}`);
+        if (!Number.isNaN(dt.getTime())) return dt;
+      }
+
+      if (startDate){
+        const dt = new Date(startDate);
         if (!Number.isNaN(dt.getTime())) return dt;
       }
 
@@ -1339,29 +1486,48 @@
         if (!Number.isNaN(dt.getTime())) return dt;
       }
 
-      if (ev?.date){
-        const dt = new Date(ev.date);
-        if (!Number.isNaN(dt.getTime())) return dt;
-      }
-
       return null;
     }
 
     function fmtWhen(ev){
       const dt = pickEventDateObj(ev);
+      const endDate = (ev?.endDate || "").toString().trim();
+      const endTime = (ev?.endTime || "").toString().trim();
+
       if (!dt) {
-        const d = (ev?.date || "").toString().trim();
-        const t = (ev?.time || "").toString().trim();
-        return [d, t].filter(Boolean).join(" • ") || "—";
+        const d = (ev?.startDate || ev?.date || "").toString().trim();
+        const t = (ev?.startTime || ev?.time || "").toString().trim();
+        const startText = [d, t].filter(Boolean).join(" • ") || "—";
+        const endText = [endDate, endTime].filter(Boolean).join(" • ");
+        return endText ? `${startText} → ${endText}` : startText;
       }
 
-      return dt.toLocaleString([], {
+      const startText = dt.toLocaleString([], {
         year: "numeric",
         month: "short",
         day: "numeric",
         hour: "numeric",
         minute: "2-digit"
       });
+
+      if (!endDate && !endTime) return startText;
+
+      const maybeEnd = endDate
+        ? new Date(`${endDate}T${endTime || "00:00"}`)
+        : null;
+
+      if (maybeEnd && !Number.isNaN(maybeEnd.getTime())){
+        const endText = maybeEnd.toLocaleString([], {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+        });
+        return `${startText} → ${endText}`;
+      }
+
+      return `${startText} → ${[endDate, endTime].filter(Boolean).join(" • ")}`;
     }
 
     function attendeeData(ev){
@@ -1377,8 +1543,7 @@
 
     function userIsRegisteredForEvent(ev){
       if (!currentUser) return false;
-      const data = attendeeData(ev);
-      return data.ids.includes(currentUser.uid);
+      return attendeeData(ev).ids.includes(currentUser.uid);
     }
 
     function eventIsPostedByUser(ev){
@@ -1389,6 +1554,8 @@
         ev?.uid,
         ev?.userId,
         ev?.ownerId,
+        ev?.ownerUid,
+        ev?.hostUid,
         ev?.createdBy,
         ev?.createdByUid,
         ev?.creatorId,
@@ -1402,7 +1569,8 @@
         ev?.email,
         ev?.ownerEmail,
         ev?.createdByEmail,
-        ev?.posterEmail
+        ev?.posterEmail,
+        ev?.hostEmail
       ].map(x => String(x ?? "").trim().toLowerCase()).filter(Boolean);
 
       if (currentUser.email && emails.includes(currentUser.email.toLowerCase())) return true;
@@ -1471,15 +1639,53 @@
       `;
     }
 
+    function renderAttendees(ev){
+      const data = attendeeData(ev);
+      const names = data.names.length ? data.names : [];
+      eventModalAttendeeCount.textContent = String(data.count);
+
+      if (!names.length && !data.count){
+        eventModalAttendees.innerHTML = `<div class="helper">No one is registered yet.</div>`;
+        return;
+      }
+
+      if (!names.length && data.count){
+        eventModalAttendees.innerHTML = `<div class="helper">${data.count} people are going.</div>`;
+        return;
+      }
+
+      eventModalAttendees.innerHTML = names.map(name => `
+        <span class="attendeeChip">
+          <span class="dot"></span>
+          <span>${esc(name)}</span>
+        </span>
+      `).join("");
+    }
+
+    function updateEventModalRegisterButton(ev){
+      const isRegistered = userIsRegisteredForEvent(ev);
+      eventModalRegisterBtn.textContent = isRegistered ? "Unregister" : "Register";
+      eventModalRegisterBtn.className = `btn ${isRegistered ? "danger" : "primary"}`;
+    }
+
+    function updateOwnerActions(ev){
+      const mine = eventIsPostedByUser(ev);
+      eventModalEditBtn.classList.toggle("hidden", !mine);
+      eventModalDeleteBtn.classList.toggle("hidden", !mine);
+    }
+
     function openEventModal(ev){
       currentModalEvent = ev;
+
       const img = pickImage(ev);
       const title = pickTitle(ev);
       const host = pickHost(ev);
+      const invite = ev?.inviteOnly ? "Invite-only" : "Public";
+      const tags = pickTags(ev);
       const data = attendeeData(ev);
 
       eventModalTitle.textContent = title;
-      eventModalSub.textContent = host ? `Hosted by ${host}` : "Event details";
+      eventModalSub.textContent = host ? `Hosted by ${host} • ${invite}` : `Event details • ${invite}`;
       eventModalDesc.textContent = pickDescription(ev) || "No description yet.";
 
       eventModalMedia.innerHTML = img
@@ -1501,11 +1707,13 @@
         </div>
         <div class="kvItem">
           <b>Tags</b>
-          <span>${esc(pickTags(ev).join(", ") || "—")}</span>
+          <span>${esc(tags.join(", ") || "—")}</span>
         </div>
       `;
 
+      renderAttendees(ev);
       updateEventModalRegisterButton(ev);
+      updateOwnerActions(ev);
       setStatus(eventModalStatus, "Ready.");
       eventModal.classList.add("show");
       eventModal.setAttribute("aria-hidden", "false");
@@ -1516,12 +1724,22 @@
       eventModal.classList.remove("show");
       eventModal.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
+      currentModalEvent = null;
     }
 
-    function openPostModal(){
+    function openPostModal(mode = "create"){
+      postModalTitle.textContent = mode === "edit" ? "Edit event" : "Post an event";
+      postModalSub.textContent = mode === "edit"
+        ? "Update the details, cover image, and location for your event."
+        : "Upload a cover image, fill in the details, and search the address or click the map.";
+      submitPostBtn.textContent = mode === "edit" ? "Save changes" : "Post event";
       postModal.classList.add("show");
       postModal.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+      ensureMapReady().catch(err => {
+        console.error(err);
+        setStatus(postStatus, err?.message || "Could not load map.", "error");
+      });
     }
 
     function closePostModal(){
@@ -1533,23 +1751,27 @@
     function resetPostForm(){
       postForm.reset();
       currentCoverFile = null;
+      editingEventId = null;
       coverPreview.innerHTML = `<div class="previewFallback">Cover preview</div>`;
-      setStatus(postStatus, "Ready to post.");
+      locationSearchInput.value = "";
+      locationInput.value = "";
+      latInput.value = "";
+      lngInput.value = "";
+      setStatus(postStatus, "Ready.");
+      clearPicked();
     }
 
-    function updateCoverPreview(file){
-      if (!file){
-        coverPreview.innerHTML = `<div class="previewFallback">Cover preview</div>`;
+    function updateCoverPreview(file, existingUrl = ""){
+      if (file){
+        const url = URL.createObjectURL(file);
+        coverPreview.innerHTML = `<img src="${url}" alt="Cover preview">`;
         return;
       }
-      const url = URL.createObjectURL(file);
-      coverPreview.innerHTML = `<img src="${url}" alt="Cover preview">`;
-    }
-
-    function updateEventModalRegisterButton(ev){
-      const isRegistered = userIsRegisteredForEvent(ev);
-      eventModalRegisterBtn.textContent = isRegistered ? "Unregister" : "Register";
-      eventModalRegisterBtn.className = `btn ${isRegistered ? "danger" : "primary"}`;
+      if (existingUrl){
+        coverPreview.innerHTML = `<img src="${esc(existingUrl)}" alt="Cover preview">`;
+        return;
+      }
+      coverPreview.innerHTML = `<div class="previewFallback">Cover preview</div>`;
     }
 
     function replaceLocalEvent(updated){
@@ -1557,6 +1779,11 @@
       if (idx >= 0) allEvents[idx] = { ...allEvents[idx], ...updated };
       else allEvents.unshift(updated);
       return allEvents.find(x => x.id === updated.id);
+    }
+
+    function removeLocalEvent(eventId){
+      allEvents = allEvents.filter(ev => ev.id !== eventId);
+      if (currentModalEvent?.id === eventId) currentModalEvent = null;
     }
 
     function render(){
@@ -1666,7 +1893,8 @@
         const nextData = {
           attendeeIds: nextIds,
           attendeeNames: nextNames,
-          attendeeCount: nextCount
+          attendeeCount: nextCount,
+          updatedAt: serverTimestamp()
         };
 
         transaction.update(eventRef, nextData);
@@ -1700,6 +1928,7 @@
         if (currentModalEvent && currentModalEvent.id === eventId){
           currentModalEvent = { ...updated };
           updateEventModalRegisterButton(currentModalEvent);
+          renderAttendees(currentModalEvent);
           setStatus(
             eventModalStatus,
             alreadyRegistered ? "You’re no longer registered for this event." : "You’re registered for this event.",
@@ -1748,78 +1977,192 @@
       return await getDownloadURL(storageRef);
     }
 
-    async function createEvent(){
-      if (!currentUser) throw new Error("Not signed in.");
+    function parseTagsInput(value){
+      return uniqueStrings(
+        String(value || "")
+          .split(",")
+          .map(x => x.trim())
+          .filter(Boolean)
+      ).slice(0, 20);
+    }
 
+    function buildEventPayload(existingImageUrl = ""){
       const title = titleInput.value.trim();
       const location = locationInput.value.trim();
       const date = dateInput.value;
       const time = timeInput.value;
       const desc = descInput.value.trim();
+      const lat = safeNumber(latInput.value);
+      const lng = safeNumber(lngInput.value);
+      const tags = parseTagsInput(tagsInput.value);
+      const inviteOnly = !!inviteOnlyInput.checked;
 
       if (!title) throw new Error("Please add a title.");
       if (!location) throw new Error("Please add a location.");
       if (!date) throw new Error("Please add a date.");
       if (!time) throw new Error("Please add a time.");
-      if (!desc) throw new Error("Please add a description.");
+      if (lat === null || lng === null) throw new Error("Please choose a location by searching an address, using your location, or clicking the map.");
 
-      const coverUrl = await uploadCoverIfNeeded(currentCoverFile);
-      const tags = uniqueStrings(tagsInput.value.split(","));
-      const lat = safeNumber(latInput.value);
-      const lng = safeNumber(lngInput.value);
+      const displayName = currentUserDisplayName || currentUser.email?.split("@")[0] || "User";
 
-      const payload = {
+      return {
         name: title,
         title,
         location,
+        place: location,
+        address: location,
         date,
         time,
+        startDate: date,
+        startTime: time,
         description: desc,
         desc,
         tags,
-        inviteOnly: !!inviteOnlyInput.checked,
-
+        inviteOnly,
+        lat,
+        lng,
+        latitude: lat,
+        longitude: lng,
+        hostUid: currentUser.uid,
+        ownerUid: currentUser.uid,
         uid: currentUser.uid,
+        createdByUid: currentUser.uid,
         userId: currentUser.uid,
         ownerId: currentUser.uid,
-        createdBy: currentUser.uid,
-        createdByUid: currentUser.uid,
-        creatorId: currentUser.uid,
-        posterUid: currentUser.uid,
-
-        createdByName: currentUserDisplayName || currentUser.displayName || currentUser.email?.split("@")[0] || "User",
-        ownerName: currentUserDisplayName || currentUser.displayName || currentUser.email?.split("@")[0] || "User",
-        hostName: currentUserDisplayName || currentUser.displayName || currentUser.email?.split("@")[0] || "User",
-
-        createdByEmail: currentUser.email || "",
-        ownerEmail: currentUser.email || "",
+        hostName: displayName,
+        ownerName: displayName,
+        createdByName: displayName,
         email: currentUser.email || "",
-
-        attendeeIds: [],
-        attendeeNames: [],
-        attendeeCount: 0,
-
-        coverUrl,
-        imageUrl: coverUrl,
-
-        createdAt: serverTimestamp(),
+        ownerEmail: currentUser.email || "",
+        createdByEmail: currentUser.email || "",
+        attendeeIds: editingEventId ? undefined : [],
+        attendeeNames: editingEventId ? undefined : [],
+        attendeeCount: editingEventId ? undefined : 0,
+        coverUrl: existingImageUrl || undefined,
+        imageUrl: existingImageUrl || undefined,
         updatedAt: serverTimestamp()
       };
+    }
 
-      if (lat !== null && lng !== null){
-        payload.lat = lat;
-        payload.lng = lng;
-        payload.latitude = lat;
-        payload.longitude = lng;
+    async function createEvent(){
+      if (!currentUser) throw new Error("Not signed in.");
+
+      let imageUrl = "";
+      if (currentCoverFile){
+        setStatus(postStatus, "Uploading cover image...");
+        imageUrl = await uploadCoverIfNeeded(currentCoverFile);
       }
 
+      const payload = buildEventPayload(imageUrl);
+      payload.attendeeIds = [];
+      payload.attendeeNames = [];
+      payload.attendeeCount = 0;
+      payload.createdAt = serverTimestamp();
+
+      Object.keys(payload).forEach(key => {
+        if (payload[key] === undefined) delete payload[key];
+      });
+
       const refDoc = await addDoc(collection(db, "events"), payload);
-      return { id: refDoc.id, ...payload };
+      return { id: refDoc.id, ...payload, imageUrl, coverUrl: imageUrl };
     }
+
+    async function updateEvent(eventId){
+      if (!currentUser) throw new Error("Not signed in.");
+      const existing = allEvents.find(ev => ev.id === eventId);
+      if (!existing) throw new Error("Event not found.");
+      if (!eventIsPostedByUser(existing)) throw new Error("You can only edit your own event.");
+
+      let imageUrl = pickImage(existing);
+      if (currentCoverFile){
+        setStatus(postStatus, "Uploading new cover image...");
+        imageUrl = await uploadCoverIfNeeded(currentCoverFile);
+      }
+
+      const payload = buildEventPayload(imageUrl);
+      payload.coverUrl = imageUrl || "";
+      payload.imageUrl = imageUrl || "";
+
+      if (existing.attendeeIds && payload.attendeeIds === undefined){
+        payload.attendeeIds = existing.attendeeIds;
+      }
+      if (existing.attendeeNames && payload.attendeeNames === undefined){
+        payload.attendeeNames = existing.attendeeNames;
+      }
+      if (typeof existing.attendeeCount !== "undefined" && payload.attendeeCount === undefined){
+        payload.attendeeCount = existing.attendeeCount;
+      }
+
+      Object.keys(payload).forEach(key => {
+        if (payload[key] === undefined) delete payload[key];
+      });
+
+      await updateDoc(doc(db, "events", eventId), payload);
+      return replaceLocalEvent({ ...existing, ...payload });
+    }
+
+    async function deleteCurrentEvent(){
+      if (!currentModalEvent) return;
+      const ev = currentModalEvent;
+      if (!eventIsPostedByUser(ev)) return;
+
+      const ok = confirm(`Delete "${pickTitle(ev)}"? This can’t be undone.`);
+      if (!ok) return;
+
+      eventModalDeleteBtn.disabled = true;
+      eventModalEditBtn.disabled = true;
+      eventModalRegisterBtn.disabled = true;
+      setStatus(eventModalStatus, "Deleting event...");
+
+      try{
+        await deleteDoc(doc(db, "events", ev.id));
+        removeLocalEvent(ev.id);
+        render();
+        closeEventModal();
+      } catch (err){
+        console.error(err);
+        setStatus(eventModalStatus, err?.message || "Could not delete event right now.", "error");
+      } finally {
+        eventModalDeleteBtn.disabled = false;
+        eventModalEditBtn.disabled = false;
+        eventModalRegisterBtn.disabled = false;
+      }
+    }
+
+    function populateFormForEdit(ev){
+      resetPostForm();
+      editingEventId = ev.id;
+      titleInput.value = pickTitle(ev);
+      locationInput.value = pickWhere(ev);
+      locationSearchInput.value = pickWhere(ev);
+      dateInput.value = (ev?.startDate || ev?.date || "").toString().trim();
+      timeInput.value = (ev?.startTime || ev?.time || "").toString().trim();
+      descInput.value = pickDescription(ev);
+      tagsInput.value = pickTags(ev).join(", ");
+      inviteOnlyInput.checked = !!ev?.inviteOnly;
+
+      const lat = safeNumber(ev?.lat ?? ev?.latitude);
+      const lng = safeNumber(ev?.lng ?? ev?.longitude);
+      if (lat !== null) latInput.value = String(lat);
+      if (lng !== null) lngInput.value = String(lng);
+
+      updateCoverPreview(null, pickImage(ev));
+      if (lat !== null && lng !== null){
+        ensureMapReady().then(() => setPicked(lat, lng, pickWhere(ev), true)).catch(console.error);
+      }
+
+      setStatus(postStatus, "Editing event.");
+      openPostModal("edit");
+    }
+
+    coverInput.addEventListener("change", () => {
+      currentCoverFile = coverInput.files?.[0] || null;
+      updateCoverPreview(currentCoverFile, currentCoverFile ? "" : "");
+    });
 
     openPostBtn.addEventListener("click", () => {
       resetPostForm();
-      openPostModal();
+      openPostModal("create");
     });
 
     cancelPostBtn.addEventListener("click", () => closePostModal());
@@ -1836,34 +2179,33 @@
       }
     });
 
-    coverInput.addEventListener("change", () => {
-      currentCoverFile = coverInput.files?.[0] || null;
-      updateCoverPreview(currentCoverFile);
-    });
-
     postForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       submitPostBtn.disabled = true;
-      setStatus(postStatus, "Posting event...");
+      setStatus(postStatus, editingEventId ? "Saving changes..." : "Posting event...");
 
       try{
-        const created = await createEvent();
+        if (editingEventId){
+          await updateEvent(editingEventId);
+          setStatus(postStatus, "Event updated.", "success");
+        } else {
+          await createEvent();
+          setStatus(postStatus, "Event posted.", "success");
+        }
 
-        setStatus(postStatus, "Event posted.", "success");
-
-        allEvents.unshift({
-          ...created,
-          createdAt: Date.now()
-        });
-
-        render();
-        resetPostForm();
-        closePostModal();
         await loadEvents();
+        closePostModal();
+
+        if (currentModalEvent && editingEventId){
+          const fresh = allEvents.find(ev => ev.id === editingEventId);
+          if (fresh) openEventModal(fresh);
+        }
+
+        resetPostForm();
       } catch (err){
         console.error(err);
-        setStatus(postStatus, err?.message || "Could not post event right now.", "error");
+        setStatus(postStatus, err?.message || "Could not save event right now.", "error");
       } finally {
         submitPostBtn.disabled = false;
       }
@@ -1876,7 +2218,6 @@
     eventModalRegisterBtn.addEventListener("click", async () => {
       if (!currentModalEvent) return;
       eventModalRegisterBtn.disabled = true;
-
       try{
         await quickToggleRegister(currentModalEvent.id);
       } finally {
@@ -1884,8 +2225,240 @@
       }
     });
 
+    eventModalEditBtn.addEventListener("click", () => {
+      if (!currentModalEvent) return;
+      populateFormForEdit(currentModalEvent);
+    });
+
+    eventModalDeleteBtn.addEventListener("click", () => {
+      deleteCurrentEvent().catch(console.error);
+    });
+
     refreshBtn.addEventListener("click", () => loadEvents().catch(console.error));
     searchEl.addEventListener("input", render);
+
+    async function loadGoogleMaps(){
+      if (window.google?.maps?.Map) return;
+      if (mapsReadyPromise) return mapsReadyPromise;
+
+      mapsReadyPromise = new Promise((resolve, reject) => {
+        const existing = document.querySelector('script[data-google-maps="true"]');
+        if (existing){
+          existing.addEventListener("load", () => resolve(), { once: true });
+          existing.addEventListener("error", () => reject(new Error("Failed to load Google Maps script.")), { once: true });
+          return;
+        }
+
+        const s = document.createElement("script");
+        s.dataset.googleMaps = "true";
+        s.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(MAPS_API_KEY)}&libraries=places&v=weekly&loading=async`;
+        s.async = true;
+        s.defer = true;
+        s.onload = () => resolve();
+        s.onerror = () => reject(new Error("Failed to load Google Maps script."));
+        document.head.appendChild(s);
+      });
+
+      return mapsReadyPromise;
+    }
+
+    async function ensureMapReady(){
+      await loadGoogleMaps();
+
+      if (!gmap){
+        gmap = new google.maps.Map(document.getElementById("postMap"), {
+          center: DEFAULT_CENTER,
+          zoom: 12,
+          mapId: MAP_ID,
+          clickableIcons: false,
+          gestureHandling: "greedy"
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        gmap.addListener("click", async (e) => {
+          if (!e?.latLng) return;
+          const lat = e.latLng.lat();
+          const lng = e.latLng.lng();
+          const label = await reverseGeocode(lat, lng) || locationInput.value.trim() || "Pinned location";
+          setPicked(lat, lng, label, true);
+        });
+
+        if (google.maps.places?.Autocomplete){
+          autocomplete = new google.maps.places.Autocomplete(locationSearchInput, {
+            fields: ["formatted_address", "geometry", "name"],
+            types: ["geocode"]
+          });
+
+          autocomplete.addListener("place_changed", async () => {
+            const place = autocomplete.getPlace();
+            if (!place) return;
+
+            const label = place.formatted_address || place.name || "";
+            const loc = place.geometry?.location;
+
+            if (loc){
+              setPicked(loc.lat(), loc.lng(), label, true);
+              return;
+            }
+
+            if (label){
+              await searchAddress(label);
+            }
+          });
+        }
+      }
+
+      setTimeout(() => {
+        if (gmap) google.maps.event.trigger(gmap, "resize");
+      }, 60);
+    }
+
+    function setPicked(lat, lng, label = "", pan = false){
+      const niceLat = Number(lat);
+      const niceLng = Number(lng);
+      if (!Number.isFinite(niceLat) || !Number.isFinite(niceLng)) return;
+
+      latInput.value = String(niceLat);
+      lngInput.value = String(niceLng);
+      if (label) locationInput.value = label;
+
+      const pos = { lat: niceLat, lng: niceLng };
+
+      if (!gmarker){
+        gmarker = new google.maps.Marker({
+          position: pos,
+          map: gmap,
+          draggable: true
+        });
+
+        gmarker.addListener("dragend", async () => {
+          const p = gmarker.getPosition();
+          if (!p) return;
+          const nextLat = p.lat();
+          const nextLng = p.lng();
+          const nextLabel = await reverseGeocode(nextLat, nextLng) || locationInput.value.trim() || "Pinned location";
+          setPicked(nextLat, nextLng, nextLabel, false);
+        });
+      } else {
+        gmarker.setPosition(pos);
+        if (!gmarker.getMap()) gmarker.setMap(gmap);
+      }
+
+      if (gmap){
+        if (pan) gmap.panTo(pos);
+        else gmap.setCenter(pos);
+        gmap.setZoom(15);
+      }
+    }
+
+    function clearPicked(){
+      latInput.value = "";
+      lngInput.value = "";
+      if (gmarker) gmarker.setMap(null);
+      gmarker = null;
+    }
+
+    async function reverseGeocode(lat, lng){
+      await ensureMapReady();
+      return new Promise((resolve) => {
+        geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+          if (status !== "OK" || !results?.length) return resolve(null);
+          resolve(results[0].formatted_address || null);
+        });
+      });
+    }
+
+    async function searchAddress(address){
+      const q = String(address || locationSearchInput.value || "").trim();
+      if (!q){
+        setStatus(postStatus, "Enter an address to search.", "error");
+        return;
+      }
+
+      await ensureMapReady();
+
+      setStatus(postStatus, "Searching address...");
+
+      geocoder.geocode({ address: q }, (results, status) => {
+        if (status !== "OK" || !results?.length){
+          setStatus(postStatus, "Couldn’t find that address. Try a more specific one.", "error");
+          return;
+        }
+
+        const first = results[0];
+        const loc = first.geometry?.location;
+        if (!loc){
+          setStatus(postStatus, "That result didn’t include coordinates.", "error");
+          return;
+        }
+
+        const label = first.formatted_address || q;
+        setPicked(loc.lat(), loc.lng(), label, true);
+        locationSearchInput.value = label;
+        setStatus(postStatus, "Location selected.", "success");
+      });
+    }
+
+    searchAddressBtn.addEventListener("click", () => {
+      searchAddress().catch(console.error);
+    });
+
+    locationSearchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){
+        e.preventDefault();
+        searchAddress().catch(console.error);
+      }
+    });
+
+    useMyLocationBtn.addEventListener("click", () => {
+      if (!navigator.geolocation){
+        setStatus(postStatus, "Geolocation isn’t supported on this device.", "error");
+        return;
+      }
+
+      setStatus(postStatus, "Getting your location...");
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const label = await reverseGeocode(lat, lng) || "My location";
+          setPicked(lat, lng, label, true);
+          locationSearchInput.value = label;
+          setStatus(postStatus, "Location selected.", "success");
+        },
+        () => {
+          setStatus(postStatus, "Couldn’t get your location.", "error");
+        },
+        { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 }
+      );
+    });
+
+    clearLocationBtn.addEventListener("click", () => {
+      locationSearchInput.value = "";
+      locationInput.value = "";
+      clearPicked();
+      setStatus(postStatus, "Location cleared.");
+      if (gmap){
+        gmap.setCenter(DEFAULT_CENTER);
+        gmap.setZoom(12);
+      }
+    });
+
+    latInput.addEventListener("change", () => {
+      const lat = safeNumber(latInput.value);
+      const lng = safeNumber(lngInput.value);
+      if (lat === null || lng === null) return;
+      setPicked(lat, lng, locationInput.value.trim(), true);
+    });
+
+    lngInput.addEventListener("change", () => {
+      const lat = safeNumber(latInput.value);
+      const lng = safeNumber(lngInput.value);
+      if (lat === null || lng === null) return;
+      setPicked(lat, lng, locationInput.value.trim(), true);
+    });
 
     onAuthStateChanged(auth, async (user) => {
       if (!user){
