@@ -1300,11 +1300,19 @@
     }
 
     function pickDescription(ev){
-      const candidates = [ev.description, ev.desc, ev.details, ev.about, ev.caption, ev.bio];
-      for (const c of candidates){
-        if (typeof c === "string" && c.trim()) return c.trim();
-      }
-      return "";
+      const publicCandidates = [ev.publicDescription, ev.publicDesc, ev.description, ev.desc, ev.details, ev.about, ev.caption, ev.bio];
+      const privateCandidates = [ev.privateDescription, ev.privateDesc];
+      const pickFirst = (arr) => {
+        for (const c of arr){
+          if (typeof c === "string" && c.trim()) return c.trim();
+        }
+        return "";
+      };
+      const publicBio = pickFirst(publicCandidates);
+      const privateBio = pickFirst(privateCandidates);
+      if (!ev?.inviteOnly) return privateBio || publicBio || "";
+      if (eventIsPostedByUser(ev) || userIsRegisteredForEvent(ev)) return privateBio || publicBio || "";
+      return publicBio || privateBio || "";
     }
 
     function pickHost(ev){
@@ -1563,6 +1571,7 @@
       const tags = pickTags(ev);
       const img = pickImageUrl(ev);
       const desc = pickDescription(ev);
+      const showingPrivateBio = !!(ev.inviteOnly && (eventIsPostedByUser(ev) || userIsRegisteredForEvent(ev)) && (ev.privateDescription || ev.privateDesc));
       const host = pickHost(ev);
       const price = pickPrice(ev);
       const cap = pickCapacity(ev);
@@ -1633,6 +1642,8 @@
       if (desc){
         modalDescCard.style.display = "grid";
         modalDesc.textContent = desc;
+        const modalDescTitle = modalDescCard.querySelector("h3");
+        if (modalDescTitle) modalDescTitle.textContent = showingPrivateBio ? "Private bio" : "Public bio";
       } else {
         modalDescCard.style.display = "none";
         modalDesc.textContent = "";
