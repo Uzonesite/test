@@ -45,7 +45,7 @@
 
     a{ color:inherit; text-decoration:none; }
     button, input, textarea{ font:inherit; }
-    img{ max-width:100%; display:block; }
+    img, video, canvas{ max-width:100%; display:block; }
 
     header{
       position: sticky;
@@ -151,32 +151,14 @@
       min-width: 160px;
     }
 
-    .version b{
-      font-size: 12px;
-      letter-spacing:.2px;
-    }
-
-    .version span{
-      font-size: 12px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
+    .version b{ font-size: 12px; letter-spacing:.2px; }
+    .version span{ font-size: 12px; color: var(--muted); white-space: nowrap; }
 
     @media (max-width: 760px){
-      .topbar{
-        grid-template-columns: 1fr;
-        gap:10px;
-      }
+      .topbar{ grid-template-columns: 1fr; gap:10px; }
       .brand{ justify-self: start; }
-      .tabs{
-        justify-self: stretch;
-        max-width: 100%;
-      }
-      .version{
-        justify-self: start;
-        text-align:left;
-        min-width: unset;
-      }
+      .tabs{ justify-self: stretch; max-width: 100%; }
+      .version{ justify-self: start; text-align:left; min-width: unset; }
       .brand .btxt span{
         max-width: 70vw;
         overflow:hidden;
@@ -246,15 +228,23 @@
       cursor:pointer;
       font-weight: 950;
       font-size: 13px;
-      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease, opacity .12s ease;
       user-select:none;
       white-space:nowrap;
+      color: var(--ink);
     }
 
     .btn:hover{
       transform: translateY(-1px);
       border-color: rgba(176,11,85,.25);
       box-shadow: 0 14px 38px rgba(176,11,85,.10);
+    }
+
+    .btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none !important;
+      box-shadow:none !important;
     }
 
     .btn.primary{
@@ -321,9 +311,7 @@
     }
 
     @media (max-width: 560px){
-      .profileHero{
-        grid-template-columns: 1fr;
-      }
+      .profileHero{ grid-template-columns: 1fr; }
     }
 
     .avatar{
@@ -420,16 +408,8 @@
       gap:4px;
     }
 
-    .stat b{
-      font-size: 20px;
-      line-height:1;
-    }
-
-    .stat span{
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 800;
-    }
+    .stat b{ font-size: 20px; line-height:1; }
+    .stat span{ font-size: 12px; color: var(--muted); font-weight: 800; }
 
     .formGrid{
       display:grid;
@@ -447,8 +427,7 @@
       color: rgba(17,16,24,.82);
     }
 
-    .input,
-    .textarea{
+    .input, .textarea{
       width:100%;
       border:1px solid rgba(17,16,24,.10);
       background: rgba(255,255,255,.84);
@@ -464,8 +443,7 @@
       min-height: 110px;
     }
 
-    .input:focus,
-    .textarea:focus{
+    .input:focus, .textarea:focus{
       border-color: rgba(176,11,85,.30);
       box-shadow: 0 0 0 4px rgba(176,11,85,.08);
     }
@@ -542,9 +520,7 @@
     }
 
     @media (max-width: 560px){
-      .uploadRow{
-        grid-template-columns:1fr;
-      }
+      .uploadRow{ grid-template-columns:1fr; }
     }
 
     .uploadPreview{
@@ -574,9 +550,7 @@
       gap:8px;
     }
 
-    .fileInput{
-      display:none;
-    }
+    .fileInput{ display:none; }
 
     .verifyCard{
       border:1px solid rgba(109,40,217,.12);
@@ -599,7 +573,7 @@
     }
 
     .verifyTab{
-      border:none;
+      border:1px solid transparent;
       background:transparent;
       color:rgba(17,16,24,.76);
       padding:10px 12px;
@@ -612,7 +586,7 @@
 
     .verifyTab.active{
       background: linear-gradient(135deg, rgba(176,11,85,.12), rgba(109,40,217,.10));
-      border:1px solid rgba(176,11,85,.22);
+      border-color: rgba(176,11,85,.22);
       color:var(--ink);
     }
 
@@ -622,9 +596,7 @@
       gap:12px;
     }
 
-    .verifyPane.active{
-      display:grid;
-    }
+    .verifyPane.active{ display:grid; }
 
     .verifyNote{
       padding:12px 13px;
@@ -643,9 +615,7 @@
     }
 
     @media (max-width: 700px){
-      .docUploadGrid{
-        grid-template-columns:1fr;
-      }
+      .docUploadGrid{ grid-template-columns:1fr; }
     }
 
     .docUploadCard{
@@ -678,6 +648,89 @@
       object-fit:cover;
     }
 
+    .cameraTag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.78);
+      font-size:12px;
+      font-weight:900;
+      color:rgba(17,16,24,.74);
+      width:max-content;
+    }
+
+    .cameraTag::before{
+      content:"";
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background: var(--blue);
+      box-shadow: 0 0 0 4px rgba(139,211,255,.16);
+    }
+
+    .modal{
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background: rgba(17,16,24,.52);
+      backdrop-filter: blur(10px);
+    }
+
+    .modal.open{ display:flex; }
+
+    .modalCard{
+      width:min(760px, 100%);
+      max-height:calc(100vh - 36px);
+      overflow:auto;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.15);
+      background:
+        radial-gradient(600px 250px at 10% 10%, rgba(139,211,255,.16), transparent 60%),
+        radial-gradient(600px 250px at 90% 90%, rgba(176,11,85,.10), transparent 60%),
+        rgba(255,255,255,.94);
+      box-shadow: 0 30px 90px rgba(17,16,24,.26);
+      padding:16px;
+    }
+
+    .modalHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .cameraSurface{
+      border:1px solid rgba(17,16,24,.10);
+      border-radius:18px;
+      overflow:hidden;
+      background:#0f0f14;
+      min-height:240px;
+    }
+
+    .cameraSurface video,
+    .cameraSurface canvas,
+    .cameraSurface img{
+      width:100%;
+      aspect-ratio: 4 / 3;
+      object-fit:cover;
+      background:#0f0f14;
+    }
+
+    .cameraActions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+    }
+
     footer{
       width: min(1120px, 92vw);
       margin: 14px auto 30px auto;
@@ -697,21 +750,9 @@
       color: rgba(17,16,24,.72);
     }
 
-    .footerLeft{
-      display:grid;
-      gap:4px;
-    }
-
-    .footerTitle{
-      font-size: 13px;
-      font-weight: 1000;
-      color: rgba(17,16,24,.9);
-    }
-
-    .footerSub{
-      font-size: 12px;
-      color: rgba(17,16,24,.62);
-    }
+    .footerLeft{ display:grid; gap:4px; }
+    .footerTitle{ font-size: 13px; font-weight: 1000; color: rgba(17,16,24,.9); }
+    .footerSub{ font-size: 12px; color: rgba(17,16,24,.62); }
 
     .footerActions{
       display:flex;
@@ -757,7 +798,7 @@
         <button class="tab" type="button" data-go="myevents.html">
           <span class="dot"></span> My Events
         </button>
-        <button class="tab active" type="button" data-go="profile.html">
+        <button class="tab active" type="button" data-go="account.html">
           <span class="dot"></span> Account
         </button>
       </nav>
@@ -776,7 +817,6 @@
           <h2>Your account</h2>
           <p>Manage your profile, add a profile picture, and get verified.</p>
         </div>
-        <div class="miniBtns"></div>
       </div>
     </section>
 
@@ -894,26 +934,28 @@
 
             <div class="verifyPane" id="verifyPaneStudentId">
               <div class="verifyNote">
-                Upload a clear photo of your student ID and a selfie. An admin can review it and verify your account manually.
+                Take a live photo of your student ID and a selfie. This keeps the same old admin review flow.
               </div>
 
               <div class="docUploadGrid">
                 <div class="docUploadCard">
                   <div class="sectionTitle" style="font-size:13px;">Student ID photo</div>
-                  <div class="docPreview" id="studentIdPreview">No image selected</div>
+                  <div class="docPreview" id="studentIdPreview">No photo taken</div>
+                  <div class="cameraTag">Live camera capture</div>
                   <div class="miniBtns">
-                    <label class="btn" for="studentIdInput">Choose ID photo</label>
+                    <button class="btn" type="button" id="openIdCameraBtn">Take ID photo</button>
+                    <button class="btn" type="button" id="clearIdPhotoBtn">Clear</button>
                   </div>
-                  <input class="fileInput" id="studentIdInput" type="file" accept="image/*" />
                 </div>
 
                 <div class="docUploadCard">
                   <div class="sectionTitle" style="font-size:13px;">Selfie</div>
-                  <div class="docPreview" id="selfiePreview">No image selected</div>
+                  <div class="docPreview" id="selfiePreview">No photo taken</div>
+                  <div class="cameraTag">Live camera capture</div>
                   <div class="miniBtns">
-                    <label class="btn" for="selfieInput">Choose selfie</label>
+                    <button class="btn" type="button" id="openSelfieCameraBtn">Take selfie</button>
+                    <button class="btn" type="button" id="clearSelfiePhotoBtn">Clear</button>
                   </div>
-                  <input class="fileInput" id="selfieInput" type="file" accept="image/*" />
                 </div>
               </div>
 
@@ -955,6 +997,32 @@
     </div>
   </footer>
 
+  <div class="modal" id="cameraModal" aria-hidden="true">
+    <div class="modalCard">
+      <div class="modalHead">
+        <div>
+          <h3 class="sectionTitle" id="cameraModalTitle">Take photo</h3>
+          <div class="sub" id="cameraModalSub">Allow camera access, then capture your photo.</div>
+        </div>
+        <button class="btn" type="button" id="closeCameraModalBtn">Close</button>
+      </div>
+
+      <div class="cameraSurface">
+        <video id="cameraVideo" autoplay playsinline muted></video>
+        <canvas id="cameraCanvas" style="display:none;"></canvas>
+      </div>
+
+      <div class="cameraActions">
+        <button class="btn" type="button" id="startCameraBtn">Start camera</button>
+        <button class="btn primary" type="button" id="capturePhotoBtn">Capture photo</button>
+        <button class="btn" type="button" id="retakePhotoBtn">Retake</button>
+        <button class="btn primary" type="button" id="usePhotoBtn">Use this photo</button>
+      </div>
+
+      <div class="statusBox" id="cameraStatus" style="margin-top:12px;">Camera not started yet.</div>
+    </div>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
     import {
@@ -970,7 +1038,8 @@
       getFirestore,
       doc,
       getDoc,
-      setDoc
+      setDoc,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
     import {
       getStorage,
@@ -1023,10 +1092,12 @@
     const checkVerifyEmailBtn = document.getElementById("checkVerifyEmailBtn");
     const emailVerifyStatus = document.getElementById("emailVerifyStatus");
 
-    const studentIdInput = document.getElementById("studentIdInput");
-    const selfieInput = document.getElementById("selfieInput");
     const studentIdPreview = document.getElementById("studentIdPreview");
     const selfiePreview = document.getElementById("selfiePreview");
+    const openIdCameraBtn = document.getElementById("openIdCameraBtn");
+    const openSelfieCameraBtn = document.getElementById("openSelfieCameraBtn");
+    const clearIdPhotoBtn = document.getElementById("clearIdPhotoBtn");
+    const clearSelfiePhotoBtn = document.getElementById("clearSelfiePhotoBtn");
     const submitManualVerifyBtn = document.getElementById("submitManualVerifyBtn");
     const studentIdVerifyStatus = document.getElementById("studentIdVerifyStatus");
 
@@ -1034,66 +1105,43 @@
     const deleteBtn = document.getElementById("deleteBtn");
     const dangerStatus = document.getElementById("dangerStatus");
 
+    const cameraModal = document.getElementById("cameraModal");
+    const closeCameraModalBtn = document.getElementById("closeCameraModalBtn");
+    const cameraModalTitle = document.getElementById("cameraModalTitle");
+    const cameraModalSub = document.getElementById("cameraModalSub");
+    const cameraVideo = document.getElementById("cameraVideo");
+    const cameraCanvas = document.getElementById("cameraCanvas");
+    const startCameraBtn = document.getElementById("startCameraBtn");
+    const capturePhotoBtn = document.getElementById("capturePhotoBtn");
+    const retakePhotoBtn = document.getElementById("retakePhotoBtn");
+    const usePhotoBtn = document.getElementById("usePhotoBtn");
+    const cameraStatus = document.getElementById("cameraStatus");
+
     let currentUser = null;
     let loadedUserDoc = {};
     let selectedProfileFile = null;
     let previewPhotoURL = "";
 
-    let selectedStudentIdFile = null;
-    let selectedSelfieFile = null;
+    let selectedStudentIdBlob = null;
+    let selectedSelfieBlob = null;
+    let selectedStudentIdURL = "";
+    let selectedSelfieURL = "";
+
+    let activeCameraTarget = null;
+    let cameraStream = null;
+    let capturedBlob = null;
+    let capturedObjectURL = "";
+    let capturedFacingMode = "environment";
 
     const allowedUniversityDomains = [
-      "uottawa.ca",
-      "umontreal.ca",
-      "mcgill.ca",
-      "concordia.ca",
-      "uqam.ca",
-      "polymtl.ca",
-      "etsmtl.ca",
-      "usherbrooke.ca",
-      "ulaval.ca",
-      "ubc.ca",
-      "utoronto.ca",
-      "yorku.ca",
-      "torontomu.ca",
-      "tmu.ca",
-      "queensu.ca",
-      "uwaterloo.ca",
-      "wlu.ca",
-      "uwo.ca",
-      "westernu.ca",
-      "mcmaster.ca",
-      "uoguelph.ca",
-      "carleton.ca",
-      "queensu.ca",
-      "dal.ca",
-      "mun.ca",
-      "unb.ca",
-      "stu.ca",
-      "viu.ca",
-      "uvic.ca",
-      "sfu.ca",
-      "ucalgary.ca",
-      "ualberta.ca",
-      "umanitoba.ca",
-      "usask.ca",
-      "ontariotechu.ca",
-      "brocku.ca",
-      "trentu.ca",
-      "laurentian.ca",
-      "lakeheadu.ca",
-      "algonquincollege.com",
-      "collegeboreal.ca",
-      "georgebrown.ca",
-      "centennialcollege.ca",
-      "senecapolytechnic.ca",
-      "humber.ca",
-      "sheridancollege.ca",
-      "fanshawec.ca",
-      "niagaracollege.ca",
-      "stclaircollege.ca",
-      "durhamcollege.ca",
-      "lambtoncollege.ca"
+      "uottawa.ca","umontreal.ca","mcgill.ca","concordia.ca","uqam.ca","polymtl.ca","etsmtl.ca",
+      "usherbrooke.ca","ulaval.ca","ubc.ca","utoronto.ca","yorku.ca","torontomu.ca","tmu.ca",
+      "queensu.ca","uwaterloo.ca","wlu.ca","uwo.ca","westernu.ca","mcmaster.ca","uoguelph.ca",
+      "carleton.ca","dal.ca","mun.ca","unb.ca","stu.ca","viu.ca","uvic.ca","sfu.ca","ucalgary.ca",
+      "ualberta.ca","umanitoba.ca","usask.ca","ontariotechu.ca","brocku.ca","trentu.ca",
+      "laurentian.ca","lakeheadu.ca","algonquincollege.com","collegeboreal.ca","georgebrown.ca",
+      "centennialcollege.ca","senecapolytechnic.ca","humber.ca","sheridancollege.ca",
+      "fanshawec.ca","niagaracollege.ca","stclaircollege.ca","durhamcollege.ca","lambtoncollege.ca"
     ];
 
     function scrollActiveTabIntoView(){
@@ -1112,10 +1160,8 @@
     document.querySelectorAll(".verifyTab").forEach(btn => {
       btn.addEventListener("click", () => {
         const tab = btn.getAttribute("data-verify-tab");
-
         document.querySelectorAll(".verifyTab").forEach(x => x.classList.remove("active"));
         btn.classList.add("active");
-
         document.querySelectorAll(".verifyPane").forEach(x => x.classList.remove("active"));
         if (tab === "email") {
           document.getElementById("verifyPaneEmail").classList.add("active");
@@ -1178,35 +1224,26 @@
       return allowedUniversityDomains.includes(domain);
     }
 
-    function renderFilePreview(targetEl, file){
-      if (!file){
-        targetEl.textContent = "No image selected";
-        targetEl.innerHTML = "No image selected";
-        return;
+    function renderDocPreview(targetEl, url, emptyText){
+      if (url){
+        targetEl.innerHTML = `<img src="${url}" alt="Captured photo">`;
+      } else {
+        targetEl.textContent = emptyText;
       }
-      const url = URL.createObjectURL(file);
-      targetEl.innerHTML = `<img src="${url}" alt="Preview">`;
     }
 
     function getVerificationState(user, data){
-      const manualStatus =
-        safeString(data.verificationRequestStatus).trim().toLowerCase() ||
-        safeString(data.manualVerificationStatus).trim().toLowerCase();
-
-      const userVerified =
-        data.verified === true ||
-        data.userVerified === true ||
-        data.isVerified === true;
+      const verification = data?.verification || {};
+      const verificationStatus = safeString(verification.status).trim().toLowerCase();
 
       const domainValid = isValidUniversityEmail(user?.email || data?.email || "");
-      const emailVerifiedAndValid = !!user?.emailVerified && domainValid;
 
-      if (userVerified || emailVerifiedAndValid){
-        return "verified";
-      }
-      if (manualStatus === "pending"){
-        return "pending";
-      }
+      if (verificationStatus === "verified") return "verified";
+      if (verificationStatus === "pending" || verificationStatus === "email_pending") return "pending";
+
+      if (data.verified === true || data.userVerified === true || data.isVerified === true) return "verified";
+      if (user?.emailVerified && domainValid) return "verified";
+
       return "unverified";
     }
 
@@ -1214,21 +1251,31 @@
       if (!currentUser) return false;
 
       const domainValid = isValidUniversityEmail(currentUser.email || "");
-      if (!currentUser.emailVerified || !domainValid) return false;
+      const existingVerification = loadedUserDoc?.verification || {};
+      const startedEmailFlow = existingVerification.method === "email" && existingVerification.status === "email_pending";
+
+      if (!currentUser.emailVerified || !domainValid || !startedEmailFlow) return false;
 
       await setDoc(doc(db, "users", currentUser.uid), {
-        verified: true,
-        verificationMethod: "email",
-        verificationRequestStatus: "",
-        updatedAt: Date.now()
+        verification: {
+          status: "verified",
+          method: "email",
+          email: safeString(currentUser.email).trim().toLowerCase(),
+          updatedAt: serverTimestamp()
+        },
+        updatedAt: serverTimestamp()
       }, { merge: true });
 
       loadedUserDoc = {
         ...loadedUserDoc,
-        verified: true,
-        verificationMethod: "email",
-        verificationRequestStatus: "",
-        updatedAt: Date.now()
+        verification: {
+          ...(loadedUserDoc.verification || {}),
+          status: "verified",
+          method: "email",
+          email: safeString(currentUser.email).trim().toLowerCase(),
+          updatedAt: new Date()
+        },
+        updatedAt: new Date()
       };
 
       return true;
@@ -1256,7 +1303,7 @@
       if (!email){
         emailVerifyInfo.textContent = "No email found on this account.";
       } else if (domainValid){
-        emailVerifyInfo.textContent = `Your email looks like a valid school email (${email}). Verify it and your account can be marked verified automatically.`;
+        emailVerifyInfo.textContent = `Your email looks like a valid school email (${email}). Verify it and your account can be marked verified.`;
       } else {
         emailVerifyInfo.textContent = `Your current email (${email}) is not in the allowed university email list. Use the student ID option or change your account email to a school one.`;
       }
@@ -1293,6 +1340,9 @@
 
       const createdAt = data.createdAt || data.joinedAt || data.created || user.metadata?.creationTime || null;
       statJoined.textContent = formatDate(createdAt);
+
+      renderDocPreview(studentIdPreview, selectedStudentIdURL, "No photo taken");
+      renderDocPreview(selfiePreview, selectedSelfieURL, "No photo taken");
     }
 
     function getFormData(){
@@ -1314,6 +1364,138 @@
       updateBioCount();
       applyProfileToUI(currentUser, loadedUserDoc);
       setStatus(saveStatus, "Changes reset.", "success");
+    }
+
+    function makeJpegFileFromBlob(blob, filename){
+      return new File([blob], filename, { type: "image/jpeg" });
+    }
+
+    async function stopCamera(){
+      try{
+        if (cameraStream){
+          cameraStream.getTracks().forEach(track => track.stop());
+        }
+      } catch (_) {}
+      cameraStream = null;
+      cameraVideo.srcObject = null;
+    }
+
+    function resetCameraCaptureUI(){
+      cameraVideo.style.display = "";
+      cameraCanvas.style.display = "none";
+      capturedBlob = null;
+      if (capturedObjectURL){
+        URL.revokeObjectURL(capturedObjectURL);
+        capturedObjectURL = "";
+      }
+      setStatus(cameraStatus, "Camera ready.", "info");
+    }
+
+    async function openCameraModal(target){
+      activeCameraTarget = target;
+      capturedFacingMode = target === "selfie" ? "user" : "environment";
+      cameraModal.classList.add("open");
+      cameraModal.setAttribute("aria-hidden", "false");
+      cameraModalTitle.textContent = target === "selfie" ? "Take selfie" : "Take student ID photo";
+      cameraModalSub.textContent = target === "selfie"
+        ? "Use your front camera and make sure your face is clear."
+        : "Use your back camera if possible and keep the whole card visible.";
+      cameraVideo.style.display = "";
+      cameraCanvas.style.display = "none";
+      setStatus(cameraStatus, "Press “Start camera”.", "info");
+      capturedBlob = null;
+      if (capturedObjectURL){
+        URL.revokeObjectURL(capturedObjectURL);
+        capturedObjectURL = "";
+      }
+    }
+
+    async function closeCameraModal(){
+      await stopCamera();
+      cameraModal.classList.remove("open");
+      cameraModal.setAttribute("aria-hidden", "true");
+      activeCameraTarget = null;
+      capturedBlob = null;
+      if (capturedObjectURL){
+        URL.revokeObjectURL(capturedObjectURL);
+        capturedObjectURL = "";
+      }
+      cameraCanvas.style.display = "none";
+      cameraVideo.style.display = "";
+    }
+
+    async function startCamera(){
+      try{
+        await stopCamera();
+        const constraints = {
+          audio: false,
+          video: {
+            facingMode: { ideal: capturedFacingMode },
+            width: { ideal: 1280 },
+            height: { ideal: 960 }
+          }
+        };
+        cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+        cameraVideo.srcObject = cameraStream;
+        await cameraVideo.play();
+        cameraVideo.style.display = "";
+        cameraCanvas.style.display = "none";
+        setStatus(cameraStatus, "Camera started. Capture when ready.", "success");
+      } catch (err){
+        console.error(err);
+        setStatus(cameraStatus, "Could not access camera. Make sure camera permission is allowed on this device/browser.", "error");
+      }
+    }
+
+    async function capturePhoto(){
+      if (!cameraVideo.videoWidth || !cameraVideo.videoHeight){
+        setStatus(cameraStatus, "Start the camera first.", "error");
+        return;
+      }
+
+      const width = cameraVideo.videoWidth;
+      const height = cameraVideo.videoHeight;
+      cameraCanvas.width = width;
+      cameraCanvas.height = height;
+
+      const ctx = cameraCanvas.getContext("2d");
+      ctx.drawImage(cameraVideo, 0, 0, width, height);
+
+      const blob = await new Promise(resolve => cameraCanvas.toBlob(resolve, "image/jpeg", 0.92));
+      if (!blob){
+        setStatus(cameraStatus, "Could not capture photo.", "error");
+        return;
+      }
+
+      capturedBlob = blob;
+      cameraVideo.style.display = "none";
+      cameraCanvas.style.display = "";
+      setStatus(cameraStatus, "Photo captured. Use it or retake it.", "success");
+    }
+
+    function useCapturedPhoto(){
+      if (!capturedBlob || !activeCameraTarget){
+        setStatus(cameraStatus, "Capture a photo first.", "error");
+        return;
+      }
+
+      const url = URL.createObjectURL(capturedBlob);
+
+      if (activeCameraTarget === "id"){
+        if (selectedStudentIdURL) URL.revokeObjectURL(selectedStudentIdURL);
+        selectedStudentIdBlob = capturedBlob;
+        selectedStudentIdURL = url;
+        renderDocPreview(studentIdPreview, selectedStudentIdURL, "No photo taken");
+        setStatus(studentIdVerifyStatus, "Student ID photo captured.", "info");
+      } else if (activeCameraTarget === "selfie"){
+        if (selectedSelfieURL) URL.revokeObjectURL(selectedSelfieURL);
+        selectedSelfieBlob = capturedBlob;
+        selectedSelfieURL = url;
+        renderDocPreview(selfiePreview, selectedSelfieURL, "No photo taken");
+        setStatus(studentIdVerifyStatus, "Selfie captured.", "info");
+      }
+
+      closeCameraModal();
     }
 
     resetBtn.addEventListener("click", resetForm);
@@ -1351,39 +1533,36 @@
       setStatus(saveStatus, "Photo selected. Save changes to upload it.", "success");
     });
 
-    studentIdInput.addEventListener("change", () => {
-      const file = studentIdInput.files?.[0];
-      if (!file) return;
+    openIdCameraBtn.addEventListener("click", () => openCameraModal("id"));
+    openSelfieCameraBtn.addEventListener("click", () => openCameraModal("selfie"));
 
-      if (!file.type.startsWith("image/")){
-        studentIdInput.value = "";
-        selectedStudentIdFile = null;
-        setStatus(studentIdVerifyStatus, "Please choose an image for the student ID.", "error");
-        renderFilePreview(studentIdPreview, null);
-        return;
-      }
-
-      selectedStudentIdFile = file;
-      renderFilePreview(studentIdPreview, file);
-      setStatus(studentIdVerifyStatus, "Student ID photo selected.", "info");
+    clearIdPhotoBtn.addEventListener("click", () => {
+      selectedStudentIdBlob = null;
+      if (selectedStudentIdURL) URL.revokeObjectURL(selectedStudentIdURL);
+      selectedStudentIdURL = "";
+      renderDocPreview(studentIdPreview, "", "No photo taken");
+      setStatus(studentIdVerifyStatus, "Student ID photo cleared.", "info");
     });
 
-    selfieInput.addEventListener("change", () => {
-      const file = selfieInput.files?.[0];
-      if (!file) return;
-
-      if (!file.type.startsWith("image/")){
-        selfieInput.value = "";
-        selectedSelfieFile = null;
-        setStatus(studentIdVerifyStatus, "Please choose an image for the selfie.", "error");
-        renderFilePreview(selfiePreview, null);
-        return;
-      }
-
-      selectedSelfieFile = file;
-      renderFilePreview(selfiePreview, file);
-      setStatus(studentIdVerifyStatus, "Selfie selected.", "info");
+    clearSelfiePhotoBtn.addEventListener("click", () => {
+      selectedSelfieBlob = null;
+      if (selectedSelfieURL) URL.revokeObjectURL(selectedSelfieURL);
+      selectedSelfieURL = "";
+      renderDocPreview(selfiePreview, "", "No photo taken");
+      setStatus(studentIdVerifyStatus, "Selfie cleared.", "info");
     });
+
+    closeCameraModalBtn.addEventListener("click", closeCameraModal);
+    cameraModal.addEventListener("click", (e) => {
+      if (e.target === cameraModal) closeCameraModal();
+    });
+
+    startCameraBtn.addEventListener("click", startCamera);
+    capturePhotoBtn.addEventListener("click", capturePhoto);
+    retakePhotoBtn.addEventListener("click", async () => {
+      await startCamera();
+    });
+    usePhotoBtn.addEventListener("click", useCapturedPhoto);
 
     bioInput.addEventListener("input", () => {
       updateBioCount();
@@ -1461,10 +1640,48 @@
     sendVerifyEmailBtn.addEventListener("click", async () => {
       if (!currentUser) return;
 
+      const email = currentUser.email || "";
+      if (!email){
+        setStatus(emailVerifyStatus, "No login email found on this account.", "error");
+        return;
+      }
+
+      if (!isValidUniversityEmail(email)){
+        setStatus(emailVerifyStatus, "This email domain is not in the allowed university list. Use the student ID option instead.", "error");
+        return;
+      }
+
       try{
-        setStatus(emailVerifyStatus, "Sending verification email...");
-        await sendEmailVerification(currentUser);
-        setStatus(emailVerifyStatus, "Verification email sent. Open it, verify, then come back and press “I verified my email”.", "success");
+        setStatus(emailVerifyStatus, "Preparing email verification...");
+
+        await setDoc(doc(db, "users", currentUser.uid), {
+          verification: {
+            status: "email_pending",
+            method: "email",
+            email: safeString(email).trim().toLowerCase(),
+            emailRequestedAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          },
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        if (!currentUser.emailVerified){
+          await sendEmailVerification(currentUser);
+          setStatus(emailVerifyStatus, "Verification email sent. Open it, verify, then come back and press “I verified my email”.", "success");
+        } else {
+          setStatus(emailVerifyStatus, "Your email already shows as verified. Press “I verified my email”.", "success");
+        }
+
+        loadedUserDoc = {
+          ...loadedUserDoc,
+          verification: {
+            ...(loadedUserDoc.verification || {}),
+            status: "email_pending",
+            method: "email",
+            email: safeString(email).trim().toLowerCase()
+          }
+        };
+        applyProfileToUI(currentUser, loadedUserDoc);
       } catch (err){
         console.error(err);
         setStatus(emailVerifyStatus, "Could not send verification email right now.", "error");
@@ -1479,6 +1696,13 @@
         await reload(currentUser);
 
         const domainValid = isValidUniversityEmail(currentUser.email || "");
+        const verification = loadedUserDoc?.verification || {};
+
+        if (verification.method !== "email" || verification.status !== "email_pending"){
+          setStatus(emailVerifyStatus, "Press “Send verification email” first.", "error");
+          return;
+        }
+
         if (!currentUser.emailVerified){
           setStatus(emailVerifyStatus, "Your email is still not verified yet.", "error");
           applyProfileToUI(currentUser, loadedUserDoc);
@@ -1503,47 +1727,52 @@
     submitManualVerifyBtn.addEventListener("click", async () => {
       if (!currentUser) return;
 
-      if (!selectedStudentIdFile || !selectedSelfieFile){
-        setStatus(studentIdVerifyStatus, "Please upload both your student ID photo and your selfie.", "error");
+      if (!selectedStudentIdBlob || !selectedSelfieBlob){
+        setStatus(studentIdVerifyStatus, "Please take both your student ID photo and your selfie.", "error");
         return;
       }
 
       try{
         setStatus(studentIdVerifyStatus, "Submitting verification request...");
 
-        const idExt = (selectedStudentIdFile.name.split(".").pop() || "jpg").toLowerCase();
-        const selfieExt = (selectedSelfieFile.name.split(".").pop() || "jpg").toLowerCase();
+        const idFile = makeJpegFileFromBlob(selectedStudentIdBlob, "id.jpg");
+        const selfieFile = makeJpegFileFromBlob(selectedSelfieBlob, "selfie.jpg");
 
-        const studentIdRef = ref(storage, `verificationRequests/${currentUser.uid}/student-id.${idExt}`);
-        const selfieRef = ref(storage, `verificationRequests/${currentUser.uid}/selfie.${selfieExt}`);
+        const idPath = `verification/${currentUser.uid}/id.jpg`;
+        const selfiePath = `verification/${currentUser.uid}/selfie.jpg`;
 
-        await uploadBytes(studentIdRef, selectedStudentIdFile, { contentType: selectedStudentIdFile.type });
-        await uploadBytes(selfieRef, selectedSelfieFile, { contentType: selectedSelfieFile.type });
+        await uploadBytes(ref(storage, idPath), idFile, { contentType: "image/jpeg" });
+        await uploadBytes(ref(storage, selfiePath), selfieFile, { contentType: "image/jpeg" });
 
-        const studentIdURL = await getDownloadURL(studentIdRef);
-        const selfieURL = await getDownloadURL(selfieRef);
+        await setDoc(doc(db, "verification_requests", currentUser.uid), {
+          uid: currentUser.uid,
+          status: "pending",
+          idImagePath: idPath,
+          selfieImagePath: selfiePath,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        }, { merge: true });
 
-        const payload = {
-          verificationRequestStatus: "pending",
-          manualVerificationStatus: "pending",
-          verificationMethod: "student-id",
-          verificationSubmittedAt: Date.now(),
-          verificationAssets: {
-            studentIdURL,
-            selfieURL
+        await setDoc(doc(db, "users", currentUser.uid), {
+          verification: {
+            status: "pending",
+            method: "upload",
+            updatedAt: serverTimestamp()
           },
-          updatedAt: Date.now()
-        };
-
-        await setDoc(doc(db, "users", currentUser.uid), payload, { merge: true });
+          updatedAt: serverTimestamp()
+        }, { merge: true });
 
         loadedUserDoc = {
           ...loadedUserDoc,
-          ...payload
+          verification: {
+            ...(loadedUserDoc.verification || {}),
+            status: "pending",
+            method: "upload"
+          }
         };
 
         applyProfileToUI(currentUser, loadedUserDoc);
-        setStatus(studentIdVerifyStatus, "Submitted for review. An admin can verify your account once they review your images.", "success");
+        setStatus(studentIdVerifyStatus, "Submitted for review.", "success");
       } catch (err){
         console.error(err);
         setStatus(studentIdVerifyStatus, "Could not submit your verification request right now.", "error");
@@ -1573,12 +1802,16 @@
         window.location.href = "index.html";
       } catch (err){
         console.error(err);
-        setStatus(
-          dangerStatus,
-          "Could not delete account. You may need to sign in again before deleting.",
-          "error"
-        );
+        setStatus(dangerStatus, "Could not delete account. You may need to sign in again before deleting.", "error");
       }
+    });
+
+    window.addEventListener("beforeunload", () => {
+      try{
+        if (selectedStudentIdURL) URL.revokeObjectURL(selectedStudentIdURL);
+        if (selectedSelfieURL) URL.revokeObjectURL(selectedSelfieURL);
+        if (previewPhotoURL) URL.revokeObjectURL(previewPhotoURL);
+      } catch (_) {}
     });
 
     onAuthStateChanged(auth, async (user) => {
@@ -1604,10 +1837,12 @@
         if (changed){
           loadedUserDoc = {
             ...loadedUserDoc,
-            verified: true,
-            verificationMethod: "email",
-            verificationRequestStatus: "",
-            updatedAt: Date.now()
+            verification: {
+              ...(loadedUserDoc.verification || {}),
+              status: "verified",
+              method: "email"
+            },
+            updatedAt: new Date()
           };
         }
       } catch (err){
