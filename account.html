@@ -613,11 +613,7 @@
           <h2>Your account</h2>
           <p>Manage your profile, update the way you appear to other students, and get back to your events fast.</p>
         </div>
-        <div class="miniBtns">
-          <a class="btn primary" href="events.html">Browse events</a>
-          <a class="btn" href="myevents.html">My events</a>
-          <button class="btn" id="signOutBtn" type="button">Sign out</button>
-        </div>
+        <div class="miniBtns"></div>
       </div>
     </section>
 
@@ -636,11 +632,6 @@
                   <span class="pill" id="studentStatusPill">
                     <span class="dot"></span>
                     <span id="studentStatusText">Verified student</span>
-                  </span>
-
-                  <span class="pill pending" id="publicIdPill">
-                    <span class="dot"></span>
-                    <span id="publicIdText">—</span>
                   </span>
                 </div>
               </div>
@@ -705,8 +696,9 @@
             <div class="sub" style="margin-bottom:12px;">Be careful with actions here.</div>
 
             <div class="miniBtns">
-              <button class="btn danger" id="deleteBtn" type="button">Delete account</button>
-            </div>
+  <button class="btn" id="signOutBtn" type="button">Sign out</button>
+  <button class="btn danger" id="deleteBtn" type="button">Delete account</button>
+</div>
 
             <div class="statusBox" id="dangerStatus" style="margin-top:12px;">No danger action used.</div>
           </div>
@@ -764,8 +756,6 @@
     const profileEmail = document.getElementById("profileEmail");
     const studentStatusText = document.getElementById("studentStatusText");
     const studentStatusPill = document.getElementById("studentStatusPill");
-    const publicIdText = document.getElementById("publicIdText");
-    const publicIdPill = document.getElementById("publicIdPill");
 
     const statJoined = document.getElementById("statJoined");
 
@@ -866,14 +856,6 @@
       } else {
         studentStatusText.textContent = "Not student verified";
         studentStatusPill.className = "pill unverified";
-      }
-
-      if (publicId){
-        publicIdText.textContent = `${publicId}`;
-        publicIdPill.className = "pill pending";
-      } else {
-        publicIdText.textContent = "U# —";
-        publicIdPill.className = "pill unverified";
       }
 
       const createdAt = data.createdAt || data.joinedAt || data.created || user.metadata?.creationTime || null;
