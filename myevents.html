@@ -1451,8 +1451,15 @@
           </div>
 
           <div class="field">
-            <label for="descInput">Description</label>
-            <textarea class="textarea" id="descInput" maxlength="4000" placeholder="What’s happening?"></textarea>
+            <label for="descInput">Public bio</label>
+            <div class="helper">This is what people can see before they’re accepted.</div>
+            <textarea class="textarea" id="descInput" maxlength="4000" placeholder="What can everyone see about this event?"></textarea>
+          </div>
+
+          <div class="field hidden" id="privateBioField">
+            <label for="privateDescInput">Private bio</label>
+            <div class="helper">Accepted people will see this instead of the public bio.</div>
+            <textarea class="textarea" id="privateDescInput" maxlength="4000" placeholder="What should only accepted people see?"></textarea>
           </div>
 
           <label class="checkRow">
@@ -1631,6 +1638,8 @@
     const privateLngInput = document.getElementById("privateLngInput");
     const tagsInput = document.getElementById("tagsInput");
     const descInput = document.getElementById("descInput");
+    const privateBioField = document.getElementById("privateBioField");
+    const privateDescInput = document.getElementById("privateDescInput");
     const inviteOnlyInput = document.getElementById("inviteOnlyInput");
     const useMyLocationBtn = document.getElementById("useMyLocationBtn");
     const clearLocationBtn = document.getElementById("clearLocationBtn");
@@ -1757,7 +1766,11 @@
     }
 
     function pickDescription(ev){
-      return ev?.description || ev?.desc || "";
+      const publicBio = ev?.publicDescription || ev?.publicDesc || ev?.description || ev?.desc || ev?.about || ev?.bio || "";
+      const privateBio = ev?.privateDescription || ev?.privateDesc || "";
+      if (!ev?.inviteOnly) return privateBio || publicBio || "";
+      if (eventIsPostedByUser(ev) || userIsRegisteredForEvent(ev)) return privateBio || publicBio || "";
+      return publicBio || privateBio || "";
     }
 
     function pickImage(ev){
@@ -2799,7 +2812,11 @@
     function toggleInviteOnlyFields(){
       const inviteOnly = !!inviteOnlyInput.checked;
       privateLocationPicker.classList.toggle("hidden", !inviteOnly);
-      if (!inviteOnly) clearPicked("private");
+      if (privateBioField) privateBioField.classList.toggle("hidden", !inviteOnly);
+      if (!inviteOnly){
+        clearPicked("private");
+        if (privateDescInput) privateDescInput.value = "";
+      }
       Promise.resolve().then(async () => {
         await ensureMapReady("public");
         if (inviteOnly) await ensureMapReady("private");
@@ -2814,7 +2831,8 @@
       const privateLocation = privateLocationInput.value.trim();
       const date = dateInput.value;
       const time = timeInput.value;
-      const desc = descInput.value.trim();
+      const publicDesc = descInput.value.trim();
+      const privateDesc = privateDescInput?.value.trim() || "";
       const endTime = endTimeInput.value;
       const publicLat = safeNumber(publicLatInput.value);
       const publicLng = safeNumber(publicLngInput.value);
@@ -2856,8 +2874,12 @@
         time,
         startDate: date,
         startTime: time,
-        description: desc,
-        desc,
+        description: inviteOnly ? (privateDesc || publicDesc) : publicDesc,
+        desc: inviteOnly ? (privateDesc || publicDesc) : publicDesc,
+        publicDescription: publicDesc,
+        publicDesc,
+        privateDescription: inviteOnly ? privateDesc : undefined,
+        privateDesc: inviteOnly ? privateDesc : undefined,
         tags,
         inviteOnly,
         endTime: endTime || undefined,
@@ -2998,7 +3020,8 @@
       dateInput.value = ev.date || ev.startDate || "";
       timeInput.value = ev.time || ev.startTime || "";
       endTimeInput.value = ev.endTime || ev.finishTime || "";
-      descInput.value = pickDescription(ev);
+      descInput.value = ev.publicDescription || ev.publicDesc || (!ev.inviteOnly ? pickDescription(ev) : "");
+      if (privateDescInput) privateDescInput.value = ev.privateDescription || ev.privateDesc || (ev.inviteOnly ? (ev.description || ev.desc || "") : "");
       tagsInput.value = pickTags(ev).join(", ");
       inviteOnlyInput.checked = !!ev.inviteOnly;
 
