@@ -25,6 +25,7 @@
       --danger: #d92d20;
       --dangerBg: rgba(217,45,32,.08);
       --successBg: rgba(88,201,154,.14);
+      --warnBg: rgba(139,211,255,.14);
     }
 
     *{ box-sizing:border-box; }
@@ -510,6 +511,12 @@
       color: #8f1d15;
     }
 
+    .statusBox.info{
+      background: var(--warnBg);
+      border-color: rgba(139,211,255,.22);
+      color: rgba(17,16,24,.86);
+    }
+
     .sectionTitle{
       font-size: 15px;
       font-weight: 1000;
@@ -569,6 +576,106 @@
 
     .fileInput{
       display:none;
+    }
+
+    .verifyCard{
+      border:1px solid rgba(109,40,217,.12);
+      background:
+        radial-gradient(500px 180px at 0% 0%, rgba(139,211,255,.12), transparent 60%),
+        radial-gradient(500px 180px at 100% 100%, rgba(176,11,85,.08), transparent 60%),
+        rgba(255,255,255,.82);
+    }
+
+    .verifyTabs{
+      display:flex;
+      gap:8px;
+      padding:6px;
+      border-radius:999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.78);
+      width:max-content;
+      max-width:100%;
+      overflow:auto;
+    }
+
+    .verifyTab{
+      border:none;
+      background:transparent;
+      color:rgba(17,16,24,.76);
+      padding:10px 12px;
+      border-radius:999px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:13px;
+      white-space:nowrap;
+    }
+
+    .verifyTab.active{
+      background: linear-gradient(135deg, rgba(176,11,85,.12), rgba(109,40,217,.10));
+      border:1px solid rgba(176,11,85,.22);
+      color:var(--ink);
+    }
+
+    .verifyPane{
+      display:none;
+      margin-top:14px;
+      gap:12px;
+    }
+
+    .verifyPane.active{
+      display:grid;
+    }
+
+    .verifyNote{
+      padding:12px 13px;
+      border-radius:14px;
+      border:1px solid rgba(17,16,24,.08);
+      background: rgba(255,255,255,.72);
+      color: rgba(17,16,24,.76);
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .docUploadGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    @media (max-width: 700px){
+      .docUploadGrid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .docUploadCard{
+      border:1px solid rgba(17,16,24,.10);
+      border-radius:16px;
+      background: rgba(255,255,255,.74);
+      padding:12px;
+      display:grid;
+      gap:10px;
+    }
+
+    .docPreview{
+      width:100%;
+      aspect-ratio: 4 / 3;
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid rgba(17,16,24,.10);
+      background: linear-gradient(135deg, rgba(139,211,255,.18), rgba(109,40,217,.10));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:14px;
+      font-weight:900;
+      color:rgba(17,16,24,.72);
+    }
+
+    .docPreview img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
     }
 
     footer{
@@ -762,6 +869,63 @@
       </div>
 
       <div class="stack">
+        <section class="card verifyCard" id="verifyCard" aria-label="Verify account" style="display:none;">
+          <div class="cardInner">
+            <h3 class="sectionTitle">Verify account</h3>
+            <div class="sub" style="margin-bottom:12px;">Get verified so other users know you’re a real student.</div>
+
+            <div class="verifyTabs" role="tablist" aria-label="Verification methods">
+              <button class="verifyTab active" type="button" data-verify-tab="email">Verify by email</button>
+              <button class="verifyTab" type="button" data-verify-tab="studentid">Verify by student ID</button>
+            </div>
+
+            <div class="verifyPane active" id="verifyPaneEmail">
+              <div class="verifyNote" id="emailVerifyInfo">
+                Verify your email first. If your email domain belongs to a valid university, your account will be marked verified.
+              </div>
+
+              <div class="miniBtns">
+                <button class="btn primary" type="button" id="sendVerifyEmailBtn">Send verification email</button>
+                <button class="btn" type="button" id="checkVerifyEmailBtn">I verified my email</button>
+              </div>
+
+              <div class="statusBox" id="emailVerifyStatus">Use your school email to verify faster.</div>
+            </div>
+
+            <div class="verifyPane" id="verifyPaneStudentId">
+              <div class="verifyNote">
+                Upload a clear photo of your student ID and a selfie. An admin can review it and verify your account manually.
+              </div>
+
+              <div class="docUploadGrid">
+                <div class="docUploadCard">
+                  <div class="sectionTitle" style="font-size:13px;">Student ID photo</div>
+                  <div class="docPreview" id="studentIdPreview">No image selected</div>
+                  <div class="miniBtns">
+                    <label class="btn" for="studentIdInput">Choose ID photo</label>
+                  </div>
+                  <input class="fileInput" id="studentIdInput" type="file" accept="image/*" />
+                </div>
+
+                <div class="docUploadCard">
+                  <div class="sectionTitle" style="font-size:13px;">Selfie</div>
+                  <div class="docPreview" id="selfiePreview">No image selected</div>
+                  <div class="miniBtns">
+                    <label class="btn" for="selfieInput">Choose selfie</label>
+                  </div>
+                  <input class="fileInput" id="selfieInput" type="file" accept="image/*" />
+                </div>
+              </div>
+
+              <div class="miniBtns">
+                <button class="btn primary" type="button" id="submitManualVerifyBtn">Submit for review</button>
+              </div>
+
+              <div class="statusBox" id="studentIdVerifyStatus">Nothing submitted yet.</div>
+            </div>
+          </div>
+        </section>
+
         <section class="card dangerCard" aria-label="Danger zone">
           <div class="cardInner">
             <h3 class="sectionTitle">Danger zone</h3>
@@ -798,7 +962,9 @@
       onAuthStateChanged,
       signOut,
       deleteUser,
-      updateProfile
+      updateProfile,
+      sendEmailVerification,
+      reload
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
     import {
       getFirestore,
@@ -851,6 +1017,19 @@
     const resetBtn = document.getElementById("resetBtn");
     const saveStatus = document.getElementById("saveStatus");
 
+    const verifyCard = document.getElementById("verifyCard");
+    const emailVerifyInfo = document.getElementById("emailVerifyInfo");
+    const sendVerifyEmailBtn = document.getElementById("sendVerifyEmailBtn");
+    const checkVerifyEmailBtn = document.getElementById("checkVerifyEmailBtn");
+    const emailVerifyStatus = document.getElementById("emailVerifyStatus");
+
+    const studentIdInput = document.getElementById("studentIdInput");
+    const selfieInput = document.getElementById("selfieInput");
+    const studentIdPreview = document.getElementById("studentIdPreview");
+    const selfiePreview = document.getElementById("selfiePreview");
+    const submitManualVerifyBtn = document.getElementById("submitManualVerifyBtn");
+    const studentIdVerifyStatus = document.getElementById("studentIdVerifyStatus");
+
     const signOutBtn = document.getElementById("signOutBtn");
     const deleteBtn = document.getElementById("deleteBtn");
     const dangerStatus = document.getElementById("dangerStatus");
@@ -859,6 +1038,63 @@
     let loadedUserDoc = {};
     let selectedProfileFile = null;
     let previewPhotoURL = "";
+
+    let selectedStudentIdFile = null;
+    let selectedSelfieFile = null;
+
+    const allowedUniversityDomains = [
+      "uottawa.ca",
+      "umontreal.ca",
+      "mcgill.ca",
+      "concordia.ca",
+      "uqam.ca",
+      "polymtl.ca",
+      "etsmtl.ca",
+      "usherbrooke.ca",
+      "ulaval.ca",
+      "ubc.ca",
+      "utoronto.ca",
+      "yorku.ca",
+      "torontomu.ca",
+      "tmu.ca",
+      "queensu.ca",
+      "uwaterloo.ca",
+      "wlu.ca",
+      "uwo.ca",
+      "westernu.ca",
+      "mcmaster.ca",
+      "uoguelph.ca",
+      "carleton.ca",
+      "queensu.ca",
+      "dal.ca",
+      "mun.ca",
+      "unb.ca",
+      "stu.ca",
+      "viu.ca",
+      "uvic.ca",
+      "sfu.ca",
+      "ucalgary.ca",
+      "ualberta.ca",
+      "umanitoba.ca",
+      "usask.ca",
+      "ontariotechu.ca",
+      "brocku.ca",
+      "trentu.ca",
+      "laurentian.ca",
+      "lakeheadu.ca",
+      "algonquincollege.com",
+      "collegeboreal.ca",
+      "georgebrown.ca",
+      "centennialcollege.ca",
+      "senecapolytechnic.ca",
+      "humber.ca",
+      "sheridancollege.ca",
+      "fanshawec.ca",
+      "niagaracollege.ca",
+      "stclaircollege.ca",
+      "durhamcollege.ca",
+      "lambtoncollege.ca"
+    ];
 
     function scrollActiveTabIntoView(){
       const active = document.querySelector(".tab.active");
@@ -870,6 +1106,22 @@
       btn.addEventListener("click", () => {
         const to = btn.getAttribute("data-go");
         if (to) window.location.href = to;
+      });
+    });
+
+    document.querySelectorAll(".verifyTab").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const tab = btn.getAttribute("data-verify-tab");
+
+        document.querySelectorAll(".verifyTab").forEach(x => x.classList.remove("active"));
+        btn.classList.add("active");
+
+        document.querySelectorAll(".verifyPane").forEach(x => x.classList.remove("active"));
+        if (tab === "email") {
+          document.getElementById("verifyPaneEmail").classList.add("active");
+        } else {
+          document.getElementById("verifyPaneStudentId").classList.add("active");
+        }
       });
     });
 
@@ -917,6 +1169,99 @@
       }
     }
 
+    function getEmailDomain(email){
+      return safeString(email).trim().toLowerCase().split("@")[1] || "";
+    }
+
+    function isValidUniversityEmail(email){
+      const domain = getEmailDomain(email);
+      return allowedUniversityDomains.includes(domain);
+    }
+
+    function renderFilePreview(targetEl, file){
+      if (!file){
+        targetEl.textContent = "No image selected";
+        targetEl.innerHTML = "No image selected";
+        return;
+      }
+      const url = URL.createObjectURL(file);
+      targetEl.innerHTML = `<img src="${url}" alt="Preview">`;
+    }
+
+    function getVerificationState(user, data){
+      const manualStatus =
+        safeString(data.verificationRequestStatus).trim().toLowerCase() ||
+        safeString(data.manualVerificationStatus).trim().toLowerCase();
+
+      const userVerified =
+        data.verified === true ||
+        data.userVerified === true ||
+        data.isVerified === true;
+
+      const domainValid = isValidUniversityEmail(user?.email || data?.email || "");
+      const emailVerifiedAndValid = !!user?.emailVerified && domainValid;
+
+      if (userVerified || emailVerifiedAndValid){
+        return "verified";
+      }
+      if (manualStatus === "pending"){
+        return "pending";
+      }
+      return "unverified";
+    }
+
+    async function syncEmailVerificationIfEligible(){
+      if (!currentUser) return false;
+
+      const domainValid = isValidUniversityEmail(currentUser.email || "");
+      if (!currentUser.emailVerified || !domainValid) return false;
+
+      await setDoc(doc(db, "users", currentUser.uid), {
+        verified: true,
+        verificationMethod: "email",
+        verificationRequestStatus: "",
+        updatedAt: Date.now()
+      }, { merge: true });
+
+      loadedUserDoc = {
+        ...loadedUserDoc,
+        verified: true,
+        verificationMethod: "email",
+        verificationRequestStatus: "",
+        updatedAt: Date.now()
+      };
+
+      return true;
+    }
+
+    function refreshVerifyUI(user, data){
+      const state = getVerificationState(user, data);
+      const email = safeString(user?.email);
+      const domainValid = isValidUniversityEmail(email);
+
+      if (state === "verified"){
+        studentStatusText.textContent = "Verified student";
+        studentStatusPill.className = "pill";
+        verifyCard.style.display = "none";
+      } else if (state === "pending"){
+        studentStatusText.textContent = "Verification pending";
+        studentStatusPill.className = "pill pending";
+        verifyCard.style.display = "";
+      } else {
+        studentStatusText.textContent = "Not student verified";
+        studentStatusPill.className = "pill unverified";
+        verifyCard.style.display = "";
+      }
+
+      if (!email){
+        emailVerifyInfo.textContent = "No email found on this account.";
+      } else if (domainValid){
+        emailVerifyInfo.textContent = `Your email looks like a valid school email (${email}). Verify it and your account can be marked verified automatically.`;
+      } else {
+        emailVerifyInfo.textContent = `Your current email (${email}) is not in the allowed university email list. Use the student ID option or change your account email to a school one.`;
+      }
+    }
+
     function applyProfileToUI(user, data){
       const name =
         safeString(data.name).trim() ||
@@ -944,18 +1289,7 @@
       bioInput.value = bio;
       updateBioCount();
 
-      const userVerified =
-        data.verified === true ||
-        data.userVerified === true ||
-        data.isVerified === true;
-
-      if (userVerified){
-        studentStatusText.textContent = "Verified student";
-        studentStatusPill.className = "pill";
-      } else {
-        studentStatusText.textContent = "Not student verified";
-        studentStatusPill.className = "pill unverified";
-      }
+      refreshVerifyUI(user, data);
 
       const createdAt = data.createdAt || data.joinedAt || data.created || user.metadata?.creationTime || null;
       statJoined.textContent = formatDate(createdAt);
@@ -1015,6 +1349,40 @@
       }
 
       setStatus(saveStatus, "Photo selected. Save changes to upload it.", "success");
+    });
+
+    studentIdInput.addEventListener("change", () => {
+      const file = studentIdInput.files?.[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")){
+        studentIdInput.value = "";
+        selectedStudentIdFile = null;
+        setStatus(studentIdVerifyStatus, "Please choose an image for the student ID.", "error");
+        renderFilePreview(studentIdPreview, null);
+        return;
+      }
+
+      selectedStudentIdFile = file;
+      renderFilePreview(studentIdPreview, file);
+      setStatus(studentIdVerifyStatus, "Student ID photo selected.", "info");
+    });
+
+    selfieInput.addEventListener("change", () => {
+      const file = selfieInput.files?.[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")){
+        selfieInput.value = "";
+        selectedSelfieFile = null;
+        setStatus(studentIdVerifyStatus, "Please choose an image for the selfie.", "error");
+        renderFilePreview(selfiePreview, null);
+        return;
+      }
+
+      selectedSelfieFile = file;
+      renderFilePreview(selfiePreview, file);
+      setStatus(studentIdVerifyStatus, "Selfie selected.", "info");
     });
 
     bioInput.addEventListener("input", () => {
@@ -1090,6 +1458,98 @@
       }
     });
 
+    sendVerifyEmailBtn.addEventListener("click", async () => {
+      if (!currentUser) return;
+
+      try{
+        setStatus(emailVerifyStatus, "Sending verification email...");
+        await sendEmailVerification(currentUser);
+        setStatus(emailVerifyStatus, "Verification email sent. Open it, verify, then come back and press “I verified my email”.", "success");
+      } catch (err){
+        console.error(err);
+        setStatus(emailVerifyStatus, "Could not send verification email right now.", "error");
+      }
+    });
+
+    checkVerifyEmailBtn.addEventListener("click", async () => {
+      if (!currentUser) return;
+
+      try{
+        setStatus(emailVerifyStatus, "Checking verification...");
+        await reload(currentUser);
+
+        const domainValid = isValidUniversityEmail(currentUser.email || "");
+        if (!currentUser.emailVerified){
+          setStatus(emailVerifyStatus, "Your email is still not verified yet.", "error");
+          applyProfileToUI(currentUser, loadedUserDoc);
+          return;
+        }
+
+        if (!domainValid){
+          setStatus(emailVerifyStatus, "Your email is verified, but the domain is not in the allowed university list.", "error");
+          applyProfileToUI(currentUser, loadedUserDoc);
+          return;
+        }
+
+        await syncEmailVerificationIfEligible();
+        applyProfileToUI(currentUser, loadedUserDoc);
+        setStatus(emailVerifyStatus, "Your account is now verified.", "success");
+      } catch (err){
+        console.error(err);
+        setStatus(emailVerifyStatus, "Could not check email verification right now.", "error");
+      }
+    });
+
+    submitManualVerifyBtn.addEventListener("click", async () => {
+      if (!currentUser) return;
+
+      if (!selectedStudentIdFile || !selectedSelfieFile){
+        setStatus(studentIdVerifyStatus, "Please upload both your student ID photo and your selfie.", "error");
+        return;
+      }
+
+      try{
+        setStatus(studentIdVerifyStatus, "Submitting verification request...");
+
+        const idExt = (selectedStudentIdFile.name.split(".").pop() || "jpg").toLowerCase();
+        const selfieExt = (selectedSelfieFile.name.split(".").pop() || "jpg").toLowerCase();
+
+        const studentIdRef = ref(storage, `verificationRequests/${currentUser.uid}/student-id.${idExt}`);
+        const selfieRef = ref(storage, `verificationRequests/${currentUser.uid}/selfie.${selfieExt}`);
+
+        await uploadBytes(studentIdRef, selectedStudentIdFile, { contentType: selectedStudentIdFile.type });
+        await uploadBytes(selfieRef, selectedSelfieFile, { contentType: selectedSelfieFile.type });
+
+        const studentIdURL = await getDownloadURL(studentIdRef);
+        const selfieURL = await getDownloadURL(selfieRef);
+
+        const payload = {
+          verificationRequestStatus: "pending",
+          manualVerificationStatus: "pending",
+          verificationMethod: "student-id",
+          verificationSubmittedAt: Date.now(),
+          verificationAssets: {
+            studentIdURL,
+            selfieURL
+          },
+          updatedAt: Date.now()
+        };
+
+        await setDoc(doc(db, "users", currentUser.uid), payload, { merge: true });
+
+        loadedUserDoc = {
+          ...loadedUserDoc,
+          ...payload
+        };
+
+        applyProfileToUI(currentUser, loadedUserDoc);
+        setStatus(studentIdVerifyStatus, "Submitted for review. An admin can verify your account once they review your images.", "success");
+      } catch (err){
+        console.error(err);
+        setStatus(studentIdVerifyStatus, "Could not submit your verification request right now.", "error");
+      }
+    });
+
     signOutBtn.addEventListener("click", async () => {
       if (!confirm("Sign out of your account?")) return;
       try{
@@ -1138,7 +1598,23 @@
       }
 
       loadedUserDoc = data;
-      applyProfileToUI(user, data);
+
+      try{
+        const changed = await syncEmailVerificationIfEligible();
+        if (changed){
+          loadedUserDoc = {
+            ...loadedUserDoc,
+            verified: true,
+            verificationMethod: "email",
+            verificationRequestStatus: "",
+            updatedAt: Date.now()
+          };
+        }
+      } catch (err){
+        console.error(err);
+      }
+
+      applyProfileToUI(user, loadedUserDoc);
       setStatus(saveStatus, "Profile loaded.");
       setStatus(dangerStatus, "No danger action used.");
     });
