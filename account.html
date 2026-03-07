@@ -640,7 +640,7 @@
 
                   <span class="pill pending" id="publicIdPill">
                     <span class="dot"></span>
-                    <span id="publicIdText">U# —</span>
+                    <span id="publicIdText">—</span>
                   </span>
                 </div>
               </div>
@@ -869,7 +869,7 @@
       }
 
       if (publicId){
-        publicIdText.textContent = `U# ${publicId}`;
+        publicIdText.textContent = `${publicId}`;
         publicIdPill.className = "pill pending";
       } else {
         publicIdText.textContent = "U# —";
