@@ -338,6 +338,14 @@
       background: linear-gradient(135deg, var(--pink), var(--purple));
       box-shadow: 0 18px 50px rgba(176,11,85,.22);
       border:1px solid rgba(255,255,255,.25);
+      overflow:hidden;
+      flex-shrink:0;
+    }
+
+    .avatar img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
     }
 
     .heroMeta{
@@ -515,6 +523,54 @@
         rgba(255,255,255,.82);
     }
 
+    .uploadRow{
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:14px;
+      align-items:center;
+      padding:12px;
+      border:1px solid rgba(17,16,24,.10);
+      border-radius:16px;
+      background: rgba(255,255,255,.72);
+    }
+
+    @media (max-width: 560px){
+      .uploadRow{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .uploadPreview{
+      width:72px;
+      height:72px;
+      border-radius:20px;
+      overflow:hidden;
+      border:1px solid rgba(17,16,24,.10);
+      background: linear-gradient(135deg, rgba(176,11,85,.14), rgba(109,40,217,.10));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:24px;
+      font-weight:1000;
+      color:#fff;
+      flex-shrink:0;
+    }
+
+    .uploadPreview img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .uploadActions{
+      display:grid;
+      gap:8px;
+    }
+
+    .fileInput{
+      display:none;
+    }
+
     footer{
       width: min(1120px, 92vw);
       margin: 14px auto 30px auto;
@@ -658,6 +714,22 @@
 
           <div class="cardInner" style="padding-top:0;">
             <form id="profileForm" class="formGrid">
+              <div class="field">
+                <label>Profile picture</label>
+                <div class="uploadRow">
+                  <div class="uploadPreview" id="uploadPreview">U</div>
+
+                  <div class="uploadActions">
+                    <div class="miniBtns">
+                      <label class="btn" for="profilePicInput">Choose photo</label>
+                      <button class="btn" type="button" id="removePhotoBtn">Remove</button>
+                    </div>
+                    <input class="fileInput" id="profilePicInput" type="file" accept="image/*" />
+                    <div class="helper">Upload a square-ish image for best results. It will show as your profile photo.</div>
+                  </div>
+                </div>
+              </div>
+
               <div class="row2">
                 <div class="field">
                   <label for="nameInput">Display name</label>
@@ -696,9 +768,9 @@
             <div class="sub" style="margin-bottom:12px;">Be careful with actions here.</div>
 
             <div class="miniBtns">
-  <button class="btn" id="signOutBtn" type="button">Sign out</button>
-  <button class="btn danger" id="deleteBtn" type="button">Delete account</button>
-</div>
+              <button class="btn" id="signOutBtn" type="button">Sign out</button>
+              <button class="btn danger" id="deleteBtn" type="button">Delete account</button>
+            </div>
 
             <div class="statusBox" id="dangerStatus" style="margin-top:12px;">No danger action used.</div>
           </div>
@@ -734,6 +806,12 @@
       getDoc,
       setDoc
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    import {
+      getStorage,
+      ref,
+      uploadBytes,
+      getDownloadURL
+    } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD_k18vbiBsLhQB7PzgEVT9PEI_30Mu0kg",
@@ -749,6 +827,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const storage = getStorage(app);
 
     const hello = document.getElementById("hello");
     const avatar = document.getElementById("avatar");
@@ -764,6 +843,10 @@
     const bioInput = document.getElementById("bioInput");
     const bioCount = document.getElementById("bioCount");
 
+    const profilePicInput = document.getElementById("profilePicInput");
+    const uploadPreview = document.getElementById("uploadPreview");
+    const removePhotoBtn = document.getElementById("removePhotoBtn");
+
     const profileForm = document.getElementById("profileForm");
     const resetBtn = document.getElementById("resetBtn");
     const saveStatus = document.getElementById("saveStatus");
@@ -774,6 +857,8 @@
 
     let currentUser = null;
     let loadedUserDoc = {};
+    let selectedProfileFile = null;
+    let previewPhotoURL = "";
 
     function scrollActiveTabIntoView(){
       const active = document.querySelector(".tab.active");
@@ -823,6 +908,15 @@
       bioCount.textContent = String((bioInput.value || "").length);
     }
 
+    function renderAvatar(targetEl, name, email, photoURL){
+      const safePhoto = safeString(photoURL).trim();
+      if (safePhoto){
+        targetEl.innerHTML = `<img src="${safePhoto}" alt="Profile photo">`;
+      } else {
+        targetEl.textContent = initialsFrom(name, email);
+      }
+    }
+
     function applyProfileToUI(user, data){
       const name =
         safeString(data.name).trim() ||
@@ -833,12 +927,17 @@
       const email = safeString(user.email);
       const school = safeString(data.school).trim();
       const bio = safeString(data.bio).trim();
-      const publicId = safeString(data.publicId).trim();
+      const photoURL =
+        previewPhotoURL ||
+        safeString(data.photoURL).trim() ||
+        safeString(user.photoURL).trim();
 
       hello.textContent = `Hey, ${name}`;
       profileName.textContent = name;
       profileEmail.textContent = email || "No email";
-      avatar.textContent = initialsFrom(name, email);
+
+      renderAvatar(avatar, name, email, photoURL);
+      renderAvatar(uploadPreview, name, email, photoURL);
 
       nameInput.value = safeString(data.name) || safeString(user.displayName) || "";
       schoolInput.value = school;
@@ -871,6 +970,10 @@
     }
 
     function resetForm(){
+      selectedProfileFile = null;
+      previewPhotoURL = "";
+      profilePicInput.value = "";
+
       nameInput.value = safeString(loadedUserDoc.name) || safeString(currentUser?.displayName) || "";
       schoolInput.value = safeString(loadedUserDoc.school) || "";
       bioInput.value = safeString(loadedUserDoc.bio) || "";
@@ -880,6 +983,40 @@
     }
 
     resetBtn.addEventListener("click", resetForm);
+
+    removePhotoBtn.addEventListener("click", () => {
+      selectedProfileFile = null;
+      previewPhotoURL = "";
+      profilePicInput.value = "";
+      if (currentUser) {
+        const nextData = { ...loadedUserDoc, photoURL: "" };
+        applyProfileToUI(currentUser, nextData);
+      }
+      setStatus(saveStatus, "Profile photo will be removed when you save.", "success");
+    });
+
+    profilePicInput.addEventListener("change", () => {
+      const file = profilePicInput.files?.[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")){
+        profilePicInput.value = "";
+        selectedProfileFile = null;
+        previewPhotoURL = "";
+        setStatus(saveStatus, "Please choose an image file.", "error");
+        return;
+      }
+
+      selectedProfileFile = file;
+      previewPhotoURL = URL.createObjectURL(file);
+
+      if (currentUser) {
+        applyProfileToUI(currentUser, { ...loadedUserDoc, ...getFormData(), photoURL: previewPhotoURL });
+      }
+
+      setStatus(saveStatus, "Photo selected. Save changes to upload it.", "success");
+    });
+
     bioInput.addEventListener("input", () => {
       updateBioCount();
       if (currentUser) applyProfileToUI(currentUser, { ...loadedUserDoc, ...getFormData() });
@@ -905,23 +1042,45 @@
       setStatus(saveStatus, "Saving changes...");
 
       try{
+        let photoURL =
+          previewPhotoURL && selectedProfileFile ? "" :
+          (safeString(loadedUserDoc.photoURL).trim() || safeString(currentUser.photoURL).trim() || "");
+
+        if (selectedProfileFile){
+          const extension = (selectedProfileFile.name.split(".").pop() || "jpg").toLowerCase();
+          const photoRef = ref(storage, `profilePictures/${currentUser.uid}/avatar.${extension}`);
+          await uploadBytes(photoRef, selectedProfileFile, { contentType: selectedProfileFile.type });
+          photoURL = await getDownloadURL(photoRef);
+        } else if (previewPhotoURL === "" && (loadedUserDoc.photoURL || currentUser.photoURL)) {
+          photoURL = "";
+        }
+
         await setDoc(doc(db, "users", currentUser.uid), {
           ...loadedUserDoc,
           ...data,
           email: currentUser.email || loadedUserDoc.email || "",
+          photoURL,
           updatedAt: Date.now()
         }, { merge: true });
 
         try{
-          await updateProfile(currentUser, { displayName: data.name });
+          await updateProfile(currentUser, {
+            displayName: data.name,
+            photoURL: photoURL || null
+          });
         } catch (_) {}
 
         loadedUserDoc = {
           ...loadedUserDoc,
           ...data,
           email: currentUser.email || loadedUserDoc.email || "",
+          photoURL,
           updatedAt: Date.now()
         };
+
+        selectedProfileFile = null;
+        previewPhotoURL = "";
+        profilePicInput.value = "";
 
         applyProfileToUI(currentUser, loadedUserDoc);
         setStatus(saveStatus, "Profile updated.", "success");
