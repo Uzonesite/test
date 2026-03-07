@@ -1383,7 +1383,7 @@
     function pickVisibleLocation(ev){
       if (!ev) return "—";
       const exact = (ev.location || ev.place || ev.address || "").toString().trim();
-      const general = (ev.generalLocation || ev.generalArea || ev.area || "").toString().trim();
+      const general = (ev.publicLocation || ev.publicLocation || ev.generalLocation || ev.generalArea || ev.area || "").toString().trim();
       if (!ev.inviteOnly) return exact || general || "—";
       if (eventIsPostedByUser(ev) || userIsRegisteredForEvent(ev)) return exact || general || "—";
       return general || exact || "—";
@@ -1583,7 +1583,7 @@
 
       addRow("When", when);
       addRow("Where", where);
-      if (ev.inviteOnly && !userIsRegisteredForEvent(ev) && !eventIsPostedByUser(ev) && (ev.generalLocation || ev.generalArea || ev.area)) addRow("Area", ev.generalLocation || ev.generalArea || ev.area);
+      if (ev.inviteOnly && !userIsRegisteredForEvent(ev) && !eventIsPostedByUser(ev) && (ev.publicLocation || ev.publicLocation || ev.generalLocation || ev.generalArea || ev.area)) addRow("Area", ev.publicLocation || ev.generalLocation || ev.generalArea || ev.area);
       if (ev.inviteOnly && !userIsRegisteredForEvent(ev) && !eventIsPostedByUser(ev)) addRow("Access", "Apply to get the exact location.");
       addRow("Host", host);
       addRow("Price", price);
