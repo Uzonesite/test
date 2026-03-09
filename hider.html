@@ -22,8 +22,6 @@
       --shadow:0 18px 60px rgba(17,16,24,.08);
 
       --radius:20px;
-      --radius2:16px;
-
       --danger:#c6285d;
       --success:#2f9e6f;
       --warn:#e89a1d;
@@ -247,12 +245,6 @@
       background: linear-gradient(135deg, rgba(176,11,85,.14), rgba(109,40,217,.10));
     }
 
-    .btn.warn{
-      border-color: rgba(232,154,29,.22);
-      background: rgba(232,154,29,.12);
-      color: #9b6200;
-    }
-
     .btn.success{
       border-color: rgba(88,201,154,.24);
       background: rgba(88,201,154,.14);
@@ -297,6 +289,7 @@
       border-top:1px solid rgba(17,16,24,.08);
       background: rgba(255,255,255,.62);
       min-height: 420px;
+      position: relative;
     }
 
     #map{
@@ -304,9 +297,22 @@
       height:420px;
     }
 
+    .mapFallback{
+      min-height:420px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      text-align:center;
+      color:rgba(17,16,24,.72);
+      font-size:14px;
+      line-height:1.5;
+    }
+
     @media (max-width: 520px){
       #map{ height: 360px; }
       .mapBox{ min-height: 360px; }
+      .mapFallback{ min-height: 360px; }
     }
 
     .pinWrap{ position:relative; width:1px; height:1px; overflow: visible; }
@@ -459,8 +465,8 @@
       </a>
 
       <div class="version" aria-label="Version">
-        <b>hider map</b>
-        <span id="gameCodeChip">code: —</span>
+        <b>hide and seek</b>
+        <span id="liveChip">live game</span>
       </div>
     </div>
   </header>
@@ -470,7 +476,7 @@
       <div class="bannerTop">
         <div>
           <h2>Hide &amp; Seek</h2>
-          <p>Press the still playing button before each deadline. That button is what pings your location. The map shows the latest pinged locations of the other players in the game.</p>
+          <p>This page shows the live game map. Your location is checked in automatically when the page opens if location is allowed, and you can press Check in any time to ping again.</p>
         </div>
         <div class="badge pink">
           <span class="dot"></span>
@@ -486,7 +492,7 @@
             <div class="hRow">
               <div>
                 <h1 class="h1">Map</h1>
-                <div class="sub">Using the same map style as events, but showing player pings instead of event markers.</div>
+                <div class="sub">Shows the game boundary, your ping, and the latest pinged locations of other active players.</div>
               </div>
               <div style="display:flex; gap:10px; flex-wrap:wrap;">
                 <button class="btn" id="refreshBtn" type="button">Refresh</button>
@@ -538,17 +544,17 @@
 
         <section class="card">
           <div class="cardInner">
-            <h1 class="h1">Still playing</h1>
-            <div class="sub">When you press this, your location is pinged and your timer resets.</div>
+            <h1 class="h1">Check in</h1>
+            <div class="sub">Press this to confirm you are still playing and ping your latest location.</div>
 
             <div class="row2" style="margin-top:14px;">
-              <button class="btn primary" id="pingBtn" type="button">Still playing</button>
+              <button class="btn primary" id="pingBtn" type="button">Check in</button>
               <button class="btn success" id="centerMeBtn" type="button">Center on me</button>
             </div>
 
             <div class="row2" style="margin-top:12px;">
               <div class="playerItem" id="pingStatus">
-                <b>Ping</b>
+                <b>Check in</b>
                 Waiting for the game to load.
               </div>
               <div class="playerItem" id="deadlineStatus">
@@ -564,7 +570,7 @@
             <div class="hRow">
               <div>
                 <h1 class="h1">Other players</h1>
-                <div class="sub">Latest pinged locations from the current game.</div>
+                <div class="sub">Latest pinged locations from the live game.</div>
               </div>
             </div>
             <div class="playerList" id="playerList" style="margin-top:14px;"></div>
@@ -583,14 +589,13 @@
       doc,
       getDoc,
       getDocs,
-      query,
-      where,
-      limit,
       onSnapshot,
       updateDoc,
       setDoc,
       serverTimestamp,
-      orderBy
+      orderBy,
+      query,
+      limit
     } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -611,11 +616,7 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    const qs = new URLSearchParams(location.search);
-    const GAME_CODE = (qs.get("code") || localStorage.getItem("hz_last_code") || "").trim().toUpperCase();
-
     const hello = document.getElementById("hello");
-    const gameCodeChip = document.getElementById("gameCodeChip");
     const clockText = document.getElementById("clockText");
     const playerCount = document.getElementById("playerCount");
     const hiderCount = document.getElementById("hiderCount");
@@ -628,6 +629,7 @@
     const pingBtn = document.getElementById("pingBtn");
     const refreshBtn = document.getElementById("refreshBtn");
     const centerMeBtn = document.getElementById("centerMeBtn");
+    const mapEl = document.getElementById("map");
 
     let currentUser = null;
     let game = null;
@@ -640,6 +642,7 @@
     let boundaryPolygon = null;
     let myLatestLatLng = null;
     let uiInterval = null;
+    let autoCheckInStarted = false;
 
     function esc(s){
       return String(s ?? "").replace(/[&<>"']/g, m => ({
@@ -690,7 +693,6 @@
       ].filter(v => Number.isFinite(v) && v > 0);
 
       if (candidates.length) return candidates[0];
-
       return 5 * 60 * 1000;
     }
 
@@ -705,11 +707,15 @@
     }
 
     function setPingMessage(html){
-      pingStatus.innerHTML = `<b>Ping</b>${html}`;
+      pingStatus.innerHTML = `<b>Check in</b>${html}`;
     }
 
     function setDeadlineMessage(html){
       deadlineStatus.innerHTML = `<b>Deadline</b>${html}`;
+    }
+
+    function showMapFallback(message){
+      mapEl.innerHTML = `<div class="mapFallback">${esc(message)}</div>`;
     }
 
     async function loadGoogleMaps(){
@@ -741,10 +747,15 @@
     }
 
     async function initMap(){
-      await loadGoogleMaps();
+      try {
+        await loadGoogleMaps();
+      } catch (err) {
+        showMapFallback("Map unavailable. Google Maps could not load.");
+        throw err;
+      }
 
       const defaultCenter = game?.center || { lat:45.4215, lng:-75.6972 };
-      gmap = new google.maps.Map(document.getElementById("map"), {
+      gmap = new google.maps.Map(mapEl, {
         center: defaultCenter,
         zoom: 12,
         mapId: MAP_ID,
@@ -757,7 +768,7 @@
 
     function clearMarkers(){
       for (const m of markers){
-        try{ m.map = null; } catch(_){}
+        try { m.map = null; } catch(_){}
       }
       markers = [];
     }
@@ -809,6 +820,11 @@
         }
       });
 
+      if (!hasAny && game?.center?.lat && game?.center?.lng) {
+        bounds.extend(game.center);
+        hasAny = true;
+      }
+
       if (hasAny) gmap.fitBounds(bounds, 42);
     }
 
@@ -824,12 +840,38 @@
       return google.maps.geometry.poly.containsLocation(new google.maps.LatLng(lat, lng), poly);
     }
 
-    async function getGameByCode(code){
-      const q = query(collection(db, "hideSeekGames"), where("code", "==", code), limit(1));
-      const snap = await getDocs(q);
+    async function getLiveGame(){
+      const snap = await getDocs(collection(db, "hideSeekGames"));
       if (snap.empty) return null;
-      const d = snap.docs[0];
-      return { id:d.id, ...d.data() };
+
+      const docs = [];
+      snap.forEach(d => docs.push({ id:d.id, ...d.data() }));
+
+      docs.sort((a, b) => {
+        const aScore = Number(!!(a.active || a.isActive || a.startedAt));
+        const bScore = Number(!!(b.active || b.isActive || b.startedAt));
+        if (bScore !== aScore) return bScore - aScore;
+
+        const aTime = Math.max(
+          tsToMs(a.updatedAt),
+          tsToMs(a.startedAt),
+          tsToMs(a.createdAt),
+          Number(a.updatedAt || 0),
+          Number(a.startedAt || 0),
+          Number(a.createdAt || 0)
+        );
+        const bTime = Math.max(
+          tsToMs(b.updatedAt),
+          tsToMs(b.startedAt),
+          tsToMs(b.createdAt),
+          Number(b.updatedAt || 0),
+          Number(b.startedAt || 0),
+          Number(b.createdAt || 0)
+        );
+        return bTime - aTime;
+      });
+
+      return docs[0] || null;
     }
 
     async function ensureSignedIn(){
@@ -880,7 +922,11 @@
         return;
       }
 
-      await setDoc(ref, base, { merge:true });
+      await setDoc(ref, {
+        ...base,
+        role: existingSnap.data()?.role || "hider",
+        status: existingSnap.data()?.status || "active"
+      }, { merge:true });
     }
 
     function subscribeToGame(){
@@ -907,6 +953,15 @@
         renderPlayerList();
         renderAllMarkers();
         updateStatusUI();
+
+        if (!autoCheckInStarted && me) {
+          autoCheckInStarted = true;
+          setTimeout(() => {
+            sendCheckIn(true).catch(err => {
+              console.error(err);
+            });
+          }, 800);
+        }
       });
     }
 
@@ -990,7 +1045,7 @@
               box-shadow: 0 0 0 4px ${isMe ? "rgba(88,201,154,.16)" : "rgba(176,11,85,.16)"};
               flex:0 0 auto;
             "></span>
-            ${isMe ? "Your ping" : "Player ping"}
+            ${isMe ? "Your check in" : "Player check in"}
           </div>
 
           <h3 style="margin:10px 0 6px 0; font-size:15px; line-height:1.2; font-weight:1000; padding-right:40px;">
@@ -1000,7 +1055,7 @@
           <div style="font-size:12px; color: rgba(20,20,24,.74); line-height:1.35; word-break: break-word;">
             <b>Role:</b> ${role}<br>
             <b>Status:</b> ${status}<br>
-            <b>Last ping:</b> ${lastPing ? new Date(lastPing).toLocaleTimeString() : "Never"}<br>
+            <b>Last check in:</b> ${lastPing ? new Date(lastPing).toLocaleTimeString() : "Never"}<br>
             <b>Coords:</b> ${typeof player.lat === "number" && typeof player.lng === "number" ? `${player.lat.toFixed(5)}, ${player.lng.toFixed(5)}` : "No location"}
           </div>
         </div>
@@ -1056,11 +1111,11 @@
             <div class="playerItem">
               <b>${esc(p.name || "Player")}</b>
               Role: ${esc(p.role || "player")}<br>
-              Last ping: ${Number(p.lastPingAt || 0) ? new Date(Number(p.lastPingAt)).toLocaleTimeString() : "Never"}<br>
+              Last check in: ${Number(p.lastPingAt || 0) ? new Date(Number(p.lastPingAt)).toLocaleTimeString() : "Never"}<br>
               Location: ${typeof p.lat === "number" && typeof p.lng === "number" ? `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` : "No ping yet"}
             </div>
           `).join("")
-        : `<div class="playerItem"><b>Players</b>No other players with visible pings yet.</div>`;
+        : `<div class="playerItem"><b>Players</b>No other players with visible check ins yet.</div>`;
     }
 
     function updateStatusUI(){
@@ -1085,7 +1140,7 @@
       } else if (!game.startedAt) {
         statusSmall.textContent = "Host has not started the game yet.";
       } else {
-        statusSmall.textContent = `Next ping due in ${fmtMs(msLeft)}`;
+        statusSmall.textContent = `Next check in due in ${fmtMs(msLeft)}`;
       }
 
       if (me?.status === "out") {
@@ -1093,13 +1148,13 @@
       } else if (!game.startedAt) {
         setPingMessage(`The game has not started yet.`);
       } else if (msLeft <= 0) {
-        setPingMessage(`<span class="bad">Ping overdue.</span> Press the button now.`);
+        setPingMessage(`<span class="bad">Check in overdue.</span> Press the button now.`);
       } else if (msLeft <= 30000) {
-        setPingMessage(`<span class="warnText">Ping due soon.</span> ${fmtMs(msLeft)} left.`);
+        setPingMessage(`<span class="warnText">Check in due soon.</span> ${fmtMs(msLeft)} left.`);
       } else if (Number(me?.lastPingAt || 0)) {
-        setPingMessage(`<span class="good">Last ping saved.</span> ${new Date(Number(me.lastPingAt)).toLocaleTimeString()}`);
+        setPingMessage(`<span class="good">Last check in saved.</span> ${new Date(Number(me.lastPingAt)).toLocaleTimeString()}`);
       } else {
-        setPingMessage(`No ping sent yet.`);
+        setPingMessage(`No check in sent yet.`);
       }
 
       const intervalMin = Math.round(getPingIntervalMs() / 60000);
@@ -1110,7 +1165,7 @@
       );
     }
 
-    async function sendStillPlayingPing(){
+    async function sendCheckIn(isAutomatic = false){
       if (!game || !me) return;
       if (me.status === "out") {
         setPingMessage(`<span class="bad">You are out.</span>`);
@@ -1122,7 +1177,7 @@
       }
 
       pingBtn.disabled = true;
-      setPingMessage(`Getting your location…`);
+      setPingMessage(isAutomatic ? `Getting your location for automatic check in…` : `Getting your location…`);
 
       navigator.geolocation.getCurrentPosition(async pos => {
         const lat = pos.coords.latitude;
@@ -1157,18 +1212,30 @@
           });
 
           myLatestLatLng = { lat, lng };
-          if (gmap) gmap.panTo(myLatestLatLng);
 
-          setPingMessage(`<span class="good">Ping saved.</span> ${new Date(now).toLocaleTimeString()}`);
+          if (gmap) {
+            gmap.panTo(myLatestLatLng);
+            if ((gmap.getZoom() || 0) < 15) gmap.setZoom(15);
+          }
+
+          setPingMessage(
+            isAutomatic
+              ? `<span class="good">Automatic check in saved.</span> ${new Date(now).toLocaleTimeString()}`
+              : `<span class="good">Check in saved.</span> ${new Date(now).toLocaleTimeString()}`
+          );
         } catch (err) {
           console.error(err);
-          setPingMessage(`<span class="bad">${esc(err?.message || "Could not save ping.")}</span>`);
+          setPingMessage(`<span class="bad">${esc(err?.message || "Could not save check in.")}</span>`);
         } finally {
           pingBtn.disabled = false;
         }
       }, err => {
         pingBtn.disabled = false;
-        setPingMessage(`<span class="bad">${esc(err?.message || "Could not get your location.")}</span>`);
+        setPingMessage(
+          isAutomatic
+            ? `<span class="warnText">Automatic check in did not run.</span> You can still press Check in manually.`
+            : `<span class="bad">${esc(err?.message || "Could not get your location.")}</span>`
+        );
       }, {
         enableHighAccuracy: true,
         timeout: 15000,
@@ -1190,35 +1257,25 @@
     });
 
     pingBtn.addEventListener("click", () => {
-      sendStillPlayingPing().catch(err => {
+      sendCheckIn(false).catch(err => {
         console.error(err);
-        setPingMessage(`<span class="bad">${esc(err?.message || "Could not send ping.")}</span>`);
+        setPingMessage(`<span class="bad">${esc(err?.message || "Could not send check in.")}</span>`);
         pingBtn.disabled = false;
       });
     });
 
     (async () => {
-      gameCodeChip.textContent = `code: ${GAME_CODE || "—"}`;
-
-      if (!GAME_CODE) {
-        statusBig.textContent = "No code";
-        statusSmall.textContent = "Missing game code.";
-        setPingMessage(`<span class="bad">No game code found.</span>`);
-        return;
-      }
-
       currentUser = await ensureSignedIn();
       hello.textContent = `Hey, ${getDisplayName(currentUser)}`;
 
-      game = await getGameByCode(GAME_CODE);
+      game = await getLiveGame();
       if (!game) {
         statusBig.textContent = "Missing";
-        statusSmall.textContent = "Game code not found.";
-        setPingMessage(`<span class="bad">Could not find that game.</span>`);
+        statusSmall.textContent = "No live game found.";
+        setPingMessage(`<span class="bad">Could not find a hide and seek game.</span>`);
+        showMapFallback("No live Hide & Seek game was found.");
         return;
       }
-
-      localStorage.setItem("hz_last_code", GAME_CODE);
 
       await ensureJoinedAsHider();
       await initMap();
@@ -1244,6 +1301,7 @@
       statusBig.textContent = "Error";
       statusSmall.textContent = err?.message || "Could not load page.";
       setPingMessage(`<span class="bad">${esc(err?.message || "Could not load page.")}</span>`);
+      if (!gmap) showMapFallback(err?.message || "Could not load map.");
     });
   </script>
 </body>
