@@ -18,12 +18,13 @@
       --blue: #8bd3ff;
       --green: #58c99a;
       --red: #d92d55;
+      --amber: #c77b00;
 
       --card: rgba(255,255,255,.88);
       --border: rgba(17,16,24,.10);
       --shadow: 0 18px 60px rgba(17,16,24,.08);
 
-      --radius: 20px;
+      --radius: 22px;
       --radius2: 16px;
     }
 
@@ -62,13 +63,14 @@
       align-items:center;
       justify-content:space-between;
       gap:14px;
+      flex-wrap:wrap;
     }
 
     .brand{
       display:flex;
       align-items:center;
       gap:10px;
-      min-width: 140px;
+      min-width:140px;
     }
 
     .brand img{
@@ -88,6 +90,13 @@
     .brand .btxt b{ font-size:14px; letter-spacing:.2px; }
     .brand .btxt span{ font-size:12px; color:var(--muted); }
 
+    .topActions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
     .pill{
       display:inline-flex;
       align-items:center;
@@ -100,6 +109,12 @@
       font-size: 12px;
       font-weight: 900;
       white-space:nowrap;
+    }
+
+    .pill.good{
+      background: rgba(88,201,154,.12);
+      border-color: rgba(88,201,154,.25);
+      color: #1f6b50;
     }
 
     main{
@@ -143,7 +158,7 @@
       color: rgba(17,16,24,.70);
       font-size: 13px;
       line-height:1.45;
-      max-width: 75ch;
+      max-width: 80ch;
     }
 
     .btn{
@@ -183,6 +198,19 @@
       background: rgba(255,255,255,.78);
     }
 
+    .btn.warn{
+      border-color: rgba(199,123,0,.20);
+      background: rgba(199,123,0,.08);
+      color: #9a6100;
+    }
+
+    .btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
     .grid{
       display:grid;
       grid-template-columns: 1.05fr .95fr;
@@ -199,7 +227,7 @@
       background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.74));
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      overflow:hidden;
+      overflow:visible;
       backdrop-filter: blur(10px);
     }
 
@@ -226,55 +254,87 @@
       margin-top: 6px;
     }
 
-    .searchBubble{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
-      margin-bottom: 14px;
+    .searchShell{
+      position:relative;
     }
 
     .search{
-      flex: 1 1 280px;
+      width:100%;
       display:flex;
       align-items:center;
       gap:10px;
-      padding: 10px 12px;
-      border-radius: 999px;
+      padding: 12px 14px;
+      border-radius: 18px;
       border: 1px solid rgba(17,16,24,.10);
-      background: rgba(255,255,255,.88);
+      background: rgba(255,255,255,.90);
       box-shadow: 0 10px 26px rgba(17,16,24,.04);
+    }
+
+    .search:focus-within{
+      border-color: rgba(176,11,85,.25);
+      box-shadow: 0 14px 36px rgba(176,11,85,.08);
     }
 
     .search input{
       border:none;
       outline:none;
       width:100%;
-      font-size: 14px;
+      font-size: 15px;
       background: transparent;
       color: var(--ink);
     }
 
-    .selectWrap{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding: 12px 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(17,16,24,.10);
-      background: rgba(255,255,255,.88);
-      box-shadow: 0 10px 26px rgba(17,16,24,.04);
-      margin-bottom: 14px;
+    .recBox{
+      position:absolute;
+      top: calc(100% + 10px);
+      left:0;
+      right:0;
+      z-index:40;
+      display:none;
+      padding:10px;
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.45);
+      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
+      box-shadow: 0 24px 60px rgba(17,16,24,.12);
+      backdrop-filter: blur(12px);
+      max-height: 380px;
+      overflow:auto;
     }
 
-    .selectWrap select{
+    .recBox.show{ display:block; }
+
+    .recItem{
       width:100%;
       border:none;
-      outline:none;
-      background:transparent;
-      color:var(--ink);
-      font-size:14px;
+      background: transparent;
+      padding:10px;
+      border-radius: 14px;
+      display:grid;
+      grid-template-columns: 48px 1fr auto;
+      gap:10px;
+      align-items:center;
+      text-align:left;
+      cursor:pointer;
+      transition: background .12s ease, transform .12s ease;
+    }
+
+    .recItem:hover,
+    .recItem.active{
+      background: rgba(176,11,85,.07);
+      transform: translateY(-1px);
+    }
+
+    .recSide{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .results{
+      display:grid;
+      gap:10px;
     }
 
     .rowCard{
@@ -290,14 +350,11 @@
       min-width:0;
     }
 
-    .results{
-      display:grid;
-      gap:10px;
-    }
-
     @media (max-width: 680px){
       .rowCard{ grid-template-columns: 56px 1fr; }
       .rowActions{ grid-column: 1 / -1; justify-content:flex-end; }
+      .recItem{ grid-template-columns: 48px 1fr; }
+      .recSide{ grid-column: 1 / -1; justify-content:flex-start; }
     }
 
     .avatar{
@@ -307,6 +364,11 @@
       background: rgba(255,255,255,.90);
       object-fit:cover;
       box-shadow: 0 14px 30px rgba(17,16,24,.08);
+    }
+
+    .avatar.sm{
+      width:48px;height:48px;
+      box-shadow:none;
     }
 
     .avatarFallback{
@@ -358,11 +420,34 @@
       white-space:nowrap;
     }
 
+    .tag.good{
+      background: rgba(88,201,154,.10);
+      border-color: rgba(88,201,154,.20);
+      color: #1f6b50;
+    }
+
     .rowActions{
       display:flex;
       gap:10px;
       justify-content:flex-end;
       flex-wrap:wrap;
+    }
+
+    .toolbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:12px;
+    }
+
+    .toolbarLeft,
+    .toolbarRight{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
     }
 
     .empty{
@@ -447,9 +532,10 @@
         </div>
       </a>
 
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+      <div class="topActions">
         <span class="pill" id="countPill">0 users</span>
-        <span class="pill" id="listCountPill">0 added</span>
+        <span class="pill good" id="listCountPill">0 added</span>
+        <span class="pill" id="saveStatePill">Not loaded</span>
       </div>
     </div>
   </header>
@@ -459,12 +545,13 @@
       <div class="heroTop">
         <div>
           <h1>Host Hide &amp; Seek</h1>
-          <p>Search users by name, email, or U#, pick one from the dropdown, and add them to your list. Remove them anytime from the list on the right.</p>
+          <p>Search users by name, email, or U#, click a suggestion to add them, and the allowed list is saved to Firestore so <b>join.html</b> can read the same list.</p>
         </div>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
           <button class="btn ghost" id="refreshBtn" type="button">Refresh users</button>
-          <button class="btn" id="clearListBtn" type="button">Clear list</button>
+          <button class="btn warn" id="addFilteredBtn" type="button">Add all shown</button>
+          <button class="btn danger" id="clearListBtn" type="button">Remove all</button>
         </div>
       </div>
     </section>
@@ -477,28 +564,34 @@
           <div class="hRow">
             <div>
               <h2 class="h1">Find user</h2>
-              <div class="sub">Search by name, email, or U#.</div>
+              <div class="sub">Type a name, email, or U#. Click a recommendation to add them instantly.</div>
             </div>
           </div>
         </div>
 
         <div class="cardInner" style="padding-top:0;">
-          <div class="searchBubble">
-            <div class="search" role="search" style="max-width: 560px; width:100%;">
+          <div class="searchShell">
+            <div class="search" role="search">
               <span style="opacity:.6; font-weight:1000;">⌕</span>
               <input id="searchInput" type="search" placeholder="Search name, email, or U#…" autocomplete="off" />
             </div>
+
+            <div id="recBox" class="recBox"></div>
           </div>
 
-          <div class="selectWrap">
-            <span style="opacity:.6; font-weight:1000;">▾</span>
-            <select id="userSelect" aria-label="User dropdown">
-              <option value="">Loading users…</option>
-            </select>
+          <div class="toolbar">
+            <div class="toolbarLeft">
+              <span class="pill" id="shownPill">0 shown</span>
+              <span class="pill" id="notAddedPill">0 not added</span>
+            </div>
+            <div class="toolbarRight">
+              <button class="btn ghost" id="closeRecBtn" type="button">Close suggestions</button>
+            </div>
           </div>
 
-          <div id="selectedPreview" class="results"></div>
-          <div id="previewEmpty" class="empty">Search and choose a user from the dropdown.</div>
+          <div class="sub" style="margin-top:14px;">
+            Stored in Firestore doc: <b>gameLists/hideAndSeek</b>
+          </div>
         </div>
       </section>
 
@@ -506,8 +599,8 @@
         <div class="cardInner">
           <div class="hRow">
             <div>
-              <h2 class="h1">Added list</h2>
-              <div class="sub">Users you added on this page.</div>
+              <h2 class="h1">Allowed list</h2>
+              <div class="sub">Users on this list can join Hide &amp; Seek and be sent to hider.html.</div>
             </div>
           </div>
         </div>
@@ -523,7 +616,7 @@
   <footer>
     <div>
       <div class="footerTitle">uZone</div>
-      <div class="footerSub">Simple host list builder.</div>
+      <div class="footerSub">Hide &amp; Seek allowed list manager.</div>
     </div>
     <div class="footerSub">© uZone</div>
   </footer>
@@ -531,7 +624,15 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-    import { getFirestore, collection, getDocs, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      doc,
+      getDoc,
+      setDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD_k18vbiBsLhQB7PzgEVT9PEI_30Mu0kg",
@@ -548,25 +649,31 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
+    const LIST_REF = doc(db, "gameLists", "hideAndSeek");
+
     const els = {
       hello: document.getElementById("hello"),
       msgBox: document.getElementById("msgBox"),
       searchInput: document.getElementById("searchInput"),
-      userSelect: document.getElementById("userSelect"),
-      selectedPreview: document.getElementById("selectedPreview"),
-      previewEmpty: document.getElementById("previewEmpty"),
+      recBox: document.getElementById("recBox"),
+      closeRecBtn: document.getElementById("closeRecBtn"),
       addedResults: document.getElementById("addedResults"),
       addedEmpty: document.getElementById("addedEmpty"),
       countPill: document.getElementById("countPill"),
       listCountPill: document.getElementById("listCountPill"),
+      saveStatePill: document.getElementById("saveStatePill"),
+      shownPill: document.getElementById("shownPill"),
+      notAddedPill: document.getElementById("notAddedPill"),
       refreshBtn: document.getElementById("refreshBtn"),
-      clearListBtn: document.getElementById("clearListBtn")
+      clearListBtn: document.getElementById("clearListBtn"),
+      addFilteredBtn: document.getElementById("addFilteredBtn")
     };
 
-    let allUsers = [];
-    let filteredUsers = [];
-    let addedIds = [];
     let currentUser = null;
+    let allUsers = [];
+    let addedIds = [];
+    let activeRecIndex = -1;
+    let saveLock = false;
 
     function showMsg(text, kind = "info"){
       els.msgBox.className = "msg " + kind;
@@ -578,6 +685,10 @@
       els.msgBox.style.display = "none";
       els.msgBox.textContent = "";
       els.msgBox.className = "msg";
+    }
+
+    function setSaveState(text){
+      els.saveStatePill.textContent = text;
     }
 
     function esc(s){
@@ -595,24 +706,31 @@
     }
 
     function displayName(user){
-      return (user.name && user.name.trim())
+      return (user?.name && user.name.trim())
         ? user.name.trim()
-        : (user.displayName && user.displayName.trim())
+        : (user?.displayName && user.displayName.trim())
           ? user.displayName.trim()
           : "Unnamed";
     }
 
     function getEmail(user){
-      return (user.email || user.schoolEmail || user.studentEmail || "").toString().trim();
+      return (user?.email || user?.schoolEmail || user?.studentEmail || "").toString().trim();
     }
 
     function getPublicId(user){
-      const v = (user.publicId ?? user.publicID ?? user.uNumber ?? "").toString().trim();
+      const v = (user?.publicId ?? user?.publicID ?? user?.uNumber ?? "").toString().trim();
       return v || "U?";
     }
 
     function getAvatar(user){
-      return user.photoURL || user.photoUrl || user.avatarUrl || user.avatar || "";
+      return (
+        user?.photoURL ||
+        user?.photoUrl ||
+        user?.avatarUrl ||
+        user?.avatar ||
+        user?.profilePic ||
+        ""
+      ).toString().trim();
     }
 
     function extractPublicNumber(publicId){
@@ -645,18 +763,19 @@
       return list;
     }
 
-    function avatarHTML(user){
+    function avatarHTML(user, small = false){
       const avatar = getAvatar(user);
       const name = displayName(user);
       const initial = name.trim() ? name.trim().charAt(0).toUpperCase() : "?";
+      const cls = small ? "avatar sm" : "avatar";
 
       if (avatar){
-        return `<img class="avatar" alt="${esc(name)}" src="${esc(avatar)}" referrerpolicy="no-referrer">`;
+        return `<img class="${cls}" alt="${esc(name)}" src="${esc(avatar)}" referrerpolicy="no-referrer">`;
       }
-      return `<div class="avatar avatarFallback">${esc(initial)}</div>`;
+      return `<div class="${cls} avatarFallback">${esc(initial)}</div>`;
     }
 
-    function userCardHTML(user, mode){
+    function userCardHTML(user){
       const uid = user.__uid || "";
       const name = displayName(user);
       const email = getEmail(user);
@@ -670,88 +789,88 @@
             <div class="meta">
               <span class="tag">🆔 ${esc(publicId)}</span>
               ${email ? `<span class="tag">✉️ ${esc(email)}</span>` : ""}
+              <span class="tag good">Allowed</span>
             </div>
           </div>
           <div class="rowActions">
-            ${
-              mode === "preview"
-                ? `<button class="btn primary" type="button" data-action="add" data-uid="${esc(uid)}">Add</button>`
-                : `<button class="btn danger" type="button" data-action="remove" data-uid="${esc(uid)}">Remove</button>`
-            }
+            <button class="btn danger" type="button" data-action="remove" data-uid="${esc(uid)}">Remove</button>
           </div>
         </article>
       `;
     }
 
-    function getSelectedUser(){
-      const uid = els.userSelect.value || "";
-      if (!uid) return null;
-      return allUsers.find(u => u.__uid === uid) || null;
+    function buildStoredUser(user){
+      return {
+        uid: user.__uid,
+        name: displayName(user),
+        email: getEmail(user),
+        publicId: getPublicId(user),
+        photoURL: getAvatar(user)
+      };
     }
 
-    function populateDropdown(){
+    function getFilteredUsers(limit = 8){
       const q = norm(els.searchInput.value);
-      filteredUsers = allUsers.filter(user => !q || userBlob(user).includes(q));
-      sortUsers(filteredUsers);
-
-      els.userSelect.innerHTML = "";
-
-      if (!filteredUsers.length){
-        els.userSelect.innerHTML = `<option value="">No matching users</option>`;
-        els.previewEmpty.style.display = "block";
-        els.selectedPreview.innerHTML = "";
-        els.previewEmpty.textContent = q ? "No matching users found." : "No users found.";
-        return;
-      }
-
-      const placeholder = document.createElement("option");
-      placeholder.value = "";
-      placeholder.textContent = `Select a user (${filteredUsers.length})`;
-      els.userSelect.appendChild(placeholder);
-
-      filteredUsers.slice(0, 200).forEach(user => {
-        const opt = document.createElement("option");
-        opt.value = user.__uid;
-        opt.textContent = `${displayName(user)} • ${getPublicId(user)}${getEmail(user) ? " • " + getEmail(user) : ""}`;
-        els.userSelect.appendChild(opt);
+      let list = allUsers.filter(user => {
+        if (!q) return true;
+        return userBlob(user).includes(q);
       });
 
-      renderSelectedPreview();
+      sortUsers(list);
+
+      els.shownPill.textContent = `${list.length} shown`;
+      els.notAddedPill.textContent = `${list.filter(u => !addedIds.includes(u.__uid)).length} not added`;
+
+      return list.slice(0, limit);
     }
 
-    function renderSelectedPreview(){
-      const user = getSelectedUser();
-      els.selectedPreview.innerHTML = "";
+    function getAllFilteredUsers(){
+      const q = norm(els.searchInput.value);
+      let list = allUsers.filter(user => !q || userBlob(user).includes(q));
+      sortUsers(list);
+      return list;
+    }
 
-      if (!user){
-        els.previewEmpty.style.display = "block";
-        els.previewEmpty.textContent = "Search and choose a user from the dropdown.";
+    function renderRecommendations(){
+      const q = norm(els.searchInput.value);
+      const list = getFilteredUsers(8);
+      activeRecIndex = -1;
+
+      if (!list.length){
+        els.recBox.innerHTML = `
+          <div class="empty">
+            ${q ? "No matching users found." : "Start typing to search users."}
+          </div>
+        `;
+        els.recBox.classList.toggle("show", !!q);
         return;
       }
 
-      els.previewEmpty.style.display = "none";
-
-      if (addedIds.includes(user.__uid)){
-        els.selectedPreview.innerHTML = `
-          <article class="rowCard">
-            ${avatarHTML(user)}
+      els.recBox.innerHTML = list.map((user, index) => {
+        const already = addedIds.includes(user.__uid);
+        return `
+          <button class="recItem" type="button" data-index="${index}" data-uid="${esc(user.__uid)}">
+            ${avatarHTML(user, true)}
             <div class="rowMain">
               <div class="name">${esc(displayName(user))}</div>
               <div class="meta">
                 <span class="tag">🆔 ${esc(getPublicId(user))}</span>
                 ${getEmail(user) ? `<span class="tag">✉️ ${esc(getEmail(user))}</span>` : ""}
-                <span class="tag">Already added</span>
               </div>
             </div>
-            <div class="rowActions">
-              <button class="btn" type="button" disabled>Added</button>
+            <div class="recSide">
+              ${already ? `<span class="tag good">Added</span>` : `<span class="tag">Click to add</span>`}
             </div>
-          </article>
+          </button>
         `;
-        return;
-      }
+      }).join("");
 
-      els.selectedPreview.innerHTML = userCardHTML(user, "preview");
+      els.recBox.classList.add("show");
+    }
+
+    function closeRecommendations(){
+      els.recBox.classList.remove("show");
+      activeRecIndex = -1;
     }
 
     function renderAddedList(){
@@ -769,29 +888,89 @@
 
       els.addedEmpty.style.display = "none";
       users.forEach(user => {
-        els.addedResults.insertAdjacentHTML("beforeend", userCardHTML(user, "added"));
+        els.addedResults.insertAdjacentHTML("beforeend", userCardHTML(user));
       });
     }
 
-    function addUser(uid){
-      if (!uid) return;
-      if (addedIds.includes(uid)) return;
-      addedIds.push(uid);
-      renderSelectedPreview();
-      renderAddedList();
-      showMsg("User added to the list.", "ok");
+    async function saveList(){
+      if (saveLock) return;
+      saveLock = true;
+      setSaveState("Saving…");
+
+      try{
+        const storedUsers = addedIds
+          .map(uid => allUsers.find(u => u.__uid === uid))
+          .filter(Boolean)
+          .map(buildStoredUser);
+
+        await setDoc(LIST_REF, {
+          game: "hideAndSeek",
+          allowedUids: addedIds,
+          allowedUsers: storedUsers,
+          count: addedIds.length,
+          updatedAt: serverTimestamp(),
+          updatedBy: currentUser?.uid || null
+        }, { merge: true });
+
+        setSaveState("Saved");
+      } catch (err){
+        console.error(err);
+        setSaveState("Save failed");
+        showMsg("Could not save the Hide & Seek list to Firestore.", "error");
+      } finally {
+        saveLock = false;
+      }
     }
 
-    function removeUser(uid){
-      addedIds = addedIds.filter(id => id !== uid);
-      renderSelectedPreview();
+    async function addUser(uid){
+      if (!uid) return;
+      if (addedIds.includes(uid)){
+        showMsg("That user is already on the allowed list.", "info");
+        return;
+      }
+
+      addedIds.push(uid);
       renderAddedList();
-      showMsg("User removed from the list.", "ok");
+      renderRecommendations();
+      await saveList();
+      showMsg("User added and saved.", "ok");
+    }
+
+    async function removeUser(uid){
+      addedIds = addedIds.filter(id => id !== uid);
+      renderAddedList();
+      renderRecommendations();
+      await saveList();
+      showMsg("User removed and saved.", "ok");
+    }
+
+    async function clearList(){
+      addedIds = [];
+      renderAddedList();
+      renderRecommendations();
+      await saveList();
+      showMsg("Allowed list cleared and saved.", "ok");
+    }
+
+    async function addAllFiltered(){
+      const filtered = getAllFilteredUsers()
+        .map(user => user.__uid)
+        .filter(uid => !addedIds.includes(uid));
+
+      if (!filtered.length){
+        showMsg("No new matching users to add.", "info");
+        return;
+      }
+
+      addedIds = [...new Set([...addedIds, ...filtered])];
+      renderAddedList();
+      renderRecommendations();
+      await saveList();
+      showMsg(`Added ${filtered.length} user${filtered.length === 1 ? "" : "s"} and saved.`, "ok");
     }
 
     async function loadUsers(){
       showMsg("Loading users…", "info");
-
       try{
         const snap = await getDocs(collection(db, "users"));
         const users = [];
@@ -804,43 +983,120 @@
 
         allUsers = sortUsers(users);
         els.countPill.textContent = `${allUsers.length} users`;
-        populateDropdown();
-        renderAddedList();
-        hideMsg();
       } catch (err){
         console.error(err);
         els.countPill.textContent = "0 users";
-        showMsg("Could not load users from Firestore.", "error");
+        throw err;
       }
     }
 
+    async function loadSavedList(){
+      try{
+        const snap = await getDoc(LIST_REF);
+        if (!snap.exists()){
+          addedIds = [];
+          setSaveState("No saved list");
+          return;
+        }
+
+        const data = snap.data() || {};
+        addedIds = Array.isArray(data.allowedUids)
+          ? [...new Set(data.allowedUids.map(v => String(v || "").trim()).filter(Boolean))]
+          : [];
+
+        setSaveState("Loaded");
+      } catch (err){
+        console.error(err);
+        setSaveState("Load failed");
+        throw err;
+      }
+    }
+
+    async function boot(){
+      try{
+        await Promise.all([loadUsers(), loadSavedList()]);
+        renderAddedList();
+        renderRecommendations();
+        hideMsg();
+      } catch (err){
+        console.error(err);
+        showMsg("Could not load users or the saved Hide & Seek list.", "error");
+      }
+    }
+
+    els.searchInput.addEventListener("focus", () => {
+      renderRecommendations();
+      if (allUsers.length) els.recBox.classList.add("show");
+    });
+
     els.searchInput.addEventListener("input", () => {
-      populateDropdown();
+      renderRecommendations();
     });
 
-    els.userSelect.addEventListener("change", () => {
-      renderSelectedPreview();
+    els.searchInput.addEventListener("keydown", async (e) => {
+      const items = [...els.recBox.querySelectorAll(".recItem")];
+      if (!items.length) return;
+
+      if (e.key === "ArrowDown"){
+        e.preventDefault();
+        activeRecIndex = Math.min(activeRecIndex + 1, items.length - 1);
+      } else if (e.key === "ArrowUp"){
+        e.preventDefault();
+        activeRecIndex = Math.max(activeRecIndex - 1, 0);
+      } else if (e.key === "Enter"){
+        e.preventDefault();
+        if (activeRecIndex >= 0 && items[activeRecIndex]){
+          await addUser(items[activeRecIndex].dataset.uid || "");
+          return;
+        }
+        const first = items[0];
+        if (first) await addUser(first.dataset.uid || "");
+        return;
+      } else if (e.key === "Escape"){
+        closeRecommendations();
+        return;
+      } else {
+        return;
+      }
+
+      items.forEach((item, i) => item.classList.toggle("active", i === activeRecIndex));
+      if (items[activeRecIndex]){
+        items[activeRecIndex].scrollIntoView({ block: "nearest" });
+      }
     });
 
-    els.selectedPreview.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-action='add']");
+    els.recBox.addEventListener("click", async (e) => {
+      const btn = e.target.closest(".recItem");
       if (!btn) return;
-      addUser(btn.dataset.uid || "");
+      await addUser(btn.dataset.uid || "");
     });
 
-    els.addedResults.addEventListener("click", (e) => {
+    els.addedResults.addEventListener("click", async (e) => {
       const btn = e.target.closest("[data-action='remove']");
       if (!btn) return;
-      removeUser(btn.dataset.uid || "");
+      await removeUser(btn.dataset.uid || "");
     });
 
-    els.refreshBtn.addEventListener("click", loadUsers);
+    els.refreshBtn.addEventListener("click", async () => {
+      await boot();
+      showMsg("Users and saved list refreshed.", "ok");
+    });
 
-    els.clearListBtn.addEventListener("click", () => {
-      addedIds = [];
-      renderSelectedPreview();
-      renderAddedList();
-      showMsg("List cleared.", "ok");
+    els.clearListBtn.addEventListener("click", async () => {
+      await clearList();
+    });
+
+    els.addFilteredBtn.addEventListener("click", async () => {
+      await addAllFiltered();
+    });
+
+    els.closeRecBtn.addEventListener("click", () => {
+      closeRecommendations();
+    });
+
+    document.addEventListener("click", (e) => {
+      const insideSearch = e.target.closest(".searchShell");
+      if (!insideSearch) closeRecommendations();
     });
 
     onAuthStateChanged(auth, async (user) => {
@@ -863,7 +1119,7 @@
       } catch (_) {}
 
       els.hello.textContent = name ? `Hey, ${name}` : "Welcome back";
-      await loadUsers();
+      await boot();
     });
   </script>
 </body>
