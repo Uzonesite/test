@@ -9,22 +9,15 @@
   <style>
     :root{
       --bg: #f8f7ff;
-      --bg2: #fcfbff;
       --ink: #111018;
       --muted: rgba(17,16,24,.62);
-
       --pink: #b00b55;
       --purple: #6d28d9;
       --blue: #8bd3ff;
       --green: #58c99a;
       --red: #d92d55;
-
-      --card: rgba(255,255,255,.88);
-      --border: rgba(17,16,24,.10);
       --shadow: 0 18px 60px rgba(17,16,24,.08);
-
       --radius: 22px;
-      --radius2: 16px;
     }
 
     *{ box-sizing:border-box; }
@@ -42,7 +35,7 @@
     }
 
     a{ color:inherit; text-decoration:none; }
-    button, input{ font:inherit; }
+    button{ font:inherit; }
 
     header{
       position: sticky;
@@ -85,22 +78,8 @@
       line-height:1.05;
     }
 
-    .brandText b{
-      font-size:14px;
-      letter-spacing:.2px;
-    }
-
-    .brandText span{
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .topActions{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
+    .brandText b{ font-size:14px; letter-spacing:.2px; }
+    .brandText span{ font-size:12px; color:var(--muted); }
 
     .pill{
       display:inline-flex;
@@ -164,19 +143,21 @@
       gap:18px;
     }
 
-    .hero{
-      position:relative;
+    .hero, .card, footer{
+      border:1px solid rgba(255,255,255,.45);
+      background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.74));
       border-radius: var(--radius);
-      overflow:hidden;
-      border: 1px solid rgba(255,255,255,.48);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero{
+      padding: 20px;
       background:
         radial-gradient(650px 260px at 10% 35%, rgba(139,211,255,.34), transparent 60%),
         radial-gradient(700px 280px at 65% 10%, rgba(109,40,217,.14), transparent 55%),
         radial-gradient(620px 240px at 95% 75%, rgba(176,11,85,.14), transparent 55%),
         linear-gradient(180deg, rgba(255,255,255,.84), rgba(255,255,255,.74));
-      box-shadow: 0 22px 70px rgba(17,16,24,.08);
-      padding: 20px;
-      backdrop-filter: blur(12px);
     }
 
     .heroTop{
@@ -212,26 +193,7 @@
       .grid{ grid-template-columns: 1fr; }
     }
 
-    .card{
-      border:1px solid rgba(255,255,255,.45);
-      background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.74));
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-      backdrop-filter: blur(10px);
-    }
-
-    .cardInner{
-      padding:16px;
-    }
-
-    .hRow{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-end;
-      gap:12px;
-      flex-wrap:wrap;
-    }
+    .cardInner{ padding:16px; }
 
     .h1{
       margin:0;
@@ -275,11 +237,6 @@
       display:block;
     }
 
-    .signBox{
-      display:grid;
-      gap:12px;
-    }
-
     .accountCard{
       display:flex;
       align-items:center;
@@ -289,6 +246,7 @@
       border:1px solid rgba(17,16,24,.10);
       background: rgba(255,255,255,.78);
       box-shadow: 0 10px 26px rgba(17,16,24,.04);
+      margin-top: 12px;
     }
 
     .avatar{
@@ -311,19 +269,10 @@
       background: linear-gradient(135deg, var(--pink), var(--purple));
     }
 
-    .accountMain{
-      min-width:0;
-      display:grid;
-      gap:6px;
-    }
-
     .name{
       font-size:15px;
       font-weight:1000;
       line-height:1.2;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
     }
 
     .meta{
@@ -334,6 +283,7 @@
       color: rgba(17,16,24,.72);
       font-size:13px;
       line-height:1.35;
+      margin-top:6px;
     }
 
     .tag{
@@ -344,10 +294,6 @@
       border:1px solid rgba(17,16,24,.10);
       background: rgba(255,255,255,.72);
       color: rgba(17,16,24,.72);
-      max-width:100%;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
     }
 
     .eventList{
@@ -365,14 +311,6 @@
       box-shadow: 0 18px 50px rgba(17,16,24,.06);
     }
 
-    .eventTop{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-
     .eventTitle{
       margin:0;
       font-size:16px;
@@ -385,13 +323,6 @@
       font-size:13px;
       color: rgba(17,16,24,.7);
       line-height:1.45;
-    }
-
-    .eventMeta{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
     }
 
     .empty{
@@ -408,19 +339,11 @@
       width:min(1120px, 92vw);
       margin: 14px auto 30px auto;
       padding:20px;
-      border:1px solid rgba(255,255,255,.45);
-      border-radius:22px;
-      background:
-        radial-gradient(520px 220px at 0% 0%, rgba(139,211,255,.18), transparent 60%),
-        radial-gradient(520px 220px at 100% 100%, rgba(176,11,85,.10), transparent 60%),
-        linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.74));
-      box-shadow: 0 18px 50px rgba(17,16,24,.06);
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:16px;
       flex-wrap:wrap;
-      backdrop-filter: blur(10px);
     }
 
     .footerTitle{
@@ -447,7 +370,7 @@
         </div>
       </a>
 
-      <div class="topActions">
+      <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
         <span class="pill" id="authPill">Checking sign-in…</span>
         <a class="btn" href="index.html">Home</a>
       </div>
@@ -459,7 +382,7 @@
       <div class="heroTop">
         <div>
           <h1>Join an event</h1>
-          <p>Sign in on this page, pick a live event, and join it. Right now this page is set up for Hide &amp; Seek. If your account is on the host’s allowed list, you’ll be sent to <b>hider.html</b>.</p>
+          <p>Sign in on this page, then join Hide &amp; Seek. If your UID is on the allowed list, you’ll be sent to <b>hider.html</b>.</p>
         </div>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -474,31 +397,23 @@
     <section class="grid">
       <section class="card">
         <div class="cardInner">
-          <div class="hRow">
-            <div>
-              <h2 class="h1">Account</h2>
-              <div class="sub">Users can sign in right here without being redirected away.</div>
-            </div>
+          <h2 class="h1">Account</h2>
+          <div class="sub">If you are not signed in, use the button below. It signs in from this page.</div>
+
+          <div id="signedOutBox" class="empty" style="margin-top:12px;">You’re not signed in yet.</div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+            <button class="btn primary" id="googleSignInBtn" type="button">Sign in with Google</button>
           </div>
-        </div>
 
-        <div class="cardInner" style="padding-top:0;">
-          <div class="signBox" id="signSection">
-            <div class="empty" id="signedOutBox">
-              You’re not signed in yet.
-            </div>
-
-            <button class="btn primary" id="googleSignInBtn" type="button">Sign in to join</button>
-
-            <div class="accountCard" id="accountCard" style="display:none;">
-              <div id="avatarWrap"></div>
-              <div class="accountMain">
-                <div class="name" id="accountName">Signed in</div>
-                <div class="meta">
-                  <span class="tag" id="accountEmail"></span>
-                  <span class="tag" id="accountUid"></span>
-                  <span class="tag" id="accountPublicId" style="display:none;"></span>
-                </div>
+          <div class="accountCard" id="accountCard" style="display:none;">
+            <div id="avatarWrap"></div>
+            <div>
+              <div class="name" id="accountName">Signed in</div>
+              <div class="meta">
+                <span class="tag" id="accountEmail"></span>
+                <span class="tag" id="accountUid"></span>
+                <span class="tag" id="accountPublicId" style="display:none;"></span>
               </div>
             </div>
           </div>
@@ -507,18 +422,10 @@
 
       <section class="card">
         <div class="cardInner">
-          <div class="hRow">
-            <div>
-              <h2 class="h1">Events</h2>
-              <div class="sub">Available events you can join right now.</div>
-            </div>
-            <span class="pill" id="eventCountPill">1 event</span>
-          </div>
-        </div>
+          <h2 class="h1">Events</h2>
+          <div class="sub">Available events you can join right now.</div>
 
-        <div class="cardInner" style="padding-top:0;">
-          <div class="eventList" id="eventList"></div>
-          <div class="empty" id="eventEmpty" style="display:none;">No events are available right now.</div>
+          <div class="eventList" id="eventList" style="margin-top:12px;"></div>
         </div>
       </section>
     </section>
@@ -534,7 +441,17 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      GoogleAuthProvider,
+      signInWithPopup,
+      signInWithRedirect,
+      getRedirectResult,
+      browserLocalPersistence,
+      setPersistence,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -553,8 +470,11 @@
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
+    provider.setCustomParameters({
+      prompt: "select_account"
+    });
+
     const HNS_WHITELIST_KEY = "hns_whitelist_uids";
-    const HNS_EVENTS_KEY = "hns_join_events";
 
     const els = {
       hello: document.getElementById("hello"),
@@ -570,13 +490,12 @@
       accountEmail: document.getElementById("accountEmail"),
       accountUid: document.getElementById("accountUid"),
       accountPublicId: document.getElementById("accountPublicId"),
-      eventList: document.getElementById("eventList"),
-      eventEmpty: document.getElementById("eventEmpty"),
-      eventCountPill: document.getElementById("eventCountPill")
+      eventList: document.getElementById("eventList")
     };
 
     let currentUser = null;
     let currentUserDoc = null;
+    let authReady = false;
 
     function esc(s){
       return String(s ?? "").replace(/[&<>"']/g, m => ({
@@ -628,39 +547,24 @@
         const parsed = JSON.parse(raw);
         if (!Array.isArray(parsed)) return [];
         return [...new Set(parsed.map(v => String(v || "").trim()).filter(Boolean))];
-      } catch (_) {
+      } catch {
         return [];
       }
     }
 
-    function defaultEvents(){
-      return [
-        {
-          id: "hide-and-seek",
-          title: "Hide & Seek",
-          description: "Join the current Hide & Seek game. If you’re on the allowed list, you’ll go to hider.html.",
-          target: "hider.html",
-          type: "hns"
-        }
-      ];
-    }
-
-    function getJoinEvents(){
-      const stored = readLocalArrayObjects(HNS_EVENTS_KEY);
-      if (stored.length) return stored;
-      return defaultEvents();
-    }
-
-    function readLocalArrayObjects(key){
+    async function loadCurrentUserDoc(uid){
       try{
-        const raw = localStorage.getItem(key);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) return [];
-        return parsed.filter(x => x && typeof x === "object");
-      } catch (_) {
-        return [];
+        const snap = await getDoc(doc(db, "users", uid));
+        return snap.exists() ? (snap.data() || {}) : null;
+      } catch {
+        return null;
       }
+    }
+
+    function isAllowedForHideAndSeek(){
+      if (!currentUser) return false;
+      const ids = readLocalArray(HNS_WHITELIST_KEY);
+      return ids.includes(currentUser.uid);
     }
 
     function setSignedOutUI(){
@@ -699,98 +603,72 @@
       }
     }
 
-    async function loadCurrentUserDoc(uid){
-      try{
-        const snap = await getDoc(doc(db, "users", uid));
-        return snap.exists() ? (snap.data() || {}) : null;
-      } catch (_) {
-        return null;
-      }
-    }
-
-    function isAllowedForHideAndSeek(){
-      if (!currentUser) return false;
-      const ids = readLocalArray(HNS_WHITELIST_KEY);
-      return ids.includes(currentUser.uid);
-    }
-
-    function eventCardHTML(ev){
-      const title = (ev.title || ev.name || "Untitled Event").toString().trim();
-      const description = (ev.description || "").toString().trim();
-      const isHns = (ev.type || "") === "hns" || ev.id === "hide-and-seek";
-
-      return `
+    function renderEvents(){
+      els.eventList.innerHTML = `
         <article class="eventCard">
-          <div class="eventTop">
-            <div>
-              <h3 class="eventTitle">${esc(title)}</h3>
-              <p class="eventDesc">${esc(description || "Join this event.")}</p>
-            </div>
-            <div class="eventMeta">
-              <span class="tag">${isHns ? "Hide & Seek" : "Event"}</span>
-              <span class="tag">Live</span>
-            </div>
+          <div>
+            <h3 class="eventTitle">Hide &amp; Seek</h3>
+            <p class="eventDesc">Join the current Hide &amp; Seek game. If your account is on the allowed list from hosthns.html, you’ll go to hider.html.</p>
           </div>
-
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn primary" type="button" data-join-event="${esc(ev.id || "")}">
-              Join
-            </button>
+            <button class="btn primary" id="joinHnsBtn" type="button">Join</button>
           </div>
         </article>
       `;
-    }
 
-    function renderEvents(){
-      const events = getJoinEvents();
-      els.eventList.innerHTML = "";
-      els.eventCountPill.textContent = `${events.length} event${events.length === 1 ? "" : "s"}`;
-      els.eventEmpty.style.display = events.length ? "none" : "block";
+      document.getElementById("joinHnsBtn").addEventListener("click", async () => {
+        if (!authReady){
+          showMsg("Still checking sign-in. Try again in a second.", "info");
+          return;
+        }
 
-      events.forEach(ev => {
-        els.eventList.insertAdjacentHTML("beforeend", eventCardHTML(ev));
-      });
-    }
+        if (!currentUser){
+          showMsg("Sign in first to join this event.", "error");
+          return;
+        }
 
-    async function joinEvent(eventId){
-      if (!currentUser){
-        showMsg("Sign in first to join this event.", "error");
-        return;
-      }
-
-      const events = getJoinEvents();
-      const ev = events.find(x => String(x.id || "") === String(eventId || ""));
-      if (!ev){
-        showMsg("That event could not be found.", "error");
-        return;
-      }
-
-      if (String(ev.id) === "hide-and-seek" || String(ev.type || "") === "hns"){
-        const allowed = isAllowedForHideAndSeek();
-        if (!allowed){
-          showMsg("You are not on the Hide & Seek allowed list yet.", "error");
+        if (!isAllowedForHideAndSeek()){
+          showMsg("You are not on the Hide & Seek added list yet.", "error");
           return;
         }
 
         showMsg("Allowed. Sending you into the game…", "ok");
-        setTimeout(() => {
-          window.location.href = ev.target || "hider.html";
-        }, 350);
-        return;
-      }
-
-      showMsg("This event type is not wired yet.", "error");
+        window.location.href = "hider.html";
+      });
     }
 
-    els.googleSignInBtn.addEventListener("click", async () => {
-      showMsg("Signing you in…", "info");
+    async function doGoogleSignIn(){
+      showMsg("Starting sign-in…", "info");
+
+      try{
+        await setPersistence(auth, browserLocalPersistence);
+      } catch (err){
+        console.warn("Could not set persistence:", err);
+      }
+
       try{
         await signInWithPopup(auth, provider);
       } catch (err){
-        console.error(err);
-        showMsg("Could not sign you in on this page.", "error");
+        console.error("Popup sign-in failed:", err);
+
+        const code = err?.code || "";
+        const shouldFallback =
+          code === "auth/popup-blocked" ||
+          code === "auth/popup-closed-by-user" ||
+          code === "auth/cancelled-popup-request" ||
+          code === "auth/operation-not-supported-in-this-environment";
+
+        if (shouldFallback){
+          showMsg("Popup was blocked, switching to sign-in redirect…", "info");
+          await signInWithRedirect(auth, provider);
+          return;
+        }
+
+        showMsg(`Sign-in failed: ${code || "unknown error"}`, "error");
       }
-    });
+    }
+
+    els.googleSignInBtn.addEventListener("click", doGoogleSignIn);
 
     els.signOutBtn.addEventListener("click", async () => {
       try{
@@ -804,46 +682,69 @@
 
     els.refreshBtn.addEventListener("click", async () => {
       renderEvents();
+
+      if (!authReady){
+        showMsg("Still checking sign-in…", "info");
+        return;
+      }
+
       if (currentUser){
         currentUserDoc = await loadCurrentUserDoc(currentUser.uid);
         setSignedInUI(currentUser, currentUserDoc);
-        showMsg(isAllowedForHideAndSeek()
-          ? "Refreshed. Your account is currently on the Hide & Seek allowed list."
-          : "Refreshed. Your account is not currently on the Hide & Seek allowed list.",
-          isAllowedForHideAndSeek() ? "ok" : "info"
-        );
+
+        if (isAllowedForHideAndSeek()){
+          showMsg("Refreshed. Your account is on the Hide & Seek added list.", "ok");
+        } else {
+          showMsg("Refreshed. Your account is not on the Hide & Seek added list.", "info");
+        }
       } else {
         setSignedOutUI();
         showMsg("Refreshed.", "ok");
       }
     });
 
-    els.eventList.addEventListener("click", async (e) => {
-      const btn = e.target.closest("[data-join-event]");
-      if (!btn) return;
-      await joinEvent(btn.getAttribute("data-join-event"));
-    });
+    renderEvents();
 
-    onAuthStateChanged(auth, async (user) => {
-      currentUser = user || null;
-      renderEvents();
+    (async () => {
+      showMsg("Checking sign-in…", "info");
 
-      if (!user){
-        currentUserDoc = null;
-        setSignedOutUI();
-        hideMsg();
-        return;
+      try{
+        await setPersistence(auth, browserLocalPersistence);
+      } catch (err){
+        console.warn("Persistence setup failed:", err);
       }
 
-      currentUserDoc = await loadCurrentUserDoc(user.uid);
-      setSignedInUI(user, currentUserDoc);
-
-      if (isAllowedForHideAndSeek()){
-        showMsg("You’re signed in and on the Hide & Seek allowed list.", "ok");
-      } else {
-        showMsg("You’re signed in, but you are not on the Hide & Seek allowed list yet.", "info");
+      try{
+        const redirectResult = await getRedirectResult(auth);
+        if (redirectResult?.user){
+          showMsg("Signed in successfully.", "ok");
+        }
+      } catch (err){
+        console.error("Redirect result error:", err);
+        showMsg(`Redirect sign-in failed: ${err?.code || "unknown error"}`, "error");
       }
-    });
+
+      onAuthStateChanged(auth, async (user) => {
+        authReady = true;
+        currentUser = user || null;
+
+        if (!user){
+          currentUserDoc = null;
+          setSignedOutUI();
+          hideMsg();
+          return;
+        }
+
+        currentUserDoc = await loadCurrentUserDoc(user.uid);
+        setSignedInUI(user, currentUserDoc);
+
+        if (isAllowedForHideAndSeek()){
+          showMsg("You’re signed in and on the Hide & Seek added list.", "ok");
+        } else {
+          showMsg("You’re signed in, but not on the Hide & Seek added list yet.", "info");
+        }
+      });
+    })();
   </script>
 </body>
 </html>
