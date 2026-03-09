@@ -1,0 +1,1249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>uZone • Host Hide & Seek</title>
+  <link rel="icon" type="image/png" href="logo.png" />
+
+  <style>
+    :root{
+      --bg: #f8f7ff;
+      --bg2: #fcfbff;
+      --ink: #111018;
+      --muted: rgba(17,16,24,.62);
+
+      --pink: #b00b55;
+      --purple: #6d28d9;
+      --blue: #8bd3ff;
+      --green: #58c99a;
+      --red: #d92d55;
+
+      --card: rgba(255,255,255,.88);
+      --border: rgba(17,16,24,.10);
+      --shadow: 0 18px 60px rgba(17,16,24,.08);
+
+      --radius: 20px;
+      --radius2: 16px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      color:var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(1200px 700px at 10% -10%, rgba(139,211,255,.20), transparent 60%),
+        radial-gradient(1000px 600px at 100% 0%, rgba(176,11,85,.08), transparent 58%),
+        radial-gradient(1100px 700px at 50% 100%, rgba(109,40,217,.10), transparent 62%),
+        linear-gradient(180deg, #fbfaff 0%, #f8f7ff 45%, #fbfbff 100%);
+      background-attachment: fixed;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    button, input, select{ font:inherit; }
+    img{ max-width:100%; display:block; }
+
+    header{
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      backdrop-filter: blur(14px);
+      background: rgba(255,255,255,.72);
+      border-bottom: 1px solid rgba(17,16,24,.08);
+    }
+
+    .topbar{
+      width: min(1120px, 92vw);
+      margin: 0 auto;
+      padding: 12px 0;
+      display:grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items:center;
+      gap: 14px;
+    }
+
+    .brand{
+      justify-self: start;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 140px;
+    }
+
+    .brand img{
+      width:34px;height:34px;
+      border-radius:10px;
+      border:1px solid rgba(17,16,24,.08);
+      background: rgba(255,255,255,.6);
+      object-fit: cover;
+    }
+
+    .brand .btxt{
+      line-height:1.05;
+      display:grid;
+      gap:2px;
+    }
+
+    .brand .btxt b{ font-size:14px; letter-spacing:.2px; }
+    .brand .btxt span{ font-size:12px; color:var(--muted); }
+
+    .tabs{
+      justify-self: center;
+      display:flex;
+      gap:8px;
+      padding:6px;
+      border-radius: 999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 14px 40px rgba(17,16,24,.05);
+      overflow:auto;
+      max-width: min(620px, 92vw);
+    }
+
+    .tab{
+      flex: 0 0 auto;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid transparent;
+      color: rgba(17,16,24,.80);
+      background: transparent;
+      cursor:pointer;
+      transition: transform .12s ease, background .12s ease, border-color .12s ease, box-shadow .12s ease;
+      white-space:nowrap;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .tab:hover{ transform: translateY(-1px); background: rgba(139,211,255,.18); }
+    .tab.active{
+      background: linear-gradient(135deg, rgba(176,11,85,.11), rgba(109,40,217,.08));
+      border-color: rgba(176,11,85,.20);
+      box-shadow: 0 12px 30px rgba(176,11,85,.08);
+    }
+
+    .tab .dot{
+      width:8px;height:8px;border-radius:999px;
+      background: rgba(17,16,24,.25);
+    }
+
+    .tab.active .dot{
+      background: var(--pink);
+      box-shadow: 0 0 0 4px rgba(176,11,85,.14);
+    }
+
+    .version{
+      justify-self:end;
+      text-align:right;
+      display:grid;
+      gap:2px;
+      min-width: 160px;
+    }
+
+    .version b{
+      font-size: 12px;
+      letter-spacing:.2px;
+    }
+
+    .version span{
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    @media (max-width: 760px){
+      .topbar{ grid-template-columns: 1fr; gap:10px; }
+      .tabs{ justify-self: stretch; max-width: 100%; }
+      .version{ justify-self: start; text-align:left; min-width: unset; }
+    }
+
+    main{
+      width: min(1120px, 92vw);
+      margin: 16px auto 44px auto;
+      display:grid;
+      gap: 18px;
+    }
+
+    .banner{
+      position:relative;
+      border-radius: var(--radius);
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,.48);
+      background:
+        radial-gradient(650px 260px at 10% 35%, rgba(139,211,255,.34), transparent 60%),
+        radial-gradient(700px 280px at 65% 10%, rgba(109,40,217,.14), transparent 55%),
+        radial-gradient(620px 240px at 95% 75%, rgba(176,11,85,.14), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.84), rgba(255,255,255,.74));
+      box-shadow: 0 22px 70px rgba(17,16,24,.08);
+      padding: 16px;
+      backdrop-filter: blur(12px);
+    }
+
+    .bannerTop{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap:wrap;
+    }
+
+    .banner h2{
+      font-size: 18px;
+      letter-spacing: .2px;
+      margin:0;
+    }
+
+    .banner p{
+      margin:6px 0 0 0;
+      color: rgba(17,16,24,.70);
+      font-size: 13px;
+      line-height:1.4;
+      max-width: 70ch;
+    }
+
+    .miniBtns{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(17,16,24,.12);
+      background: rgba(255,255,255,.84);
+      cursor:pointer;
+      font-weight: 950;
+      font-size: 13px;
+      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease, opacity .12s ease;
+      white-space:nowrap;
+    }
+
+    .btn:hover{
+      transform: translateY(-1px);
+      border-color: rgba(176,11,85,.25);
+      box-shadow: 0 14px 38px rgba(176,11,85,.08);
+    }
+
+    .btn.primary{
+      border-color: rgba(176,11,85,.28);
+      background: linear-gradient(135deg, rgba(176,11,85,.14), rgba(109,40,217,.10));
+    }
+
+    .btn.danger{
+      border-color: rgba(217,45,85,.22);
+      background: rgba(217,45,85,.08);
+      color: var(--red);
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 14px;
+      align-items:start;
+    }
+
+    @media (max-width: 980px){
+      .grid2{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      border:1px solid rgba(255,255,255,.45);
+      background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.74));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .cardInner{ padding: 16px; }
+
+    .hRow{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap:wrap;
+    }
+
+    .h1{
+      margin:0;
+      font-size: 18px;
+      letter-spacing: .2px;
+    }
+
+    .sub{
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      margin-top: 6px;
+    }
+
+    .fieldGrid{
+      display:grid;
+      gap:12px;
+      grid-template-columns: 1fr auto;
+      align-items:end;
+    }
+
+    @media (max-width: 720px){
+      .fieldGrid{ grid-template-columns: 1fr; }
+    }
+
+    .field{
+      display:grid;
+      gap:8px;
+    }
+
+    .field label{
+      font-size: 12px;
+      font-weight: 900;
+      color: rgba(17,16,24,.78);
+      letter-spacing: .2px;
+      text-transform: uppercase;
+    }
+
+    .inputWrap{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.88);
+      box-shadow: 0 10px 26px rgba(17,16,24,.04);
+    }
+
+    .inputWrap input,
+    .inputWrap select{
+      width:100%;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--ink);
+      font-size:14px;
+    }
+
+    .searchBubble{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      margin-bottom: 14px;
+    }
+
+    .search{
+      flex: 1 1 280px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding: 10px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.88);
+      box-shadow: 0 10px 26px rgba(17,16,24,.04);
+    }
+
+    .search input{
+      border:none;
+      outline:none;
+      width:100%;
+      font-size: 14px;
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(17,16,24,.06);
+      color: rgba(17,16,24,.78);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .results{
+      display:grid;
+      gap:10px;
+    }
+
+    .rowCard{
+      border:1px solid rgba(255,255,255,.44);
+      background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.76));
+      border-radius: 16px;
+      padding: 12px;
+      display:grid;
+      grid-template-columns: 56px 1fr auto;
+      gap:12px;
+      align-items:center;
+      box-shadow: 0 18px 50px rgba(17,16,24,.06);
+      min-width:0;
+    }
+
+    @media (max-width: 680px){
+      .rowCard{ grid-template-columns: 56px 1fr; }
+      .rowActions{ grid-column: 1 / -1; justify-content:flex-end; }
+    }
+
+    .avatar{
+      width:56px;height:56px;
+      border-radius:999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.90);
+      object-fit:cover;
+      box-shadow: 0 14px 30px rgba(17,16,24,.08);
+    }
+
+    .avatarFallback{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:1000;
+      color:#fff;
+      background: linear-gradient(135deg, var(--pink), var(--purple));
+      user-select:none;
+    }
+
+    .rowMain{ min-width:0; display:grid; gap:6px; }
+    .name{
+      font-size:15px;
+      font-weight:1000;
+      line-height:1.2;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .meta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+      color: rgba(17,16,24,.72);
+      font-size: 13px;
+      line-height:1.35;
+    }
+
+    .tag{
+      font-size:12px;
+      font-weight:900;
+      padding:6px 9px;
+      border-radius:999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.72);
+      color: rgba(17,16,24,.72);
+      max-width: 100%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .rowActions{
+      display:flex;
+      gap:10px;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+
+    .empty{
+      padding: 18px 12px;
+      border-radius: 16px;
+      border: 1px dashed rgba(17,16,24,.18);
+      background: rgba(255,255,255,.70);
+      color: rgba(17,16,24,.65);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .msg{
+      display:none;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.76);
+      color: rgba(17,16,24,.78);
+      font-size:13px;
+      line-height:1.45;
+      white-space:pre-line;
+    }
+
+    .msg.ok{
+      display:block;
+      border-color: rgba(88,201,154,.30);
+      background: rgba(88,201,154,.10);
+    }
+
+    .msg.error{
+      display:block;
+      border-color: rgba(217,45,85,.25);
+      background: rgba(217,45,85,.08);
+      color: #8f1737;
+    }
+
+    .msg.info{
+      display:block;
+    }
+
+    .sectionTitle{
+      margin:0;
+      font-size:16px;
+      font-weight:1000;
+      letter-spacing:.2px;
+    }
+
+    footer{
+      width: min(1120px, 92vw);
+      margin: 14px auto 30px auto;
+      padding: 20px;
+      border:1px solid rgba(255,255,255,.45);
+      border-radius: 22px;
+      background:
+        radial-gradient(520px 220px at 0% 0%, rgba(139,211,255,.18), transparent 60%),
+        radial-gradient(520px 220px at 100% 100%, rgba(176,11,85,.10), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.74));
+      box-shadow: 0 18px 50px rgba(17,16,24,.06);
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:16px;
+      align-items:center;
+      backdrop-filter: blur(10px);
+    }
+
+    .footerLeft{
+      display:grid;
+      gap:6px;
+    }
+
+    .footerTitle{
+      font-size: 14px;
+      font-weight: 1000;
+      color: rgba(17,16,24,.9);
+    }
+
+    .footerSub{
+      font-size: 12px;
+      color: rgba(17,16,24,.62);
+      line-height: 1.45;
+    }
+
+    .footerActions{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .footerLink{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px 13px;
+      border-radius:999px;
+      border:1px solid rgba(17,16,24,.10);
+      background: rgba(255,255,255,.86);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    @media (max-width: 760px){
+      footer{ grid-template-columns: 1fr; }
+      .footerActions{ justify-content:flex-start; }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="topbar">
+      <a class="brand" href="hub.html" aria-label="uZone main">
+        <img src="logo.png" alt="uZone logo" />
+        <div class="btxt">
+          <b>uZone</b>
+          <span id="hello">Loading…</span>
+        </div>
+      </a>
+
+      <nav class="tabs" aria-label="Top tabs">
+        <button class="tab" type="button" data-go="hub.html">
+          <span class="dot"></span> Hub
+        </button>
+        <button class="tab" type="button" data-go="events.html">
+          <span class="dot"></span> Events
+        </button>
+        <button class="tab active" type="button" data-go="hosthns.html">
+          <span class="dot"></span> Host HNS
+        </button>
+      </nav>
+
+      <div class="version" aria-label="Version">
+        <b>v1.0.0</b>
+        <span>host whitelist manager</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="banner" aria-label="Banner">
+      <div class="bannerTop">
+        <div>
+          <h2>Hide & Seek Host Panel</h2>
+          <p>Select one of your events, search students by name, email, or U#, and add or remove them from the whitelist. When you wire up <b>join.html</b>, it can check this whitelist and send approved users to <b>hider.html</b>.</p>
+        </div>
+        <div class="miniBtns">
+          <button class="btn" id="refreshEventsBtn" type="button">Refresh events</button>
+          <button class="btn" id="refreshUsersBtn" type="button">Refresh users</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="cardInner">
+        <div class="fieldGrid">
+          <div class="field">
+            <label for="eventSelect">Selected event</label>
+            <div class="inputWrap">
+              <span style="opacity:.6; font-weight:1000;">⌕</span>
+              <select id="eventSelect" aria-label="Select event">
+                <option value="">Loading your events…</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field" style="min-width:220px;">
+            <label>&nbsp;</label>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <span class="pill" id="eventCountPill">0 events</span>
+              <span class="pill" id="whitelistCountPill">0 whitelisted</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="eventMsg" class="msg info" style="margin-top:14px;">Choose an event to manage its whitelist.</div>
+      </div>
+    </section>
+
+    <section class="grid2">
+      <section class="card" aria-label="Directory search">
+        <div class="cardInner">
+          <div class="hRow">
+            <div>
+              <h1 class="h1">Find users</h1>
+              <div class="sub">Search by name, email, or U# and click Add.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cardInner" style="padding-top:0;">
+          <div class="searchBubble">
+            <div>
+              <h2 class="sectionTitle">Search</h2>
+              <div class="sub">Type anything from their profile.</div>
+            </div>
+            <div class="search" role="search" style="max-width: 560px; width:100%;">
+              <span style="opacity:.6; font-weight:1000;">⌕</span>
+              <input id="searchInput" type="search" placeholder="Search name, email, or U#…" autocomplete="off" />
+            </div>
+          </div>
+
+          <div class="results" id="searchResults"></div>
+          <div class="empty" id="searchEmpty" style="display:none;">
+            No matching users found.
+          </div>
+        </div>
+      </section>
+
+      <section class="card" aria-label="Whitelist">
+        <div class="cardInner">
+          <div class="hRow">
+            <div>
+              <h1 class="h1">Whitelist</h1>
+              <div class="sub">These users will be allowed into the event.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cardInner" style="padding-top:0;">
+          <div class="results" id="whitelistResults"></div>
+          <div class="empty" id="whitelistEmpty">
+            No one is whitelisted for this event yet.
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footerLeft">
+      <div class="footerTitle">uZone</div>
+      <div class="footerSub">Manage who can join your Hide &amp; Seek events.</div>
+    </div>
+
+    <div class="footerActions">
+      <a class="footerLink" href="hub.html">Back to hub</a>
+      <span class="footerSub">© uZone</span>
+    </div>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      getDoc,
+      doc,
+      updateDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_k18vbiBsLhQB7PzgEVT9PEI_30Mu0kg",
+      authDomain: "uzone-6148d.firebaseapp.com",
+      databaseURL: "https://uzone-6148d-default-rtdb.firebaseio.com",
+      projectId: "uzone-6148d",
+      storageBucket: "uzone-6148d.firebasestorage.app",
+      messagingSenderId: "88783701381",
+      appId: "1:88783701381:web:4f6c4b1ad8b26d6fa6f0ec",
+      measurementId: "G-HKL5246YMC"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const els = {
+      hello: document.getElementById("hello"),
+      eventSelect: document.getElementById("eventSelect"),
+      eventMsg: document.getElementById("eventMsg"),
+      eventCountPill: document.getElementById("eventCountPill"),
+      whitelistCountPill: document.getElementById("whitelistCountPill"),
+
+      searchInput: document.getElementById("searchInput"),
+      searchResults: document.getElementById("searchResults"),
+      searchEmpty: document.getElementById("searchEmpty"),
+
+      whitelistResults: document.getElementById("whitelistResults"),
+      whitelistEmpty: document.getElementById("whitelistEmpty"),
+
+      refreshEventsBtn: document.getElementById("refreshEventsBtn"),
+      refreshUsersBtn: document.getElementById("refreshUsersBtn")
+    };
+
+    let currentUser = null;
+    let allUsers = [];
+    let myEvents = [];
+    let selectedEventId = "";
+    let saving = false;
+
+    document.querySelectorAll(".tab[data-go]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const to = btn.getAttribute("data-go");
+        if (to) window.location.href = to;
+      });
+    });
+
+    function esc(s){
+      return String(s ?? "").replace(/[&<>"']/g, m => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#39;"
+      }[m]));
+    }
+
+    function norm(s){
+      return String(s ?? "").trim().toLowerCase();
+    }
+
+    function showEventMsg(text, kind = "info"){
+      els.eventMsg.className = "msg " + kind;
+      els.eventMsg.textContent = text;
+      els.eventMsg.style.display = "block";
+    }
+
+    function getDisplayName(user){
+      return (user?.name || user?.displayName || user?.fullName || "").toString().trim() || "Unnamed User";
+    }
+
+    function getEmail(user){
+      return (user?.email || user?.schoolEmail || user?.studentEmail || "").toString().trim();
+    }
+
+    function getPublicId(user){
+      const raw = (user?.publicId ?? user?.publicID ?? user?.uNumber ?? user?.uNo ?? user?.studentId ?? "").toString().trim();
+      return raw || "";
+    }
+
+    function getAvatar(user){
+      return (
+        user?.photoURL ||
+        user?.photoUrl ||
+        user?.avatarUrl ||
+        user?.avatarURL ||
+        user?.avatar ||
+        user?.profilePic ||
+        user?.profilePicture ||
+        ""
+      ).toString().trim();
+    }
+
+    function getUserSearchBlob(user){
+      const name = getDisplayName(user);
+      const email = getEmail(user);
+      const publicId = getPublicId(user);
+      const uid = (user?.__uid || "").toString();
+      return `${name} ${email} ${publicId} ${uid}`.toLowerCase();
+    }
+
+    function getInitial(name){
+      const n = String(name || "").trim();
+      return n ? n.charAt(0).toUpperCase() : "?";
+    }
+
+    function eventTitle(ev){
+      return (ev?.name || ev?.title || "Untitled Event").toString().trim();
+    }
+
+    function eventOwnerId(ev){
+      const candidates = [
+        ev?.hostUid,
+        ev?.ownerUid,
+        ev?.uid,
+        ev?.createdByUid,
+        ev?.userId,
+        ev?.ownerId
+      ].map(v => String(v || "").trim()).filter(Boolean);
+      return candidates[0] || "";
+    }
+
+    function eventCode(ev){
+      const candidates = [
+        ev?.joinCode,
+        ev?.code,
+        ev?.eventCode,
+        ev?.inviteCode,
+        ev?.accessCode
+      ];
+      for (const c of candidates){
+        if (typeof c === "string" && c.trim()) return c.trim();
+      }
+      return "";
+    }
+
+    function eventCreatedMs(ev){
+      const v = ev?.createdAt || ev?.created || ev?.timestamp || ev?.time || null;
+      try{
+        if (v?.toDate) return v.toDate().getTime();
+        if (typeof v === "number") return v;
+      } catch(_) {}
+      return 0;
+    }
+
+    function getSelectedEvent(){
+      return myEvents.find(ev => ev.id === selectedEventId) || null;
+    }
+
+    function readWhitelistIds(ev){
+      const candidates = [
+        ev?.whitelistIds,
+        ev?.allowlistIds,
+        ev?.approvedUserIds,
+        ev?.invitedUserIds,
+        ev?.allowedUserIds
+      ];
+
+      for (const arr of candidates){
+        if (Array.isArray(arr)){
+          return [...new Set(arr.map(v => String(v || "").trim()).filter(Boolean))];
+        }
+      }
+
+      const objectCandidates = [
+        ev?.whitelistUsers,
+        ev?.allowlistUsers,
+        ev?.approvedUsers,
+        ev?.invitedUsers
+      ];
+
+      for (const arr of objectCandidates){
+        if (Array.isArray(arr)){
+          return [...new Set(
+            arr.map(v => {
+              if (typeof v === "string") return v.trim();
+              if (v && typeof v === "object") return String(v.uid || v.id || "").trim();
+              return "";
+            }).filter(Boolean)
+          )];
+        }
+      }
+
+      return [];
+    }
+
+    function getWhitelistedUsers(ev){
+      const ids = readWhitelistIds(ev);
+      return ids.map(uid => allUsers.find(u => u.__uid === uid)).filter(Boolean);
+    }
+
+    function isWhitelisted(uid, ev = getSelectedEvent()){
+      if (!uid || !ev) return false;
+      return readWhitelistIds(ev).includes(String(uid));
+    }
+
+    function buildWhitelistUserObject(user){
+      return {
+        uid: user.__uid,
+        name: getDisplayName(user),
+        email: getEmail(user),
+        publicId: getPublicId(user),
+        photoURL: getAvatar(user)
+      };
+    }
+
+    function renderEventOptions(){
+      els.eventSelect.innerHTML = "";
+
+      if (!myEvents.length){
+        els.eventSelect.innerHTML = `<option value="">No events found</option>`;
+        els.eventCountPill.textContent = "0 events";
+        selectedEventId = "";
+        renderWhitelist();
+        renderSearchResults();
+        showEventMsg("You do not have any events to manage yet.", "error");
+        return;
+      }
+
+      els.eventCountPill.textContent = `${myEvents.length} event${myEvents.length === 1 ? "" : "s"}`;
+
+      myEvents.forEach((ev, index) => {
+        const option = document.createElement("option");
+        option.value = ev.id;
+        const code = eventCode(ev);
+        option.textContent = code ? `${eventTitle(ev)} • ${code}` : eventTitle(ev);
+        if (!selectedEventId && index === 0) selectedEventId = ev.id;
+        els.eventSelect.appendChild(option);
+      });
+
+      if (!myEvents.some(ev => ev.id === selectedEventId)){
+        selectedEventId = myEvents[0].id;
+      }
+
+      els.eventSelect.value = selectedEventId;
+
+      const ev = getSelectedEvent();
+      if (ev){
+        const code = eventCode(ev);
+        showEventMsg(
+          code
+            ? `Managing whitelist for "${eventTitle(ev)}" • code: ${code}`
+            : `Managing whitelist for "${eventTitle(ev)}"`,
+          "ok"
+        );
+      }
+
+      renderWhitelist();
+      renderSearchResults();
+    }
+
+    function userRowHTML(user, buttonLabel, buttonClass, action){
+      const name = getDisplayName(user);
+      const email = getEmail(user);
+      const publicId = getPublicId(user);
+      const avatar = getAvatar(user);
+      const avatarHtml = avatar
+        ? `<img class="avatar" alt="${esc(name)}" src="${esc(avatar)}" referrerpolicy="no-referrer" onerror="this.replaceWith(makeFallbackAvatar('${esc(getInitial(name))}'));">`
+        : `<div class="avatar avatarFallback">${esc(getInitial(name))}</div>`;
+
+      return `
+        <article class="rowCard">
+          ${avatarHtml}
+          <div class="rowMain">
+            <div class="name">${esc(name)}</div>
+            <div class="meta">
+              ${publicId ? `<span class="tag">🆔 ${esc(publicId)}</span>` : ""}
+              ${email ? `<span class="tag">✉️ ${esc(email)}</span>` : ""}
+              <span class="tag">UID ${esc(user.__uid)}</span>
+            </div>
+          </div>
+          <div class="rowActions">
+            <button
+              class="btn ${buttonClass}"
+              type="button"
+              data-action="${esc(action)}"
+              data-uid="${esc(user.__uid)}"
+            >${esc(buttonLabel)}</button>
+          </div>
+        </article>
+      `;
+    }
+
+    window.makeFallbackAvatar = function(letter){
+      const div = document.createElement("div");
+      div.className = "avatar avatarFallback";
+      div.textContent = letter || "?";
+      return div;
+    };
+
+    function renderWhitelist(){
+      const ev = getSelectedEvent();
+      els.whitelistResults.innerHTML = "";
+
+      if (!ev){
+        els.whitelistCountPill.textContent = "0 whitelisted";
+        els.whitelistEmpty.style.display = "block";
+        els.whitelistEmpty.textContent = "Choose an event to view its whitelist.";
+        return;
+      }
+
+      const users = getWhitelistedUsers(ev)
+        .sort((a, b) => getDisplayName(a).localeCompare(getDisplayName(b)));
+
+      els.whitelistCountPill.textContent = `${users.length} whitelisted`;
+
+      if (!users.length){
+        els.whitelistEmpty.style.display = "block";
+        els.whitelistEmpty.textContent = "No one is whitelisted for this event yet.";
+        return;
+      }
+
+      els.whitelistEmpty.style.display = "none";
+      els.whitelistResults.innerHTML = users
+        .map(user => userRowHTML(user, "Remove", "danger", "remove"))
+        .join("");
+    }
+
+    function renderSearchResults(){
+      const ev = getSelectedEvent();
+      els.searchResults.innerHTML = "";
+
+      if (!ev){
+        els.searchEmpty.style.display = "block";
+        els.searchEmpty.textContent = "Choose an event before searching users.";
+        return;
+      }
+
+      const q = norm(els.searchInput.value);
+      let list = [...allUsers];
+
+      if (q){
+        list = list.filter(user => getUserSearchBlob(user).includes(q));
+      }
+
+      list.sort((a, b) => {
+        const aName = getDisplayName(a);
+        const bName = getDisplayName(b);
+        return aName.localeCompare(bName);
+      });
+
+      list = list.slice(0, 75);
+
+      if (!list.length){
+        els.searchEmpty.style.display = "block";
+        els.searchEmpty.textContent = q ? "No matching users found." : "No users found.";
+        return;
+      }
+
+      els.searchEmpty.style.display = "none";
+      els.searchResults.innerHTML = list.map(user => {
+        const already = isWhitelisted(user.__uid, ev);
+        return userRowHTML(user, already ? "Added" : "Add", already ? "" : "primary", already ? "noop" : "add");
+      }).join("");
+    }
+
+    async function loadUsers(){
+      const snap = await getDocs(collection(db, "users"));
+      const users = [];
+      snap.forEach(docSnap => {
+        users.push({ __uid: docSnap.id, ...(docSnap.data() || {}) });
+      });
+      allUsers = users;
+      renderWhitelist();
+      renderSearchResults();
+    }
+
+    async function loadEvents(){
+      if (!currentUser) return;
+
+      const snap = await getDocs(collection(db, "events"));
+      const events = [];
+      snap.forEach(docSnap => {
+        events.push({ id: docSnap.id, ...(docSnap.data() || {}) });
+      });
+
+      myEvents = events
+        .filter(ev => eventOwnerId(ev) === currentUser.uid)
+        .sort((a, b) => eventCreatedMs(b) - eventCreatedMs(a));
+
+      renderEventOptions();
+    }
+
+    async function saveWhitelist(nextIds){
+      const ev = getSelectedEvent();
+      if (!ev || saving) return;
+
+      const cleanedIds = [...new Set(nextIds.map(v => String(v || "").trim()).filter(Boolean))];
+      const whitelistUsers = cleanedIds
+        .map(uid => allUsers.find(u => u.__uid === uid))
+        .filter(Boolean)
+        .map(buildWhitelistUserObject);
+
+      saving = true;
+      try{
+        await updateDoc(doc(db, "events", ev.id), {
+          whitelistIds: cleanedIds,
+          whitelistUsers,
+          whitelistCount: cleanedIds.length,
+          updatedAt: serverTimestamp()
+        });
+
+        const idx = myEvents.findIndex(x => x.id === ev.id);
+        if (idx !== -1){
+          myEvents[idx] = {
+            ...myEvents[idx],
+            whitelistIds: cleanedIds,
+            whitelistUsers,
+            whitelistCount: cleanedIds.length
+          };
+        }
+
+        renderWhitelist();
+        renderSearchResults();
+      } finally {
+        saving = false;
+      }
+    }
+
+    async function addUserToWhitelist(uid){
+      const ev = getSelectedEvent();
+      if (!ev) return;
+      const ids = readWhitelistIds(ev);
+      if (ids.includes(uid)) return;
+      showEventMsg("Adding user to whitelist…", "info");
+      try{
+        await saveWhitelist([...ids, uid]);
+        showEventMsg("User added to whitelist.", "ok");
+      } catch (err){
+        console.error(err);
+        showEventMsg("Could not add that user right now.", "error");
+      }
+    }
+
+    async function removeUserFromWhitelist(uid){
+      const ev = getSelectedEvent();
+      if (!ev) return;
+      const ids = readWhitelistIds(ev);
+      showEventMsg("Removing user from whitelist…", "info");
+      try{
+        await saveWhitelist(ids.filter(id => id !== uid));
+        showEventMsg("User removed from whitelist.", "ok");
+      } catch (err){
+        console.error(err);
+        showEventMsg("Could not remove that user right now.", "error");
+      }
+    }
+
+    els.eventSelect.addEventListener("change", () => {
+      selectedEventId = els.eventSelect.value || "";
+      const ev = getSelectedEvent();
+      if (ev){
+        const code = eventCode(ev);
+        showEventMsg(
+          code
+            ? `Managing whitelist for "${eventTitle(ev)}" • code: ${code}`
+            : `Managing whitelist for "${eventTitle(ev)}"`,
+          "ok"
+        );
+      }
+      renderWhitelist();
+      renderSearchResults();
+    });
+
+    els.searchInput.addEventListener("input", renderSearchResults);
+
+    els.searchResults.addEventListener("click", async (e) => {
+      const btn = e.target.closest("button[data-action]");
+      if (!btn) return;
+      const action = btn.dataset.action;
+      const uid = btn.dataset.uid;
+      if (!uid) return;
+      if (action === "add") await addUserToWhitelist(uid);
+    });
+
+    els.whitelistResults.addEventListener("click", async (e) => {
+      const btn = e.target.closest("button[data-action='remove']");
+      if (!btn) return;
+      const uid = btn.dataset.uid;
+      if (!uid) return;
+      await removeUserFromWhitelist(uid);
+    });
+
+    els.refreshUsersBtn.addEventListener("click", async () => {
+      showEventMsg("Refreshing users…", "info");
+      try{
+        await loadUsers();
+        showEventMsg("Users refreshed.", "ok");
+      } catch (err){
+        console.error(err);
+        showEventMsg("Could not load users.", "error");
+      }
+    });
+
+    els.refreshEventsBtn.addEventListener("click", async () => {
+      showEventMsg("Refreshing events…", "info");
+      try{
+        await loadEvents();
+      } catch (err){
+        console.error(err);
+        showEventMsg("Could not load your events.", "error");
+      }
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user){
+        window.location.href = "index.html";
+        return;
+      }
+
+      currentUser = user;
+
+      let displayName = user.displayName?.trim() || "";
+      try{
+        const snap = await getDoc(doc(db, "users", user.uid));
+        if (snap.exists()){
+          const data = snap.data() || {};
+          if (typeof data.name === "string" && data.name.trim()){
+            displayName = data.name.trim();
+          }
+        }
+      } catch (_) {}
+
+      els.hello.textContent = displayName ? `Hey, ${displayName}` : "Welcome back";
+
+      try{
+        showEventMsg("Loading users and events…", "info");
+        await Promise.all([loadUsers(), loadEvents()]);
+      } catch (err){
+        console.error(err);
+        showEventMsg("Could not load this page. Check Firestore rules and your collections.", "error");
+      }
+    });
+  </script>
+</body>
+</html>
