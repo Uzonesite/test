@@ -740,6 +740,7 @@
       getFirestore,
       collection,
       doc,
+      getDoc,
       getDocs,
       onSnapshot,
       runTransaction,
@@ -845,6 +846,15 @@
         name: data.name || data.displayName || data.fullName || "Unnamed user",
         email: data.email || "",
         photoURL: data.photoURL || data.photoUrl || ""
+      };
+    }
+
+    function normalizeAllowedUser(data) {
+      return {
+        uid: data?.uid || "",
+        name: data?.name || data?.displayName || data?.fullName || "Unnamed user",
+        email: data?.email || "",
+        photoURL: data?.photoURL || data?.photoUrl || ""
       };
     }
 
@@ -1116,22 +1126,40 @@
     }
 
     async function ensureGameDoc() {
-      await setDoc(gameRef, {
-        allowedUids: [],
-        allowedUsers: [],
-        currentRoundId: null,
-        deadlineAt: null,
-        countdownDurationMs: null,
-        status: "idle"
-      }, { merge: true });
+      const snap = await getDoc(gameRef);
+
+      if (!snap.exists()) {
+        await setDoc(gameRef, {
+          allowedUids: [],
+          allowedUsers: [],
+          currentRoundId: null,
+          deadlineAt: null,
+          countdownDurationMs: null,
+          status: "idle"
+        });
+        return;
+      }
+
+      const data = snap.data() || {};
+      const patch = {};
+
+      if (!Array.isArray(data.allowedUids)) patch.allowedUids = [];
+      if (!Array.isArray(data.allowedUsers)) patch.allowedUsers = [];
+      if (!("currentRoundId" in data)) patch.currentRoundId = null;
+      if (!("deadlineAt" in data)) patch.deadlineAt = null;
+      if (!("countdownDurationMs" in data)) patch.countdownDurationMs = null;
+      if (!("status" in data)) patch.status = "idle";
+
+      if (Object.keys(patch).length) {
+        await setDoc(gameRef, patch, { merge: true });
+      }
     }
 
     async function loadUsers() {
       showMsg("Loading users collection…", "info");
       const snap = await getDocs(usersRef);
       allUsers = uniqueByUid(
-        snap.docs.map(d => normalizeUserDoc(d.data(), d.id))
-          .filter(u => u.uid)
+        snap.docs.map(d => normalizeUserDoc(d.data(), d.id)).filter(u => u.uid)
       ).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
       loadedUsersPill.textContent = `${allUsers.length} users loaded`;
       renderSuggestions();
@@ -1146,22 +1174,34 @@
           const snap = await tx.get(gameRef);
           const data = snap.exists() ? snap.data() : {};
 
-          const nextAllowedUsers = Array.isArray(data.allowedUsers) ? [...data.allowedUsers] : [];
-          const nextAllowedUids = Array.isArray(data.allowedUids) ? [...data.allowedUids] : [];
+          const nextAllowedUsers = Array.isArray(data.allowedUsers)
+            ? data.allowedUsers.map(normalizeAllowedUser)
+            : [];
+          const nextAllowedUids = Array.isArray(data.allowedUids)
+            ? [...new Set(data.allowedUids.filter(Boolean))]
+            : [];
 
-          if (!nextAllowedUids.includes(user.uid)) nextAllowedUids.push(user.uid);
-          if (!nextAllowedUsers.some(u => u?.uid === user.uid)) {
-            nextAllowedUsers.push({
-              uid: user.uid,
-              name: user.name || "Unnamed user",
-              email: user.email || "",
-              photoURL: user.photoURL || ""
-            });
+          if (!nextAllowedUids.includes(user.uid)) {
+            nextAllowedUids.push(user.uid);
+          }
+
+          const existingIndex = nextAllowedUsers.findIndex(u => u?.uid === user.uid);
+          const normalizedUser = {
+            uid: user.uid,
+            name: user.name || "Unnamed user",
+            email: user.email || "",
+            photoURL: user.photoURL || ""
+          };
+
+          if (existingIndex >= 0) {
+            nextAllowedUsers[existingIndex] = normalizedUser;
+          } else {
+            nextAllowedUsers.push(normalizedUser);
           }
 
           tx.set(gameRef, {
-            allowedUsers: nextAllowedUsers,
-            allowedUids: nextAllowedUids
+            allowedUsers: uniqueByUid(nextAllowedUsers),
+            allowedUids: [...new Set(nextAllowedUids)]
           }, { merge: true });
         });
 
@@ -1183,12 +1223,16 @@
           const snap = await tx.get(gameRef);
           const data = snap.exists() ? snap.data() : {};
 
-          const nextAllowedUsers = (Array.isArray(data.allowedUsers) ? data.allowedUsers : []).filter(u => u?.uid !== uid);
-          const nextAllowedUids = (Array.isArray(data.allowedUids) ? data.allowedUids : []).filter(id => id !== uid);
+          const nextAllowedUsers = (Array.isArray(data.allowedUsers) ? data.allowedUsers : [])
+            .map(normalizeAllowedUser)
+            .filter(u => u?.uid !== uid);
+
+          const nextAllowedUids = (Array.isArray(data.allowedUids) ? data.allowedUids : [])
+            .filter(id => id !== uid);
 
           tx.set(gameRef, {
-            allowedUsers: nextAllowedUsers,
-            allowedUids: nextAllowedUids
+            allowedUsers: uniqueByUid(nextAllowedUsers),
+            allowedUids: [...new Set(nextAllowedUids)]
           }, { merge: true });
         });
 
@@ -1373,6 +1417,8 @@
 
       if (!currentUser) {
         hello.textContent = "Not signed in";
+        signInBtn.textContent = "Sign in";
+        signInBtn.disabled = false;
         showMsg("Sign in with Google to use the host panel.", "info");
         return;
       }
@@ -1392,8 +1438,22 @@
         onSnapshot(gameRef, (snap) => {
           const data = snap.exists() ? snap.data() : {};
           gameData = data;
-          allowedUsers = Array.isArray(data.allowedUsers) ? uniqueByUid(data.allowedUsers) : [];
-          allowedUids = Array.isArray(data.allowedUids) ? [...new Set(data.allowedUids)] : [];
+
+          allowedUsers = Array.isArray(data.allowedUsers)
+            ? uniqueByUid(data.allowedUsers.map(normalizeAllowedUser).filter(u => u.uid))
+            : [];
+
+          allowedUids = Array.isArray(data.allowedUids)
+            ? [...new Set(data.allowedUids.filter(Boolean))]
+            : [];
+
+          const missingFromUidArray = allowedUsers
+            .map(u => u.uid)
+            .filter(uid => !allowedUids.includes(uid));
+
+          if (missingFromUidArray.length) {
+            allowedUids = [...new Set([...allowedUids, ...missingFromUidArray])];
+          }
 
           const status = data?.status || "idle";
           if (status !== "running") {
