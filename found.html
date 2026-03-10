@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>uZone • Eliminated</title>
+  <link rel="icon" type="image/png" href="logo.png" />
+  <style>
+    :root{
+      --bg:#f8f7ff;
+      --ink:#111018;
+      --muted:rgba(17,16,24,.62);
+      --pink:#b00b55;
+      --purple:#6d28d9;
+      --card:rgba(255,255,255,.88);
+      --shadow:0 18px 60px rgba(17,16,24,.08);
+      --radius:24px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+
+    body{
+      margin:0;
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 700px at 10% -10%, rgba(139,211,255,.20), transparent 60%),
+        radial-gradient(1000px 600px at 100% 0%, rgba(176,11,85,.08), transparent 58%),
+        radial-gradient(1100px 700px at 50% 100%, rgba(109,40,217,.10), transparent 62%),
+        linear-gradient(180deg, #fbfaff 0%, #f8f7ff 45%, #fbfbff 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+
+    .card{
+      width:min(560px, 100%);
+      border:1px solid rgba(255,255,255,.45);
+      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.78));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:30px 24px;
+      text-align:center;
+      backdrop-filter:blur(10px);
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(176,11,85,.10);
+      border:1px solid rgba(176,11,85,.18);
+      color:var(--pink);
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      margin-bottom:18px;
+    }
+
+    h1{
+      margin:0 0 10px 0;
+      font-size:34px;
+      line-height:1.05;
+      letter-spacing:-.03em;
+    }
+
+    p{
+      margin:0 auto;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.55;
+      max-width:42ch;
+    }
+
+    .actions{
+      margin-top:24px;
+      display:flex;
+      justify-content:center;
+    }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:13px 18px;
+      border-radius:999px;
+      border:1px solid rgba(17,16,24,.12);
+      background:linear-gradient(135deg, rgba(176,11,85,.14), rgba(109,40,217,.10));
+      cursor:pointer;
+      font-weight:950;
+      font-size:14px;
+      text-decoration:none;
+      color:var(--ink);
+      transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+      border-color:rgba(176,11,85,.25);
+      box-shadow:0 14px 38px rgba(176,11,85,.08);
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <div class="badge">Eliminated</div>
+    <h1>You have been eliminated</h1>
+    <p>You missed a check-in or were removed from the active hider list for this game.</p>
+
+    <div class="actions">
+      <a class="btn" href="seeker.html">Join seekers</a>
+    </div>
+  </main>
+</body>
+</html>
