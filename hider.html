@@ -520,6 +520,9 @@
     const MAPS_API_KEY = "AIzaSyCt8UPeNwhR4mPoQgWUoYxUE2UrlKYL6UE";
     const MAP_ID = "f4ab270f6c4fc6deeed4fa00";
 
+    const JOIN_REDIRECT_URL = "https://uzone.ca/join";
+    const ELIMINATED_REDIRECT_URL = "https://uzone.ca/eliminated";
+
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
@@ -553,6 +556,7 @@
     let lastMyLatLng = null;
 
     let handledMissForRoundId = null;
+    let redirectedToJoin = false;
     let redirectedToEliminated = false;
 
     function setCheckInStatus(title, text) {
@@ -566,6 +570,18 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#39;");
+    }
+
+    function redirectToJoin() {
+      if (redirectedToJoin) return;
+      redirectedToJoin = true;
+      window.location.href = JOIN_REDIRECT_URL;
+    }
+
+    function redirectToEliminated() {
+      if (redirectedToEliminated) return;
+      redirectedToEliminated = true;
+      window.location.href = ELIMINATED_REDIRECT_URL;
     }
 
     function isAllowedUser() {
@@ -640,8 +656,28 @@
       return getActiveAllowedPlayers().length;
     }
 
+    function enforceAccessRules() {
+      if (!currentUser) return;
+
+      const me = getPlayer(currentUser.uid);
+
+      if (isPlayerEliminated(me)) {
+        redirectToEliminated();
+        return;
+      }
+
+      if (!isAllowedUser()) {
+        redirectToJoin();
+      }
+    }
+
     async function eliminateCurrentUserForMissedCheckIn() {
-      if (!currentUser || !isAllowedUser()) return;
+      if (!currentUser) return;
+      if (!isAllowedUser()) {
+        redirectToJoin();
+        return;
+      }
+
       const roundId = currentRoundId();
       const deadlineAt = Number(gameData?.deadlineAt || 0);
       if (!roundId || !deadlineAt) return;
@@ -676,12 +712,6 @@
       }
     }
 
-    function redirectToEliminated() {
-      if (redirectedToEliminated) return;
-      redirectedToEliminated = true;
-      window.location.href = "eliminated.html";
-    }
-
     function updateCountdown() {
       clearInterval(countdownInterval);
 
@@ -692,6 +722,11 @@
         const meSafe = hasCheckedInThisRound(me);
         const meEliminated = isPlayerEliminated(me);
         const now = Date.now();
+
+        if (currentUser && !isAllowedUser()) {
+          redirectToJoin();
+          return;
+        }
 
         if (meEliminated) {
           countdownBig.textContent = "0s";
@@ -774,7 +809,10 @@
 
       if (!isAllowedUser()) {
         setCheckInStatus("Check in result", "You are not on the player list.");
+        return;
       }
+
+      setCheckInStatus("Check in result", "Waiting for your next action.");
     }
 
     function updateAllowedUi() {
@@ -946,6 +984,11 @@
         }
       }
 
+      if (currentUser && !isAllowedUser()) {
+        redirectToJoin();
+        return;
+      }
+
       const me = currentUser ? getPlayer(currentUser.uid) : null;
 
       if (isPlayerEliminated(me)) {
@@ -954,7 +997,7 @@
       }
 
       if (!isAllowedUser()) {
-        setCheckInStatus("Check in result", "You are not on the player list.");
+        redirectToJoin();
         return;
       }
 
@@ -1015,6 +1058,7 @@
     }
 
     function refreshGameUi() {
+      enforceAccessRules();
       updateAllowedUi();
       updateStatsAndInfo();
       updateCountdown();
@@ -1051,11 +1095,13 @@
       }
 
       hello.textContent = currentUser.displayName || currentUser.email || "Signed in";
+      enforceAccessRules();
       refreshGameUi();
     });
 
     onSnapshot(gameRef, (snap) => {
       gameData = snap.exists() ? snap.data() : {};
+      enforceAccessRules();
       refreshGameUi();
     }, (error) => {
       console.error(error);
@@ -1063,13 +1109,7 @@
 
     onSnapshot(playersRef, (snap) => {
       allPlayers = snap.docs.map(d => normalizePlayer(d.data(), d.id)).filter(p => p.uid);
-
-      const me = currentUser ? getPlayer(currentUser.uid) : null;
-      if (isPlayerEliminated(me)) {
-        redirectToEliminated();
-        return;
-      }
-
+      enforceAccessRules();
       refreshGameUi();
     }, (error) => {
       console.error(error);
