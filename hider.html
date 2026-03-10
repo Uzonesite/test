@@ -271,43 +271,6 @@
       box-shadow:0 0 0 4px rgba(176,11,85,.18);
     }
 
-    .topStats{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:12px;
-    }
-
-    @media (max-width: 980px){
-      .topStats{ grid-template-columns:1fr; }
-    }
-
-    .statCard{
-      padding:16px;
-      border-radius:18px;
-      border:1px solid rgba(17,16,24,.10);
-      background:rgba(255,255,255,.74);
-      display:grid;
-      gap:6px;
-      min-height:120px;
-    }
-
-    .statCard b{
-      font-size:12px;
-      color:rgba(17,16,24,.58);
-      text-transform:uppercase;
-      letter-spacing:.2px;
-    }
-
-    .statCard .big{
-      font-size:32px;
-      font-weight:1000;
-      line-height:1;
-    }
-
-    .statusAccent{
-      color:var(--pink);
-    }
-
     .playerItem{
       padding:12px;
       border-radius:16px;
@@ -354,6 +317,49 @@
       min-height:54px;
       font-size:15px;
       letter-spacing:.4px;
+    }
+
+    .compactStatusWrap{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:10px;
+      margin-top:8px;
+    }
+
+    .miniStat{
+      padding:10px;
+      border-radius:14px;
+      border:1px solid rgba(17,16,24,.08);
+      background:rgba(255,255,255,.72);
+      min-width:0;
+    }
+
+    .miniStat b{
+      font-size:11px;
+      margin-bottom:6px;
+    }
+
+    .miniValue{
+      font-size:24px;
+      line-height:1;
+      font-weight:1000;
+      letter-spacing:-.02em;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .miniValue.statusAccent{
+      color:var(--pink);
+    }
+
+    @media (max-width: 820px){
+      .compactStatusWrap{
+        grid-template-columns:1fr;
+      }
+      .miniValue{
+        white-space:normal;
+      }
     }
 
     .mapBox{
@@ -421,28 +427,6 @@
 
     <section class="card">
       <div class="cardInner">
-        <div class="topStats">
-          <div class="statCard">
-            <b>Countdown</b>
-            <div class="big" id="countdownBig">--</div>
-            <div class="muted small" id="countdownSub">Waiting for round</div>
-          </div>
-          <div class="statCard">
-            <b>Status</b>
-            <div class="big statusAccent" id="statusBig">CHECK IN</div>
-            <div class="muted small" id="statusSmall">Waiting for game</div>
-          </div>
-          <div class="statCard">
-            <b>Players Remaining</b>
-            <div class="big" id="playerRemainingCount">0</div>
-            <div class="muted small" id="playerRemainingSub">players still need to check in</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="card">
-      <div class="cardInner">
         <div class="checkinTop">
           <div>
             <h1 class="h1">Check in</h1>
@@ -452,6 +436,30 @@
           <div class="checkinButtons">
             <button class="btn primary mainCheckBtn" id="checkInBtn" type="button">CHECK IN</button>
             <button class="btn success" id="centerMeBtn" type="button">Center on me</button>
+          </div>
+
+          <div class="playerItem">
+            <b>Check in results</b>
+
+            <div class="compactStatusWrap">
+              <div class="miniStat">
+                <b>Countdown</b>
+                <div class="miniValue" id="countdownBig">--</div>
+                <div class="small muted" id="countdownSub">Waiting for round</div>
+              </div>
+
+              <div class="miniStat">
+                <b>Status</b>
+                <div class="miniValue statusAccent" id="statusBig">CHECK IN</div>
+                <div class="small muted" id="statusSmall">Waiting for game</div>
+              </div>
+
+              <div class="miniStat">
+                <b>Players Remaining</b>
+                <div class="miniValue" id="playerRemainingCount">0</div>
+                <div class="small muted" id="playerRemainingSub">players still need to check in</div>
+              </div>
+            </div>
           </div>
 
           <div class="playerItem" id="checkInStatus">
