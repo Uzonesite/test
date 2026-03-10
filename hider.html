@@ -137,7 +137,7 @@
 
     .grid2{
       display:grid;
-      grid-template-columns:1.3fr .9fr;
+      grid-template-columns:1.25fr .95fr;
       gap:14px;
       align-items:start;
     }
@@ -250,12 +250,6 @@
       color:var(--success);
     }
 
-    .btn.warn{
-      border-color:rgba(232,154,29,.24);
-      background:rgba(232,154,29,.14);
-      color:#9b6200;
-    }
-
     .btn:disabled{
       opacity:.6;
       cursor:not-allowed;
@@ -320,55 +314,6 @@
       .mapFallback{ min-height:360px; }
     }
 
-    .pinWrap{ position:relative; width:1px; height:1px; overflow:visible; }
-    .glow-pin{
-      position:absolute;
-      left:0; top:0;
-      width:16px; height:16px;
-      border-radius:999px;
-      background:var(--pink);
-      box-shadow:
-        0 0 10px var(--pink),
-        0 0 22px rgba(176,11,85,.55),
-        0 0 46px rgba(176,11,85,.30);
-      transform:translate(-50%, -50%);
-    }
-    .glow-pulse{
-      position:absolute;
-      left:0; top:0;
-      width:46px; height:46px;
-      border-radius:999px;
-      border:2px solid rgba(176,11,85,.30);
-      transform:translate(-50%, -50%);
-      animation:pulse 1.6s ease-out infinite;
-      pointer-events:none;
-    }
-
-    .glow-pin.me{
-      background:var(--green);
-      box-shadow:
-        0 0 10px var(--green),
-        0 0 22px rgba(88,201,154,.50),
-        0 0 46px rgba(88,201,154,.28);
-    }
-
-    .glow-pulse.me{
-      border-color:rgba(88,201,154,.30);
-    }
-
-    @keyframes pulse{
-      0%{ opacity:.85; transform:translate(-50%,-50%) scale(.35); }
-      100%{ opacity:0; transform:translate(-50%,-50%) scale(1.15); }
-    }
-
-    .gm-style-iw{ padding:0 !important; }
-    .gm-style-iw-d{ overflow:hidden !important; }
-    .gm-style-iw-c{
-      max-width:88vw !important;
-      border-radius:16px !important;
-    }
-    .gm-ui-hover-effect{ display:none !important; }
-
     .grid3{
       display:grid;
       grid-template-columns:repeat(3,1fr);
@@ -386,7 +331,7 @@
       background:rgba(255,255,255,.72);
       display:grid;
       gap:5px;
-      min-height:100px;
+      min-height:112px;
     }
 
     .statCard b{
@@ -400,26 +345,6 @@
       font-size:30px;
       font-weight:1000;
       line-height:1;
-    }
-
-    .console{
-      border-radius:16px;
-      border:1px solid rgba(17,16,24,.10);
-      background:rgba(17,16,24,.94);
-      color:#ecedf7;
-      padding:14px;
-      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-      font-size:12px;
-      line-height:1.5;
-      min-height:180px;
-      max-height:260px;
-      overflow:auto;
-      white-space:pre-wrap;
-    }
-
-    .playerList{
-      display:grid;
-      gap:10px;
     }
 
     .playerItem{
@@ -441,16 +366,6 @@
       letter-spacing:.2px;
     }
 
-    .row2{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-    }
-
-    @media (max-width: 720px){
-      .row2{ grid-template-columns:1fr; }
-    }
-
     .muted{ color:var(--muted); }
     .small{ font-size:12px; }
     .good{ color:var(--success); font-weight:900; }
@@ -458,6 +373,27 @@
     .bad{ color:var(--danger); font-weight:900; }
 
     .hidden{ display:none !important; }
+
+    .checkinTop{
+      display:grid;
+      gap:14px;
+    }
+
+    .checkinButtons{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    @media (max-width: 720px){
+      .checkinButtons{ grid-template-columns:1fr; }
+    }
+
+    .mainCheckBtn{
+      min-height:54px;
+      font-size:15px;
+      letter-spacing:.4px;
+    }
   </style>
 </head>
 <body>
@@ -483,7 +419,7 @@
       <div class="bannerTop">
         <div>
           <h2>Hide &amp; Seek</h2>
-          <p>This page is the live game. Sign in, wait for the round, then press CHECK IN before the timer ends to ping your location on the map.</p>
+          <p>This page is the live game. Press CHECK IN before the timer ends to ping your location on the map.</p>
         </div>
         <div class="badge pink">
           <span class="dot"></span>
@@ -494,6 +430,27 @@
 
     <section class="grid2">
       <div class="stack">
+        <section class="card">
+          <div class="cardInner">
+            <div class="checkinTop">
+              <div>
+                <h1 class="h1">Check in</h1>
+                <div class="sub">Press the button before the deadline. Your location is saved to <b>gameLists/hideAndSeek/players/{uid}</b>.</div>
+              </div>
+
+              <div class="checkinButtons">
+                <button class="btn primary mainCheckBtn" id="checkInBtn" type="button">CHECK IN</button>
+                <button class="btn success" id="centerMeBtn" type="button">Center on me</button>
+              </div>
+
+              <div class="playerItem" id="checkInStatus">
+                <b>Check in result</b>
+                Waiting for the game to load.
+              </div>
+            </div>
+          </div>
+        </section>
+
         <section class="card" aria-label="Map section">
           <div class="cardInner">
             <div class="hRow">
@@ -503,7 +460,6 @@
               </div>
               <div style="display:flex; gap:10px; flex-wrap:wrap;">
                 <button class="btn" id="refreshMapBtn" type="button">Refresh map</button>
-                <span class="badge"><span class="dot"></span><span id="countdownText">Time remaining: --</span></span>
               </div>
             </div>
           </div>
@@ -513,18 +469,6 @@
             <div id="mapFallback" class="mapFallback hidden">Loading map…</div>
           </div>
         </section>
-
-        <section class="card">
-          <div class="cardInner">
-            <div class="hRow">
-              <div>
-                <h1 class="h1">Live status</h1>
-                <div class="sub">Game state updates instantly from Firestore.</div>
-              </div>
-            </div>
-            <div class="console" id="consoleBox">Connecting…</div>
-          </div>
-        </section>
       </div>
 
       <div class="stack">
@@ -532,19 +476,19 @@
           <div class="cardInner">
             <div class="grid3">
               <div class="statCard">
+                <b>Countdown</b>
+                <div class="big" id="countdownBig" style="font-size:22px;">--</div>
+                <div class="muted small" id="countdownSub">Waiting for round</div>
+              </div>
+              <div class="statCard">
                 <b>Status</b>
-                <div class="big" id="statusBig" style="font-size:20px;">—</div>
-                <div class="muted small" id="statusSmall">Loading…</div>
+                <div class="big" id="statusBig" style="font-size:22px;">CHECK IN</div>
+                <div class="muted small" id="statusSmall">Waiting for game</div>
               </div>
               <div class="statCard">
-                <b>Players shown</b>
-                <div class="big" id="playerCount">0</div>
-                <div class="muted small">checked in this round</div>
-              </div>
-              <div class="statCard">
-                <b>You</b>
-                <div class="big" id="meState" style="font-size:20px;">—</div>
-                <div class="muted small" id="meStateSub">Waiting…</div>
+                <b>Players Remaining</b>
+                <div class="big" id="playerRemainingCount">0</div>
+                <div class="muted small" id="playerRemainingSub">players still need to check in</div>
               </div>
             </div>
           </div>
@@ -552,41 +496,10 @@
 
         <section class="card">
           <div class="cardInner">
-            <h1 class="h1">Check in</h1>
-            <div class="sub">Click before the deadline. Your location is saved to <b>gameLists/hideAndSeek/players/{uid}</b>.</div>
-
-            <div class="row2" style="margin-top:14px;">
-              <button class="btn primary" id="checkInBtn" type="button">CHECK IN</button>
-              <button class="btn success" id="centerMeBtn" type="button">Center on me</button>
+            <div class="playerItem" id="gameInfoBox">
+              <b>Game</b>
+              Loading…
             </div>
-
-            <div class="row2" style="margin-top:12px;">
-              <div class="playerItem" id="authStatus">
-                <b>Player</b>
-                Waiting for sign-in…
-              </div>
-              <div class="playerItem" id="deadlineStatus">
-                <b>Deadline</b>
-                Loading…
-              </div>
-            </div>
-
-            <div class="playerItem" id="checkInStatus" style="margin-top:12px;">
-              <b>Check in result</b>
-              Waiting for the game to load.
-            </div>
-          </div>
-        </section>
-
-        <section class="card">
-          <div class="cardInner">
-            <div class="hRow">
-              <div>
-                <h1 class="h1">Current round players</h1>
-                <div class="sub">Only players with <b>checkedInForRound = true</b> and <b>lastCheckInRoundId = currentRoundId</b> are shown.</div>
-              </div>
-            </div>
-            <div class="playerList" id="playerList" style="margin-top:14px;"></div>
           </div>
         </section>
       </div>
@@ -633,20 +546,17 @@
 
     const hello = document.getElementById("hello");
     const liveChip = document.getElementById("liveChip");
-    const countdownText = document.getElementById("countdownText");
-    const consoleBox = document.getElementById("consoleBox");
+    const countdownBig = document.getElementById("countdownBig");
+    const countdownSub = document.getElementById("countdownSub");
     const statusBig = document.getElementById("statusBig");
     const statusSmall = document.getElementById("statusSmall");
-    const playerCount = document.getElementById("playerCount");
-    const meState = document.getElementById("meState");
-    const meStateSub = document.getElementById("meStateSub");
-    const authStatus = document.getElementById("authStatus");
-    const deadlineStatus = document.getElementById("deadlineStatus");
+    const playerRemainingCount = document.getElementById("playerRemainingCount");
+    const playerRemainingSub = document.getElementById("playerRemainingSub");
+    const gameInfoBox = document.getElementById("gameInfoBox");
     const checkInStatus = document.getElementById("checkInStatus");
     const checkInBtn = document.getElementById("checkInBtn");
     const centerMeBtn = document.getElementById("centerMeBtn");
     const refreshMapBtn = document.getElementById("refreshMapBtn");
-    const playerList = document.getElementById("playerList");
     const mapFallback = document.getElementById("mapFallback");
 
     let currentUser = null;
@@ -658,39 +568,24 @@
     let map = null;
     let infoWindow = null;
     let markers = [];
-    let userMarker = null;
     let lastMyLatLng = null;
-
-    function logLine(text) {
-      const now = new Date().toLocaleTimeString();
-      consoleBox.textContent = `[${now}] ${text}\n` + consoleBox.textContent;
-    }
 
     function setCheckInStatus(title, text) {
       checkInStatus.innerHTML = `<b>${title}</b>${text}`;
     }
 
-    function setAuthStatus(text) {
-      authStatus.innerHTML = `<b>Player</b>${text}`;
-    }
-
-    function setDeadlineStatus(text) {
-      deadlineStatus.innerHTML = `<b>Deadline</b>${text}`;
-    }
-
-    function initials(name = "") {
-      return String(name)
-        .trim()
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map(part => part[0]?.toUpperCase() || "")
-        .join("") || "?";
-    }
-
     function safeDateText(ms) {
       if (!ms || Number.isNaN(Number(ms))) return "—";
       return new Date(Number(ms)).toLocaleString();
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
     }
 
     function isAllowedUser() {
@@ -700,104 +595,6 @@
 
     function currentRoundId() {
       return gameData?.currentRoundId || null;
-    }
-
-    function getVisiblePlayers() {
-      const roundId = currentRoundId();
-      return allPlayers.filter(player =>
-        !!player &&
-        player.checkedInForRound === true &&
-        player.lastCheckInRoundId === roundId &&
-        typeof player.lat === "number" &&
-        typeof player.lng === "number"
-      );
-    }
-
-    function updateCountdown() {
-      clearInterval(countdownInterval);
-
-      const tick = () => {
-        const deadlineAt = Number(gameData?.deadlineAt || 0);
-        if (!deadlineAt) {
-          countdownText.textContent = "Time remaining: --";
-          statusBig.textContent = gameData?.status || "idle";
-          statusSmall.textContent = "No active deadline";
-          return;
-        }
-
-        const remainingMs = deadlineAt - Date.now();
-        const remainingSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
-
-        countdownText.textContent = `Time remaining: ${remainingSeconds} seconds`;
-
-        if (remainingMs > 0) {
-          statusBig.textContent = gameData?.status || "running";
-          statusSmall.textContent = `Round ends at ${new Date(deadlineAt).toLocaleTimeString()}`;
-        } else {
-          statusBig.textContent = "ended";
-          statusSmall.textContent = "Deadline passed";
-        }
-      };
-
-      tick();
-      countdownInterval = setInterval(tick, 250);
-    }
-
-    function updateMeState() {
-      if (!currentUser) {
-        meState.textContent = "signed out";
-        meStateSub.textContent = "Waiting for login";
-        return;
-      }
-
-      if (!isAllowedUser()) {
-        meState.textContent = "blocked";
-        meStateSub.textContent = "You are not on the player list.";
-        return;
-      }
-
-      const me = allPlayers.find(p => p.uid === currentUser.uid);
-      const roundId = currentRoundId();
-
-      if (me && me.checkedInForRound === true && me.lastCheckInRoundId === roundId) {
-        meState.textContent = "checked in";
-        meStateSub.textContent = "Your location is on the map";
-      } else {
-        meState.textContent = "waiting";
-        meStateSub.textContent = "You have not checked in this round";
-      }
-    }
-
-    function renderPlayerList() {
-      playerList.innerHTML = "";
-      visiblePlayers = getVisiblePlayers();
-      playerCount.textContent = String(visiblePlayers.length);
-
-      if (!visiblePlayers.length) {
-        const empty = document.createElement("div");
-        empty.className = "playerItem";
-        empty.innerHTML = "<b>Players</b>No players have checked in for the current round yet.";
-        playerList.appendChild(empty);
-        return;
-      }
-
-      visiblePlayers.forEach(player => {
-        const item = document.createElement("div");
-        item.className = "playerItem";
-
-        const timeText = player.lastCheckInAt
-          ? new Date(Number(player.lastCheckInAt)).toLocaleTimeString()
-          : "Unknown time";
-
-        item.innerHTML = `
-          <b>${player.name || player.email || player.uid || "Player"}</b>
-          ${player.email || "No email"}<br>
-          Check-in: ${timeText}<br>
-          Lat: ${Number(player.lat).toFixed(5)} | Lng: ${Number(player.lng).toFixed(5)}
-        `;
-
-        playerList.appendChild(item);
-      });
     }
 
     function normalizePlayer(data, id) {
@@ -811,6 +608,137 @@
         lastCheckInRoundId: data.lastCheckInRoundId || null,
         checkedInForRound: data.checkedInForRound === true
       };
+    }
+
+    function getVisiblePlayers() {
+      const roundId = currentRoundId();
+      return allPlayers.filter(player =>
+        !!player &&
+        player.checkedInForRound === true &&
+        player.lastCheckInRoundId === roundId &&
+        typeof player.lat === "number" &&
+        !Number.isNaN(player.lat) &&
+        typeof player.lng === "number" &&
+        !Number.isNaN(player.lng)
+      );
+    }
+
+    function getCheckedInCount() {
+      return getVisiblePlayers().length;
+    }
+
+    function getAllowedCount() {
+      return Array.isArray(gameData.allowedUids) ? gameData.allowedUids.length : 0;
+    }
+
+    function getPlayersRemainingCount() {
+      const allowedCount = getAllowedCount();
+      const checkedInCount = getCheckedInCount();
+      return Math.max(0, allowedCount - checkedInCount);
+    }
+
+    function updateCountdown() {
+      clearInterval(countdownInterval);
+
+      const tick = () => {
+        const deadlineAt = Number(gameData?.deadlineAt || 0);
+        const roundId = currentRoundId();
+        const me = currentUser ? allPlayers.find(p => p.uid === currentUser.uid) : null;
+        const meSafe = !!(me && me.checkedInForRound === true && me.lastCheckInRoundId === roundId);
+        const now = Date.now();
+
+        if (!deadlineAt || !roundId) {
+          countdownBig.textContent = "--";
+          countdownSub.textContent = "Waiting for round";
+          statusBig.textContent = "CHECK IN";
+          statusSmall.textContent = currentUser ? "No round is running right now" : "Sign in to play";
+          return;
+        }
+
+        const remainingMs = deadlineAt - now;
+        const remainingSeconds = Math.max(0, Math.ceil(remainingMs / 1000));
+
+        if (remainingMs > 0) {
+          countdownBig.textContent = `${remainingSeconds}s`;
+          countdownSub.textContent = `Ends ${new Date(deadlineAt).toLocaleTimeString()}`;
+
+          if (meSafe) {
+            statusBig.textContent = "YOU'RE SAFE";
+            statusSmall.textContent = "You already checked in this round";
+          } else {
+            statusBig.textContent = "CHECK IN";
+            statusSmall.textContent = "Check in before the timer ends";
+          }
+        } else {
+          countdownBig.textContent = "0s";
+          countdownSub.textContent = "Round ended";
+
+          if (meSafe) {
+            statusBig.textContent = "YOU'RE SAFE";
+            statusSmall.textContent = "You checked in before the deadline";
+          } else {
+            statusBig.textContent = "MISSED";
+            statusSmall.textContent = "You did not check in in time";
+          }
+        }
+      };
+
+      tick();
+      countdownInterval = setInterval(tick, 250);
+    }
+
+    function updateStatsAndInfo() {
+      visiblePlayers = getVisiblePlayers();
+      const remaining = getPlayersRemainingCount();
+      const allowedCount = getAllowedCount();
+      const checkedInCount = visiblePlayers.length;
+
+      playerRemainingCount.textContent = String(remaining);
+
+      if (allowedCount > 0) {
+        playerRemainingSub.textContent = `${checkedInCount}/${allowedCount} checked in`;
+      } else {
+        playerRemainingSub.textContent = "no player list loaded";
+      }
+
+      const statusText = gameData?.status || "live game";
+      liveChip.textContent = statusText;
+
+      let gameText = "";
+      if (!currentUser) {
+        gameText = `Sign in required.`;
+      } else if (!isAllowedUser()) {
+        gameText = `${escapeHtml(currentUser.displayName || currentUser.email || "Player")}<br><span class="bad">You are not on the player list.</span>`;
+      } else {
+        gameText = `${escapeHtml(currentUser.displayName || currentUser.email || "Player")}<br><span class="good">You are on the player list.</span>`;
+      }
+
+      const deadlineText = gameData?.deadlineAt
+        ? `Deadline: ${escapeHtml(safeDateText(gameData.deadlineAt))}`
+        : `Deadline: No active deadline`;
+
+      const roundText = currentRoundId()
+        ? `Round: ${escapeHtml(String(currentRoundId()))}`
+        : `Round: None`;
+
+      gameInfoBox.innerHTML = `<b>Game</b>${gameText}<br><br>${roundText}<br>${deadlineText}<br>Status: ${escapeHtml(statusText)}`;
+    }
+
+    function updateAllowedUi() {
+      if (!currentUser) {
+        hello.textContent = "Signing in…";
+        checkInBtn.disabled = true;
+        return;
+      }
+
+      hello.textContent = currentUser.displayName || currentUser.email || "Signed in";
+
+      if (!isAllowedUser()) {
+        setCheckInStatus("Check in result", "You are not on the player list.");
+        checkInBtn.disabled = true;
+      } else {
+        checkInBtn.disabled = false;
+      }
     }
 
     function loadGoogleMapsScript() {
@@ -852,13 +780,11 @@
 
         infoWindow = new google.maps.InfoWindow();
         mapFallback.classList.add("hidden");
-        logLine("Map ready.");
         return map;
       } catch (error) {
         console.error(error);
         mapFallback.classList.remove("hidden");
         mapFallback.textContent = "Google Map could not load.";
-        logLine(`Map failed: ${error.message}`);
         throw error;
       }
     }
@@ -872,6 +798,8 @@
       await ensureMap();
 
       clearMarkers();
+
+      visiblePlayers = getVisiblePlayers();
 
       const bounds = new google.maps.LatLngBounds();
       let hasBounds = false;
@@ -922,15 +850,6 @@
         map.setCenter(lastMyLatLng);
         map.setZoom(15);
       }
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#39;");
     }
 
     function requestLocation() {
@@ -984,7 +903,7 @@
       }
 
       if (Date.now() > deadlineAt) {
-        setCheckInStatus("Check in result", "Too late");
+        setCheckInStatus("Check in result", "Too late.");
         return;
       }
 
@@ -995,7 +914,7 @@
         const coords = await requestLocation();
 
         if (Date.now() > deadlineAt) {
-          setCheckInStatus("Check in result", "Too late");
+          setCheckInStatus("Check in result", "Too late.");
           return;
         }
 
@@ -1012,56 +931,28 @@
 
         lastMyLatLng = { lat: coords.lat, lng: coords.lng };
         setCheckInStatus("Check in result", "Check-in saved.");
-        logLine(`Check-in saved for round ${roundId}.`);
       } catch (error) {
         console.error(error);
         setCheckInStatus("Check in result", `Check-in failed: ${error.message || error}`);
       } finally {
-        checkInBtn.disabled = false;
-      }
-    }
-
-    function updateAllowedUi() {
-      if (!currentUser) {
-        hello.textContent = "Signing in…";
-        setAuthStatus("Waiting for sign-in…");
-        checkInBtn.disabled = true;
-        return;
-      }
-
-      hello.textContent = currentUser.displayName || currentUser.email || "Signed in";
-
-      if (!isAllowedUser()) {
-        setAuthStatus(`${currentUser.displayName || currentUser.email || "Player"}<br><span class="bad">You are not on the player list.</span>`);
-        setCheckInStatus("Check in result", "You are not on the player list.");
-        checkInBtn.disabled = true;
-      } else {
-        setAuthStatus(`${currentUser.displayName || currentUser.email || "Player"}<br><span class="good">You are on the player list.</span>`);
-        checkInBtn.disabled = false;
+        updateAllowedUi();
+        updateStatsAndInfo();
+        updateCountdown();
+        checkInBtn.disabled = !currentUser || !isAllowedUser();
       }
     }
 
     function refreshGameUi() {
-      liveChip.textContent = gameData?.status || "live game";
-      setDeadlineStatus(
-        gameData?.deadlineAt
-          ? `${safeDateText(gameData.deadlineAt)}`
-          : "No active deadline"
-      );
-      updateCountdown();
       updateAllowedUi();
-      updateMeState();
-      renderPlayerList();
+      updateStatsAndInfo();
+      updateCountdown();
       renderMap().catch(() => {});
     }
 
     checkInBtn.addEventListener("click", checkIn);
 
     centerMeBtn.addEventListener("click", async () => {
-      if (!lastMyLatLng) {
-        logLine("No personal location available yet.");
-        return;
-      }
+      if (!lastMyLatLng) return;
       await ensureMap();
       map.setCenter(lastMyLatLng);
       map.setZoom(16);
@@ -1081,36 +972,28 @@
         } catch (error) {
           console.error(error);
           hello.textContent = "Sign-in failed";
-          setAuthStatus(`Sign-in failed.<br>${error.message}`);
           setCheckInStatus("Check in result", "Sign in with Google to play.");
-          logLine(`Sign-in failed: ${error.message}`);
+          refreshGameUi();
           return;
         }
       }
 
       hello.textContent = currentUser.displayName || currentUser.email || "Signed in";
-      setAuthStatus(`${currentUser.displayName || currentUser.email || "Player"}<br>Signed in`);
-      logLine(`Signed in as ${currentUser.displayName || currentUser.email || currentUser.uid}.`);
-      updateAllowedUi();
       refreshGameUi();
     });
 
     onSnapshot(gameRef, (snap) => {
       gameData = snap.exists() ? snap.data() : {};
-      logLine("Game doc updated.");
       refreshGameUi();
     }, (error) => {
       console.error(error);
-      logLine(`Game listener failed: ${error.message}`);
     });
 
     onSnapshot(playersRef, (snap) => {
       allPlayers = snap.docs.map(d => normalizePlayer(d.data(), d.id)).filter(p => p.uid);
-      logLine(`Players updated (${allPlayers.length} total docs).`);
       refreshGameUi();
     }, (error) => {
       console.error(error);
-      logLine(`Players listener failed: ${error.message}`);
     });
 
     ensureMap().catch(() => {});
