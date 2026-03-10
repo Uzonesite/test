@@ -2,30 +2,29 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>uZone • Host HNS</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>uZone • Host Hide & Seek</title>
   <link rel="icon" type="image/png" href="logo.png" />
-
   <style>
     :root{
-      --bg: #f8f7ff;
-      --bg2: #fcfbff;
-      --ink: #111018;
-      --muted: rgba(17,16,24,.62);
+      --bg:#f8f7ff;
+      --bg2:#fcfbff;
+      --ink:#111018;
+      --muted:rgba(17,16,24,.62);
 
-      --pink: #b00b55;
-      --purple: #6d28d9;
-      --blue: #8bd3ff;
-      --green: #58c99a;
-      --red: #d92d55;
-      --amber: #c77b00;
+      --pink:#b00b55;
+      --purple:#6d28d9;
+      --blue:#8bd3ff;
+      --green:#58c99a;
+      --red:#d92d55;
+      --amber:#c77b00;
 
-      --card: rgba(255,255,255,.88);
-      --border: rgba(17,16,24,.10);
-      --shadow: 0 18px 60px rgba(17,16,24,.08);
+      --card:rgba(255,255,255,.88);
+      --border:rgba(17,16,24,.10);
+      --shadow:0 18px 60px rgba(17,16,24,.08);
 
-      --radius: 22px;
-      --radius2: 16px;
+      --radius:22px;
+      --radius2:16px;
     }
 
     *{ box-sizing:border-box; }
@@ -33,32 +32,32 @@
     body{
       margin:0;
       color:var(--ink);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
       background:
         radial-gradient(1200px 700px at 10% -10%, rgba(139,211,255,.20), transparent 60%),
         radial-gradient(1000px 600px at 100% 0%, rgba(176,11,85,.08), transparent 58%),
         radial-gradient(1100px 700px at 50% 100%, rgba(109,40,217,.10), transparent 62%),
         linear-gradient(180deg, #fbfaff 0%, #f8f7ff 45%, #fbfbff 100%);
-      background-attachment: fixed;
+      background-attachment:fixed;
     }
 
     a{ color:inherit; text-decoration:none; }
-    button, input{ font:inherit; }
+    button,input{ font:inherit; }
     img{ max-width:100%; display:block; }
 
     header{
-      position: sticky;
-      top: 0;
-      z-index: 60;
-      backdrop-filter: blur(14px);
-      background: rgba(255,255,255,.72);
-      border-bottom: 1px solid rgba(17,16,24,.08);
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:blur(14px);
+      background:rgba(255,255,255,.72);
+      border-bottom:1px solid rgba(17,16,24,.08);
     }
 
     .topbar{
-      width: min(1120px, 92vw);
-      margin: 0 auto;
-      padding: 12px 0;
+      width:min(1120px,92vw);
+      margin:0 auto;
+      padding:12px 0;
       display:flex;
       align-items:center;
       justify-content:space-between;
@@ -77,8 +76,8 @@
       width:34px;height:34px;
       border-radius:10px;
       border:1px solid rgba(17,16,24,.08);
-      background: rgba(255,255,255,.6);
-      object-fit: cover;
+      background:rgba(255,255,255,.6);
+      object-fit:cover;
     }
 
     .brand .btxt{
@@ -101,64 +100,69 @@
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding: 7px 10px;
-      border-radius: 999px;
+      padding:7px 10px;
+      border-radius:999px;
       border:1px solid rgba(17,16,24,.10);
-      background: rgba(17,16,24,.06);
-      color: rgba(17,16,24,.78);
-      font-size: 12px;
-      font-weight: 900;
+      background:rgba(17,16,24,.06);
+      color:rgba(17,16,24,.78);
+      font-size:12px;
+      font-weight:900;
       white-space:nowrap;
     }
 
     .pill.good{
-      background: rgba(88,201,154,.12);
-      border-color: rgba(88,201,154,.25);
-      color: #1f6b50;
+      background:rgba(88,201,154,.12);
+      border-color:rgba(88,201,154,.25);
+      color:#1f6b50;
+    }
+
+    .pill.warn{
+      background:rgba(199,123,0,.12);
+      border-color:rgba(199,123,0,.20);
+      color:#8a5900;
     }
 
     main{
-      width: min(1120px, 92vw);
-      margin: 18px auto 44px auto;
+      width:min(1120px,92vw);
+      margin:18px auto 44px auto;
       display:grid;
-      gap: 18px;
+      gap:18px;
     }
 
     .hero{
-      position:relative;
-      border-radius: var(--radius);
+      border-radius:var(--radius);
       overflow:hidden;
-      border: 1px solid rgba(255,255,255,.48);
+      border:1px solid rgba(255,255,255,.48);
       background:
         radial-gradient(650px 260px at 10% 35%, rgba(139,211,255,.34), transparent 60%),
         radial-gradient(700px 280px at 65% 10%, rgba(109,40,217,.14), transparent 55%),
         radial-gradient(620px 240px at 95% 75%, rgba(176,11,85,.14), transparent 55%),
         linear-gradient(180deg, rgba(255,255,255,.84), rgba(255,255,255,.74));
-      box-shadow: 0 22px 70px rgba(17,16,24,.08);
-      padding: 18px;
-      backdrop-filter: blur(12px);
+      box-shadow:0 22px 70px rgba(17,16,24,.08);
+      padding:18px;
+      backdrop-filter:blur(12px);
     }
 
     .heroTop{
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
-      gap: 12px;
+      gap:12px;
       flex-wrap:wrap;
     }
 
     .hero h1{
-      font-size: 22px;
+      font-size:22px;
       margin:0;
       letter-spacing:.2px;
     }
 
     .hero p{
       margin:8px 0 0 0;
-      color: rgba(17,16,24,.70);
-      font-size: 13px;
+      color:rgba(17,16,24,.70);
+      font-size:13px;
       line-height:1.45;
-      max-width: 80ch;
+      max-width:80ch;
     }
 
     .btn{
@@ -167,45 +171,47 @@
       justify-content:center;
       gap:8px;
       padding:10px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(17,16,24,.12);
-      background: rgba(255,255,255,.84);
+      border-radius:999px;
+      border:1px solid rgba(17,16,24,.12);
+      background:rgba(255,255,255,.84);
       cursor:pointer;
-      font-weight: 950;
-      font-size: 13px;
-      transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease, opacity .12s ease;
+      font-weight:950;
+      font-size:13px;
+      transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease, opacity .12s ease;
       white-space:nowrap;
     }
 
     .btn:hover{
-      transform: translateY(-1px);
-      border-color: rgba(176,11,85,.25);
-      box-shadow: 0 14px 38px rgba(176,11,85,.08);
+      transform:translateY(-1px);
+      border-color:rgba(176,11,85,.25);
+      box-shadow:0 14px 38px rgba(176,11,85,.08);
     }
 
     .btn.primary{
-      border-color: rgba(176,11,85,.28);
-      background: linear-gradient(135deg, rgba(176,11,85,.14), rgba(109,40,217,.10));
+      border-color:rgba(176,11,85,.28);
+      background:linear-gradient(135deg, rgba(176,11,85,.14), rgba(109,40,217,.10));
     }
 
-    .btn.danger{
-      border-color: rgba(217,45,85,.22);
-      background: rgba(217,45,85,.08);
-      color: var(--red);
-    }
-
-    .btn.ghost{
-      background: rgba(255,255,255,.78);
+    .btn.success{
+      border-color:rgba(88,201,154,.24);
+      background:rgba(88,201,154,.14);
+      color:#1f6b50;
     }
 
     .btn.warn{
-      border-color: rgba(199,123,0,.20);
-      background: rgba(199,123,0,.08);
-      color: #9a6100;
+      border-color:rgba(199,123,0,.22);
+      background:rgba(199,123,0,.10);
+      color:#8a5900;
+    }
+
+    .btn.danger{
+      border-color:rgba(217,45,85,.22);
+      background:rgba(217,45,85,.08);
+      color:var(--red);
     }
 
     .btn:disabled{
-      opacity:.55;
+      opacity:.58;
       cursor:not-allowed;
       transform:none;
       box-shadow:none;
@@ -213,45 +219,74 @@
 
     .grid{
       display:grid;
-      grid-template-columns: 1.05fr .95fr;
-      gap: 16px;
+      grid-template-columns:1.08fr .92fr;
+      gap:16px;
       align-items:start;
     }
 
     @media (max-width: 980px){
-      .grid{ grid-template-columns: 1fr; }
+      .grid{ grid-template-columns:1fr; }
     }
 
     .card{
       border:1px solid rgba(255,255,255,.45);
-      background: linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.74));
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      background:linear-gradient(180deg, rgba(255,255,255,.82), rgba(255,255,255,.74));
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
       overflow:visible;
-      backdrop-filter: blur(10px);
+      backdrop-filter:blur(10px);
     }
 
-    .cardInner{ padding: 16px; }
+    .cardInner{ padding:16px; }
 
     .hRow{
       display:flex;
       align-items:flex-end;
       justify-content:space-between;
-      gap: 12px;
+      gap:12px;
       flex-wrap:wrap;
     }
 
     .h1{
       margin:0;
-      font-size: 18px;
-      letter-spacing: .2px;
+      font-size:18px;
+      letter-spacing:.2px;
     }
 
     .sub{
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.35;
-      margin-top: 6px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+      margin-top:6px;
+    }
+
+    .msg{
+      display:none;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid rgba(17,16,24,.10);
+      background:rgba(255,255,255,.76);
+      color:rgba(17,16,24,.78);
+      font-size:13px;
+      line-height:1.45;
+      white-space:pre-line;
+    }
+
+    .msg.show{ display:block; }
+    .msg.ok{
+      border-color:rgba(88,201,154,.30);
+      background:rgba(88,201,154,.10);
+      color:#1f6b50;
+    }
+    .msg.error{
+      border-color:rgba(217,45,85,.25);
+      background:rgba(217,45,85,.08);
+      color:#8f1737;
+    }
+    .msg.info{
+      border-color:rgba(17,16,24,.10);
+      background:rgba(255,255,255,.76);
+      color:rgba(17,16,24,.78);
     }
 
     .searchShell{
@@ -263,41 +298,41 @@
       display:flex;
       align-items:center;
       gap:10px;
-      padding: 12px 14px;
-      border-radius: 18px;
-      border: 1px solid rgba(17,16,24,.10);
-      background: rgba(255,255,255,.90);
-      box-shadow: 0 10px 26px rgba(17,16,24,.04);
+      padding:12px 14px;
+      border-radius:18px;
+      border:1px solid rgba(17,16,24,.10);
+      background:rgba(255,255,255,.90);
+      box-shadow:0 10px 26px rgba(17,16,24,.04);
     }
 
     .search:focus-within{
-      border-color: rgba(176,11,85,.25);
-      box-shadow: 0 14px 36px rgba(176,11,85,.08);
+      border-color:rgba(176,11,85,.25);
+      box-shadow:0 14px 36px rgba(176,11,85,.08);
     }
 
     .search input{
       border:none;
       outline:none;
       width:100%;
-      font-size: 15px;
-      background: transparent;
-      color: var(--ink);
+      font-size:15px;
+      background:transparent;
+      color:var(--ink);
     }
 
     .recBox{
       position:absolute;
-      top: calc(100% + 10px);
+      top:calc(100% + 10px);
       left:0;
       right:0;
       z-index:40;
       display:none;
       padding:10px;
-      border-radius: 18px;
+      border-radius:18px;
       border:1px solid rgba(255,255,255,.45);
-      background: linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
-      box-shadow: 0 24px 60px rgba(17,16,24,.12);
-      backdrop-filter: blur(12px);
-      max-height: 380px;
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.88));
+      box-shadow:0 24px 60px rgba(17,16,24,.12);
+      backdrop-filter:blur(12px);
+      max-height:380px;
       overflow:auto;
     }
 
@@ -306,22 +341,21 @@
     .recItem{
       width:100%;
       border:none;
-      background: transparent;
+      background:transparent;
       padding:10px;
-      border-radius: 14px;
+      border-radius:14px;
       display:grid;
-      grid-template-columns: 48px 1fr auto;
+      grid-template-columns:48px 1fr auto;
       gap:10px;
       align-items:center;
       text-align:left;
       cursor:pointer;
-      transition: background .12s ease, transform .12s ease;
+      transition:background .12s ease, transform .12s ease;
     }
 
-    .recItem:hover,
-    .recItem.active{
-      background: rgba(176,11,85,.07);
-      transform: translateY(-1px);
+    .recItem:hover{
+      background:rgba(176,11,85,.07);
+      transform:translateY(-1px);
     }
 
     .recSide{
@@ -339,35 +373,37 @@
 
     .rowCard{
       border:1px solid rgba(255,255,255,.44);
-      background: linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.76));
-      border-radius: 16px;
-      padding: 12px;
+      background:linear-gradient(180deg, rgba(255,255,255,.88), rgba(255,255,255,.76));
+      border-radius:16px;
+      padding:12px;
       display:grid;
-      grid-template-columns: 56px 1fr auto;
+      grid-template-columns:56px 1fr auto;
       gap:12px;
       align-items:center;
-      box-shadow: 0 18px 50px rgba(17,16,24,.06);
+      box-shadow:0 18px 50px rgba(17,16,24,.06);
       min-width:0;
     }
 
-    @media (max-width: 680px){
-      .rowCard{ grid-template-columns: 56px 1fr; }
-      .rowActions{ grid-column: 1 / -1; justify-content:flex-end; }
-      .recItem{ grid-template-columns: 48px 1fr; }
-      .recSide{ grid-column: 1 / -1; justify-content:flex-start; }
+    @media (max-width: 700px){
+      .rowCard{ grid-template-columns:56px 1fr; }
+      .rowActions{ grid-column:1 / -1; justify-content:flex-end; }
+      .recItem{ grid-template-columns:48px 1fr; }
+      .recSide{ grid-column:1 / -1; justify-content:flex-start; }
     }
 
     .avatar{
-      width:56px;height:56px;
+      width:56px;
+      height:56px;
       border-radius:999px;
       border:1px solid rgba(17,16,24,.10);
-      background: rgba(255,255,255,.90);
+      background:rgba(255,255,255,.90);
       object-fit:cover;
-      box-shadow: 0 14px 30px rgba(17,16,24,.08);
+      box-shadow:0 14px 30px rgba(17,16,24,.08);
     }
 
     .avatar.sm{
-      width:48px;height:48px;
+      width:48px;
+      height:48px;
       box-shadow:none;
     }
 
@@ -377,7 +413,7 @@
       justify-content:center;
       font-weight:1000;
       color:#fff;
-      background: linear-gradient(135deg, var(--pink), var(--purple));
+      background:linear-gradient(135deg, var(--pink), var(--purple));
       user-select:none;
     }
 
@@ -401,9 +437,10 @@
       gap:8px;
       flex-wrap:wrap;
       align-items:center;
-      color: rgba(17,16,24,.72);
-      font-size: 13px;
+      color:rgba(17,16,24,.72);
+      font-size:13px;
       line-height:1.35;
+      word-break:break-word;
     }
 
     .tag{
@@ -412,8 +449,8 @@
       padding:6px 9px;
       border-radius:999px;
       border:1px solid rgba(17,16,24,.10);
-      background: rgba(255,255,255,.72);
-      color: rgba(17,16,24,.72);
+      background:rgba(255,255,255,.72);
+      color:rgba(17,16,24,.72);
       max-width:100%;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -421,9 +458,15 @@
     }
 
     .tag.good{
-      background: rgba(88,201,154,.10);
-      border-color: rgba(88,201,154,.20);
-      color: #1f6b50;
+      background:rgba(88,201,154,.10);
+      border-color:rgba(88,201,154,.20);
+      color:#1f6b50;
+    }
+
+    .tag.warn{
+      background:rgba(199,123,0,.10);
+      border-color:rgba(199,123,0,.20);
+      color:#8a5900;
     }
 
     .rowActions{
@@ -442,8 +485,7 @@
       margin-top:12px;
     }
 
-    .toolbarLeft,
-    .toolbarRight{
+    .toolbarLeft, .toolbarRight{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
@@ -451,44 +493,51 @@
     }
 
     .empty{
-      padding: 18px 12px;
-      border-radius: 16px;
-      border: 1px dashed rgba(17,16,24,.18);
-      background: rgba(255,255,255,.70);
-      color: rgba(17,16,24,.65);
-      font-size: 13px;
-      line-height: 1.4;
+      padding:18px 12px;
+      border-radius:16px;
+      border:1px dashed rgba(17,16,24,.18);
+      background:rgba(255,255,255,.70);
+      color:rgba(17,16,24,.65);
+      font-size:13px;
+      line-height:1.4;
     }
 
-    .msg{
-      display:none;
-      padding:12px 14px;
-      border-radius:16px;
-      border:1px solid rgba(17,16,24,.10);
-      background: rgba(255,255,255,.76);
-      color: rgba(17,16,24,.78);
+    .roundBtns{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+      margin-top:14px;
+    }
+
+    @media (max-width: 740px){
+      .roundBtns{ grid-template-columns:1fr; }
+    }
+
+    .kv{
+      display:grid;
+      gap:8px;
+      margin-top:14px;
+    }
+
+    .kvRow{
+      display:grid;
+      grid-template-columns:160px 1fr;
+      gap:10px;
+      align-items:start;
       font-size:13px;
       line-height:1.45;
-      white-space:pre-line;
+      color:rgba(17,16,24,.78);
     }
 
-    .msg.ok{
-      display:block;
-      border-color: rgba(88,201,154,.30);
-      background: rgba(88,201,154,.10);
+    @media (max-width: 620px){
+      .kvRow{ grid-template-columns:1fr; gap:4px; }
     }
 
-    .msg.error{
-      display:block;
-      border-color: rgba(217,45,85,.25);
-      background: rgba(217,45,85,.08);
-      color: #8f1737;
+    .kvRow b{ color:rgba(17,16,24,.90); }
+    .mono{
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      word-break:break-all;
     }
-
-    .msg.info{
-      display:block;
-    }
-
   </style>
 </head>
 <body>
@@ -498,14 +547,15 @@
         <img src="logo.png" alt="uZone logo" />
         <div class="btxt">
           <b>uZone</b>
-          <span id="hello">Loading…</span>
+          <span id="hello">Signing in…</span>
         </div>
       </a>
 
       <div class="topActions">
-        <span class="pill" id="countPill">0 users</span>
-        <span class="pill good" id="listCountPill">0 added</span>
-        <span class="pill" id="saveStatePill">Not loaded</span>
+        <span class="pill" id="loadedUsersPill">0 users loaded</span>
+        <span class="pill good" id="allowedCountPill">0 allowed</span>
+        <span class="pill warn" id="statusPill">Loading game doc</span>
+        <button class="btn" id="signInBtn" type="button">Sign in</button>
       </div>
     </div>
   </header>
@@ -515,26 +565,25 @@
       <div class="heroTop">
         <div>
           <h1>Host Hide &amp; Seek</h1>
-          <p>Search users by name, email, or U#, click a suggestion to add them, and the allowed list is saved to Firestore so <b>join.html</b> can read the same list.</p>
+          <p>Search users by name, email, or uid, click a suggestion to add them to the allowed list, remove them any time, and start a live round that all hiders see instantly.</p>
         </div>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <button class="btn ghost" id="refreshBtn" type="button">Refresh users</button>
-          <button class="btn warn" id="addFilteredBtn" type="button">Add all shown</button>
+          <button class="btn" id="refreshUsersBtn" type="button">Refresh users</button>
           <button class="btn danger" id="clearListBtn" type="button">Remove all</button>
         </div>
       </div>
     </section>
 
-    <div id="msgBox" class="msg info">Loading users…</div>
+    <div id="msgBox" class="msg info show">Loading…</div>
 
     <section class="grid">
       <section class="card">
         <div class="cardInner">
           <div class="hRow">
             <div>
-              <h2 class="h1">Find user</h2>
-              <div class="sub">Type a name, email, or U#. Click a recommendation to add them instantly.</div>
+              <h2 class="h1">Search users</h2>
+              <div class="sub">Searches the <b>users</b> collection by name, email, or uid. Click a suggestion to add that user.</div>
             </div>
           </div>
         </div>
@@ -543,25 +592,22 @@
           <div class="searchShell">
             <div class="search" role="search">
               <span style="opacity:.6; font-weight:1000;">⌕</span>
-              <input id="searchInput" type="search" placeholder="Search name, email, or U#…" autocomplete="off" />
+              <input id="searchInput" type="search" placeholder="Search name, email, or uid…" autocomplete="off" />
             </div>
-
             <div id="recBox" class="recBox"></div>
           </div>
 
           <div class="toolbar">
             <div class="toolbarLeft">
               <span class="pill" id="shownPill">0 shown</span>
-              <span class="pill" id="notAddedPill">0 not added</span>
+              <span class="pill" id="availablePill">0 not already added</span>
             </div>
             <div class="toolbarRight">
-              <button class="btn ghost" id="closeRecBtn" type="button">Close suggestions</button>
+              <button class="btn" id="closeRecBtn" type="button">Close suggestions</button>
             </div>
           </div>
 
-          <div class="sub" style="margin-top:14px;">
-            Stored in Firestore doc: <b>gameLists/hideAndSeek</b>
-          </div>
+          <div class="sub" style="margin-top:14px;">Game doc path: <b>gameLists/hideAndSeek</b></div>
         </div>
       </section>
 
@@ -569,32 +615,70 @@
         <div class="cardInner">
           <div class="hRow">
             <div>
-              <h2 class="h1">Allowed list</h2>
-              <div class="sub">Users on this list can join Hide &amp; Seek and be sent to hider.html.</div>
+              <h2 class="h1">Round controls</h2>
+              <div class="sub">Starting a round writes <b>currentRoundId</b>, <b>deadlineAt</b>, <b>countdownDurationMs</b>, and <b>status</b> to the game doc.</div>
+            </div>
+          </div>
+
+          <div class="roundBtns">
+            <button class="btn primary" data-round="30000" type="button">Start 30 second round</button>
+            <button class="btn primary" data-round="60000" type="button">Start 60 second round</button>
+            <button class="btn primary" data-round="120000" type="button">Start 120 second round</button>
+          </div>
+
+          <div class="kv">
+            <div class="kvRow">
+              <b>Status</b>
+              <span id="gameStatusText">Loading…</span>
+            </div>
+            <div class="kvRow">
+              <b>Current round ID</b>
+              <span id="roundIdText" class="mono">—</span>
+            </div>
+            <div class="kvRow">
+              <b>Deadline</b>
+              <span id="deadlineText">—</span>
+            </div>
+            <div class="kvRow">
+              <b>Duration</b>
+              <span id="durationText">—</span>
             </div>
           </div>
         </div>
-
-        <div class="cardInner" style="padding-top:0;">
-          <div id="addedResults" class="results"></div>
-          <div id="addedEmpty" class="empty">No users added yet.</div>
-        </div>
       </section>
+    </section>
+
+    <section class="card">
+      <div class="cardInner">
+        <div class="hRow">
+          <div>
+            <h2 class="h1">Allowed player list</h2>
+            <div class="sub">These players come directly from <b>gameLists/hideAndSeek.allowedUsers</b>. Removing also updates <b>allowedUids</b>.</div>
+          </div>
+        </div>
+
+        <div id="allowedList" class="results" style="margin-top:14px;"></div>
+      </div>
     </section>
   </main>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getAuth,
+      GoogleAuthProvider,
+      onAuthStateChanged,
+      signInWithPopup
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
     import {
       getFirestore,
       collection,
-      getDocs,
       doc,
-      getDoc,
-      setDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+      getDocs,
+      onSnapshot,
+      runTransaction,
+      setDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyD_k18vbiBsLhQB7PzgEVT9PEI_30Mu0kg",
@@ -610,478 +694,461 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
 
-    const LIST_REF = doc(db, "gameLists", "hideAndSeek");
+    const gameRef = doc(db, "gameLists", "hideAndSeek");
+    const usersRef = collection(db, "users");
 
-    const els = {
-      hello: document.getElementById("hello"),
-      msgBox: document.getElementById("msgBox"),
-      searchInput: document.getElementById("searchInput"),
-      recBox: document.getElementById("recBox"),
-      closeRecBtn: document.getElementById("closeRecBtn"),
-      addedResults: document.getElementById("addedResults"),
-      addedEmpty: document.getElementById("addedEmpty"),
-      countPill: document.getElementById("countPill"),
-      listCountPill: document.getElementById("listCountPill"),
-      saveStatePill: document.getElementById("saveStatePill"),
-      shownPill: document.getElementById("shownPill"),
-      notAddedPill: document.getElementById("notAddedPill"),
-      refreshBtn: document.getElementById("refreshBtn"),
-      clearListBtn: document.getElementById("clearListBtn"),
-      addFilteredBtn: document.getElementById("addFilteredBtn")
-    };
+    const hello = document.getElementById("hello");
+    const signInBtn = document.getElementById("signInBtn");
+    const msgBox = document.getElementById("msgBox");
+
+    const loadedUsersPill = document.getElementById("loadedUsersPill");
+    const allowedCountPill = document.getElementById("allowedCountPill");
+    const statusPill = document.getElementById("statusPill");
+
+    const searchInput = document.getElementById("searchInput");
+    const recBox = document.getElementById("recBox");
+    const closeRecBtn = document.getElementById("closeRecBtn");
+    const shownPill = document.getElementById("shownPill");
+    const availablePill = document.getElementById("availablePill");
+
+    const refreshUsersBtn = document.getElementById("refreshUsersBtn");
+    const clearListBtn = document.getElementById("clearListBtn");
+    const allowedList = document.getElementById("allowedList");
+
+    const gameStatusText = document.getElementById("gameStatusText");
+    const roundIdText = document.getElementById("roundIdText");
+    const deadlineText = document.getElementById("deadlineText");
+    const durationText = document.getElementById("durationText");
 
     let currentUser = null;
     let allUsers = [];
-    let addedIds = [];
-    let activeRecIndex = -1;
-    let saveLock = false;
+    let allowedUsers = [];
+    let allowedUids = [];
+    let gameData = null;
 
-    function showMsg(text, kind = "info"){
-      els.msgBox.className = "msg " + kind;
-      els.msgBox.textContent = text;
-      els.msgBox.style.display = "block";
+    function showMsg(text, type = "info") {
+      msgBox.className = `msg show ${type}`;
+      msgBox.textContent = text;
     }
 
-    function hideMsg(){
-      els.msgBox.style.display = "none";
-      els.msgBox.textContent = "";
-      els.msgBox.className = "msg";
+    function initials(name = "") {
+      return String(name)
+        .trim()
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part[0]?.toUpperCase() || "")
+        .join("") || "?";
     }
 
-    function setSaveState(text){
-      els.saveStatePill.textContent = text;
-    }
-
-    function esc(s){
-      return String(s ?? "").replace(/[&<>"']/g, m => ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#39;"
-      }[m]));
-    }
-
-    function norm(s){
-      return String(s ?? "").trim().toLowerCase();
-    }
-
-    function displayName(user){
-      return (user?.name && user.name.trim())
-        ? user.name.trim()
-        : (user?.displayName && user.displayName.trim())
-          ? user.displayName.trim()
-          : "Unnamed";
-    }
-
-    function getEmail(user){
-      return (user?.email || user?.schoolEmail || user?.studentEmail || "").toString().trim();
-    }
-
-    function getPublicId(user){
-      const v = (user?.publicId ?? user?.publicID ?? user?.uNumber ?? "").toString().trim();
-      return v || "U?";
-    }
-
-    function getAvatar(user){
-      return (
-        user?.photoURL ||
-        user?.photoUrl ||
-        user?.avatarUrl ||
-        user?.avatar ||
-        user?.profilePic ||
-        ""
-      ).toString().trim();
-    }
-
-    function extractPublicNumber(publicId){
-      const s = (publicId ?? "").toString().trim();
-      const m = s.match(/(\d+)/);
-      return m ? parseInt(m[1], 10) : null;
-    }
-
-    function userBlob(user){
-      return [
-        displayName(user),
-        getEmail(user),
-        getPublicId(user),
-        user.__uid || ""
-      ].join(" ").toLowerCase();
-    }
-
-    function sortUsers(list){
-      list.sort((a,b) => {
-        const an = extractPublicNumber(getPublicId(a));
-        const bn = extractPublicNumber(getPublicId(b));
-        const aHas = an !== null && !Number.isNaN(an);
-        const bHas = bn !== null && !Number.isNaN(bn);
-
-        if (aHas && bHas) return an - bn;
-        if (aHas && !bHas) return -1;
-        if (!aHas && bHas) return 1;
-        return displayName(a).localeCompare(displayName(b));
-      });
-      return list;
-    }
-
-    function avatarHTML(user, small = false){
-      const avatar = getAvatar(user);
-      const name = displayName(user);
-      const initial = name.trim() ? name.trim().charAt(0).toUpperCase() : "?";
-      const cls = small ? "avatar sm" : "avatar";
-
-      if (avatar){
-        return `<img class="${cls}" alt="${esc(name)}" src="${esc(avatar)}" referrerpolicy="no-referrer">`;
+    function avatarNode(user, small = false) {
+      const hasPhoto = !!user?.photoURL;
+      if (hasPhoto) {
+        const img = document.createElement("img");
+        img.src = user.photoURL;
+        img.alt = user.name || "user";
+        img.className = `avatar${small ? " sm" : ""}`;
+        return img;
       }
-      return `<div class="${cls} avatarFallback">${esc(initial)}</div>`;
+      const div = document.createElement("div");
+      div.className = `avatar avatarFallback${small ? " sm" : ""}`;
+      div.textContent = initials(user?.name || user?.email || user?.uid || "?");
+      return div;
     }
 
-    function userCardHTML(user){
-      const uid = user.__uid || "";
-      const name = displayName(user);
-      const email = getEmail(user);
-      const publicId = getPublicId(user);
-
-      return `
-        <article class="rowCard">
-          ${avatarHTML(user)}
-          <div class="rowMain">
-            <div class="name">${esc(name)}</div>
-            <div class="meta">
-              <span class="tag">🆔 ${esc(publicId)}</span>
-              ${email ? `<span class="tag">✉️ ${esc(email)}</span>` : ""}
-              <span class="tag good">Allowed</span>
-            </div>
-          </div>
-          <div class="rowActions">
-            <button class="btn danger" type="button" data-action="remove" data-uid="${esc(uid)}">Remove</button>
-          </div>
-        </article>
-      `;
-    }
-
-    function buildStoredUser(user){
+    function normalizeUserDoc(data, id) {
       return {
-        uid: user.__uid,
-        name: displayName(user),
-        email: getEmail(user),
-        publicId: getPublicId(user),
-        photoURL: getAvatar(user)
+        uid: data.uid || id || "",
+        name: data.name || data.displayName || data.fullName || "Unnamed user",
+        email: data.email || "",
+        photoURL: data.photoURL || data.photoUrl || ""
       };
     }
 
-    function getFilteredUsers(limit = 8){
-      const q = norm(els.searchInput.value);
-      let list = allUsers.filter(user => {
-        if (!q) return true;
-        return userBlob(user).includes(q);
+    function safeDateText(ms) {
+      if (!ms || Number.isNaN(Number(ms))) return "—";
+      return new Date(Number(ms)).toLocaleString();
+    }
+
+    function durationTextFromMs(ms) {
+      const value = Number(ms || 0);
+      if (!value) return "—";
+      return `${Math.round(value / 1000)} seconds`;
+    }
+
+    function uniqueByUid(list) {
+      const map = new Map();
+      for (const item of list) {
+        if (item?.uid) map.set(item.uid, item);
+      }
+      return Array.from(map.values());
+    }
+
+    function renderGameInfo() {
+      const status = gameData?.status || "idle";
+      const roundId = gameData?.currentRoundId || "—";
+      const deadlineAt = gameData?.deadlineAt || null;
+      const durationMs = gameData?.countdownDurationMs || null;
+
+      statusPill.textContent = `Game: ${status}`;
+      gameStatusText.textContent = status;
+      roundIdText.textContent = roundId;
+      deadlineText.textContent = safeDateText(deadlineAt);
+      durationText.textContent = durationTextFromMs(durationMs);
+
+      allowedCountPill.textContent = `${allowedUsers.length} allowed`;
+    }
+
+    function renderAllowedList() {
+      allowedList.innerHTML = "";
+
+      if (!allowedUsers.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No players are on the allowed list yet.";
+        allowedList.appendChild(empty);
+        return;
+      }
+
+      allowedUsers.forEach(user => {
+        const row = document.createElement("div");
+        row.className = "rowCard";
+
+        row.appendChild(avatarNode(user));
+
+        const main = document.createElement("div");
+        main.className = "rowMain";
+
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = user.name || "Unnamed user";
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        const emailTag = document.createElement("span");
+        emailTag.className = "tag";
+        emailTag.textContent = user.email || "No email";
+
+        const uidTag = document.createElement("span");
+        uidTag.className = "tag";
+        uidTag.textContent = user.uid || "No uid";
+
+        meta.appendChild(emailTag);
+        meta.appendChild(uidTag);
+
+        main.appendChild(name);
+        main.appendChild(meta);
+
+        const actions = document.createElement("div");
+        actions.className = "rowActions";
+
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "btn danger";
+        removeBtn.type = "button";
+        removeBtn.textContent = "Remove";
+        removeBtn.addEventListener("click", () => removeAllowedUser(user.uid));
+
+        actions.appendChild(removeBtn);
+
+        row.appendChild(main);
+        row.appendChild(actions);
+        allowedList.appendChild(row);
       });
-
-      sortUsers(list);
-
-      els.shownPill.textContent = `${list.length} shown`;
-      els.notAddedPill.textContent = `${list.filter(u => !addedIds.includes(u.__uid)).length} not added`;
-
-      return list.slice(0, limit);
     }
 
-    function getAllFilteredUsers(){
-      const q = norm(els.searchInput.value);
-      let list = allUsers.filter(user => !q || userBlob(user).includes(q));
-      sortUsers(list);
-      return list;
+    function getFilteredUsers(queryText) {
+      const q = String(queryText || "").trim().toLowerCase();
+      if (!q) return [];
+
+      const notAdded = allUsers.filter(user => !allowedUids.includes(user.uid));
+      const starts = [];
+      const contains = [];
+
+      for (const user of notAdded) {
+        const name = (user.name || "").toLowerCase();
+        const email = (user.email || "").toLowerCase();
+        const uid = (user.uid || "").toLowerCase();
+        const haystack = `${name} ${email} ${uid}`;
+
+        if (!haystack.includes(q)) continue;
+
+        const startsMatch = name.startsWith(q) || email.startsWith(q) || uid.startsWith(q);
+        if (startsMatch) starts.push(user);
+        else contains.push(user);
+      }
+
+      return [...starts, ...contains].slice(0, 12);
     }
 
-    function renderRecommendations(){
-      const q = norm(els.searchInput.value);
-      const list = getFilteredUsers(8);
-      activeRecIndex = -1;
+    function renderSuggestions() {
+      const filtered = getFilteredUsers(searchInput.value);
+      recBox.innerHTML = "";
+      shownPill.textContent = `${filtered.length} shown`;
+      availablePill.textContent = `${allUsers.filter(u => !allowedUids.includes(u.uid)).length} not already added`;
 
-      if (!list.length){
-        els.recBox.innerHTML = `
-          <div class="empty">
-            ${q ? "No matching users found." : "Start typing to search users."}
-          </div>
-        `;
-        els.recBox.classList.toggle("show", !!q);
+      if (!searchInput.value.trim()) {
+        recBox.classList.remove("show");
         return;
       }
 
-      els.recBox.innerHTML = list.map((user, index) => {
-        const already = addedIds.includes(user.__uid);
-        return `
-          <button class="recItem" type="button" data-index="${index}" data-uid="${esc(user.__uid)}">
-            ${avatarHTML(user, true)}
-            <div class="rowMain">
-              <div class="name">${esc(displayName(user))}</div>
-              <div class="meta">
-                <span class="tag">🆔 ${esc(getPublicId(user))}</span>
-                ${getEmail(user) ? `<span class="tag">✉️ ${esc(getEmail(user))}</span>` : ""}
-              </div>
-            </div>
-            <div class="recSide">
-              ${already ? `<span class="tag good">Added</span>` : `<span class="tag">Click to add</span>`}
-            </div>
-          </button>
-        `;
-      }).join("");
-
-      els.recBox.classList.add("show");
-    }
-
-    function closeRecommendations(){
-      els.recBox.classList.remove("show");
-      activeRecIndex = -1;
-    }
-
-    function renderAddedList(){
-      const users = addedIds
-        .map(uid => allUsers.find(u => u.__uid === uid))
-        .filter(Boolean);
-
-      els.listCountPill.textContent = `${users.length} added`;
-      els.addedResults.innerHTML = "";
-
-      if (!users.length){
-        els.addedEmpty.style.display = "block";
+      if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty";
+        empty.textContent = "No matching users found.";
+        recBox.appendChild(empty);
+        recBox.classList.add("show");
         return;
       }
 
-      els.addedEmpty.style.display = "none";
-      users.forEach(user => {
-        els.addedResults.insertAdjacentHTML("beforeend", userCardHTML(user));
-      });
-    }
+      filtered.forEach(user => {
+        const item = document.createElement("button");
+        item.className = "recItem";
+        item.type = "button";
 
-    async function saveList(){
-      if (saveLock) return;
-      saveLock = true;
-      setSaveState("Saving…");
+        item.appendChild(avatarNode(user, true));
 
-      try{
-        const storedUsers = addedIds
-          .map(uid => allUsers.find(u => u.__uid === uid))
-          .filter(Boolean)
-          .map(buildStoredUser);
+        const main = document.createElement("div");
+        main.className = "rowMain";
 
-        await setDoc(LIST_REF, {
-          game: "hideAndSeek",
-          allowedUids: addedIds,
-          allowedUsers: storedUsers,
-          count: addedIds.length,
-          updatedAt: serverTimestamp(),
-          updatedBy: currentUser?.uid || null
-        }, { merge: true });
+        const name = document.createElement("div");
+        name.className = "name";
+        name.textContent = user.name || "Unnamed user";
 
-        setSaveState("Saved");
-      } catch (err){
-        console.error(err);
-        setSaveState("Save failed");
-        showMsg("Could not save the Hide & Seek list to Firestore.", "error");
-      } finally {
-        saveLock = false;
-      }
-    }
+        const meta = document.createElement("div");
+        meta.className = "meta";
 
-    async function addUser(uid){
-      if (!uid) return;
-      if (addedIds.includes(uid)){
-        showMsg("That user is already on the allowed list.", "info");
-        return;
-      }
+        const emailTag = document.createElement("span");
+        emailTag.className = "tag";
+        emailTag.textContent = user.email || "No email";
 
-      addedIds.push(uid);
-      renderAddedList();
-      renderRecommendations();
-      await saveList();
-      showMsg("User added and saved.", "ok");
-    }
+        const uidTag = document.createElement("span");
+        uidTag.className = "tag";
+        uidTag.textContent = user.uid || "No uid";
 
-    async function removeUser(uid){
-      addedIds = addedIds.filter(id => id !== uid);
-      renderAddedList();
-      renderRecommendations();
-      await saveList();
-      showMsg("User removed and saved.", "ok");
-    }
+        meta.appendChild(emailTag);
+        meta.appendChild(uidTag);
 
-    async function clearList(){
-      addedIds = [];
-      renderAddedList();
-      renderRecommendations();
-      await saveList();
-      showMsg("Allowed list cleared and saved.", "ok");
-    }
+        main.appendChild(name);
+        main.appendChild(meta);
 
-    async function addAllFiltered(){
-      const filtered = getAllFilteredUsers()
-        .map(user => user.__uid)
-        .filter(uid => !addedIds.includes(uid));
+        const side = document.createElement("div");
+        side.className = "recSide";
 
-      if (!filtered.length){
-        showMsg("No new matching users to add.", "info");
-        return;
-      }
+        const addTag = document.createElement("span");
+        addTag.className = "tag good";
+        addTag.textContent = "Click to add";
 
-      addedIds = [...new Set([...addedIds, ...filtered])];
-      renderAddedList();
-      renderRecommendations();
-      await saveList();
-      showMsg(`Added ${filtered.length} user${filtered.length === 1 ? "" : "s"} and saved.`, "ok");
-    }
+        side.appendChild(addTag);
 
-    async function loadUsers(){
-      showMsg("Loading users…", "info");
-      try{
-        const snap = await getDocs(collection(db, "users"));
-        const users = [];
-        snap.forEach(docSnap => {
-          users.push({
-            __uid: docSnap.id,
-            ...(docSnap.data() || {})
-          });
+        item.appendChild(main);
+        item.appendChild(side);
+
+        item.addEventListener("click", async () => {
+          await addAllowedUser(user);
         });
 
-        allUsers = sortUsers(users);
-        els.countPill.textContent = `${allUsers.length} users`;
-      } catch (err){
-        console.error(err);
-        els.countPill.textContent = "0 users";
-        throw err;
+        recBox.appendChild(item);
+      });
+
+      recBox.classList.add("show");
+    }
+
+    async function ensureGameDoc() {
+      await setDoc(gameRef, {
+        allowedUids: [],
+        allowedUsers: [],
+        currentRoundId: null,
+        deadlineAt: null,
+        countdownDurationMs: null,
+        status: "idle"
+      }, { merge: true });
+    }
+
+    async function loadUsers() {
+      showMsg("Loading users collection…", "info");
+      const snap = await getDocs(usersRef);
+      allUsers = uniqueByUid(
+        snap.docs.map(d => normalizeUserDoc(d.data(), d.id))
+          .filter(u => u.uid)
+      ).sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      loadedUsersPill.textContent = `${allUsers.length} users loaded`;
+      renderSuggestions();
+      showMsg("Users loaded.", "ok");
+    }
+
+    async function addAllowedUser(user) {
+      if (!user?.uid) return;
+
+      try {
+        await runTransaction(db, async (tx) => {
+          const snap = await tx.get(gameRef);
+          const data = snap.exists() ? snap.data() : {};
+
+          const nextAllowedUsers = Array.isArray(data.allowedUsers) ? [...data.allowedUsers] : [];
+          const nextAllowedUids = Array.isArray(data.allowedUids) ? [...data.allowedUids] : [];
+
+          if (!nextAllowedUids.includes(user.uid)) nextAllowedUids.push(user.uid);
+          if (!nextAllowedUsers.some(u => u?.uid === user.uid)) {
+            nextAllowedUsers.push({
+              uid: user.uid,
+              name: user.name || "Unnamed user",
+              email: user.email || "",
+              photoURL: user.photoURL || ""
+            });
+          }
+
+          tx.set(gameRef, {
+            allowedUsers: nextAllowedUsers,
+            allowedUids: nextAllowedUids
+          }, { merge: true });
+        });
+
+        searchInput.value = "";
+        renderSuggestions();
+        showMsg(`${user.name || user.email || user.uid} was added to the allowed list.`, "ok");
+      } catch (error) {
+        console.error(error);
+        showMsg(`Could not add user.\n${error.message}`, "error");
       }
     }
 
-    async function loadSavedList(){
-      try{
-        const snap = await getDoc(LIST_REF);
-        if (!snap.exists()){
-          addedIds = [];
-          setSaveState("No saved list");
-          return;
-        }
+    async function removeAllowedUser(uid) {
+      if (!uid) return;
 
-        const data = snap.data() || {};
-        addedIds = Array.isArray(data.allowedUids)
-          ? [...new Set(data.allowedUids.map(v => String(v || "").trim()).filter(Boolean))]
-          : [];
+      try {
+        await runTransaction(db, async (tx) => {
+          const snap = await tx.get(gameRef);
+          const data = snap.exists() ? snap.data() : {};
 
-        setSaveState("Loaded");
-      } catch (err){
-        console.error(err);
-        setSaveState("Load failed");
-        throw err;
+          const nextAllowedUsers = (Array.isArray(data.allowedUsers) ? data.allowedUsers : []).filter(u => u?.uid !== uid);
+          const nextAllowedUids = (Array.isArray(data.allowedUids) ? data.allowedUids : []).filter(id => id !== uid);
+
+          tx.set(gameRef, {
+            allowedUsers: nextAllowedUsers,
+            allowedUids: nextAllowedUids
+          }, { merge: true });
+        });
+
+        showMsg("Player removed from the allowed list.", "ok");
+      } catch (error) {
+        console.error(error);
+        showMsg(`Could not remove user.\n${error.message}`, "error");
       }
     }
 
-    async function boot(){
-      try{
-        await Promise.all([loadUsers(), loadSavedList()]);
-        renderAddedList();
-        renderRecommendations();
-        hideMsg();
-      } catch (err){
-        console.error(err);
-        showMsg("Could not load users or the saved Hide & Seek list.", "error");
+    async function clearAllowedUsers() {
+      try {
+        await setDoc(gameRef, {
+          allowedUsers: [],
+          allowedUids: []
+        }, { merge: true });
+        showMsg("Allowed list cleared.", "ok");
+      } catch (error) {
+        console.error(error);
+        showMsg(`Could not clear allowed list.\n${error.message}`, "error");
       }
     }
 
-    els.searchInput.addEventListener("focus", () => {
-      renderRecommendations();
-      if (allUsers.length) els.recBox.classList.add("show");
-    });
+    function makeRoundId() {
+      return `round_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    }
 
-    els.searchInput.addEventListener("input", () => {
-      renderRecommendations();
-    });
+    async function startRound(durationMs) {
+      try {
+        const now = Date.now();
+        const deadlineAt = now + Number(durationMs);
+        const currentRoundId = makeRoundId();
 
-    els.searchInput.addEventListener("keydown", async (e) => {
-      const items = [...els.recBox.querySelectorAll(".recItem")];
-      if (!items.length) return;
+        await setDoc(gameRef, {
+          currentRoundId,
+          deadlineAt,
+          countdownDurationMs: Number(durationMs),
+          status: "running"
+        }, { merge: true });
 
-      if (e.key === "ArrowDown"){
-        e.preventDefault();
-        activeRecIndex = Math.min(activeRecIndex + 1, items.length - 1);
-      } else if (e.key === "ArrowUp"){
-        e.preventDefault();
-        activeRecIndex = Math.max(activeRecIndex - 1, 0);
-      } else if (e.key === "Enter"){
-        e.preventDefault();
-        if (activeRecIndex >= 0 && items[activeRecIndex]){
-          await addUser(items[activeRecIndex].dataset.uid || "");
-          return;
-        }
-        const first = items[0];
-        if (first) await addUser(first.dataset.uid || "");
-        return;
-      } else if (e.key === "Escape"){
-        closeRecommendations();
-        return;
-      } else {
-        return;
+        showMsg(`Round started for ${Math.round(Number(durationMs) / 1000)} seconds.`, "ok");
+      } catch (error) {
+        console.error(error);
+        showMsg(`Could not start round.\n${error.message}`, "error");
       }
+    }
 
-      items.forEach((item, i) => item.classList.toggle("active", i === activeRecIndex));
-      if (items[activeRecIndex]){
-        items[activeRecIndex].scrollIntoView({ block: "nearest" });
+    signInBtn.addEventListener("click", async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (error) {
+        console.error(error);
+        showMsg(`Sign-in failed.\n${error.message}`, "error");
       }
     });
 
-    els.recBox.addEventListener("click", async (e) => {
-      const btn = e.target.closest(".recItem");
-      if (!btn) return;
-      await addUser(btn.dataset.uid || "");
+    refreshUsersBtn.addEventListener("click", async () => {
+      try {
+        await loadUsers();
+      } catch (error) {
+        console.error(error);
+        showMsg(`Could not refresh users.\n${error.message}`, "error");
+      }
     });
 
-    els.addedResults.addEventListener("click", async (e) => {
-      const btn = e.target.closest("[data-action='remove']");
-      if (!btn) return;
-      await removeUser(btn.dataset.uid || "");
+    clearListBtn.addEventListener("click", async () => {
+      await clearAllowedUsers();
     });
 
-    els.refreshBtn.addEventListener("click", async () => {
-      await boot();
-      showMsg("Users and saved list refreshed.", "ok");
+    closeRecBtn.addEventListener("click", () => {
+      recBox.classList.remove("show");
     });
 
-    els.clearListBtn.addEventListener("click", async () => {
-      await clearList();
+    searchInput.addEventListener("input", renderSuggestions);
+    searchInput.addEventListener("focus", renderSuggestions);
+
+    document.addEventListener("click", (event) => {
+      const inside = recBox.contains(event.target) || searchInput.contains(event.target);
+      if (!inside) recBox.classList.remove("show");
     });
 
-    els.addFilteredBtn.addEventListener("click", async () => {
-      await addAllFiltered();
-    });
-
-    els.closeRecBtn.addEventListener("click", () => {
-      closeRecommendations();
-    });
-
-    document.addEventListener("click", (e) => {
-      const insideSearch = e.target.closest(".searchShell");
-      if (!insideSearch) closeRecommendations();
+    document.querySelectorAll("[data-round]").forEach(btn => {
+      btn.addEventListener("click", () => startRound(Number(btn.dataset.round)));
     });
 
     onAuthStateChanged(auth, async (user) => {
-      if (!user){
-        window.location.href = "index.html";
+      currentUser = user || null;
+
+      if (!currentUser) {
+        hello.textContent = "Not signed in";
+        showMsg("Sign in with Google to use the host panel.", "info");
         return;
       }
 
-      currentUser = user;
+      hello.textContent = currentUser.displayName || currentUser.email || "Signed in";
+      signInBtn.textContent = "Signed in";
+      signInBtn.disabled = true;
 
-      let name = user.displayName?.trim() || "";
-      try{
-        const snap = await getDoc(doc(db, "users", user.uid));
-        if (snap.exists()){
-          const data = snap.data() || {};
-          if (typeof data.name === "string" && data.name.trim()){
-            name = data.name.trim();
-          }
-        }
-      } catch (_) {}
+      try {
+        await ensureGameDoc();
+        await loadUsers();
 
-      els.hello.textContent = name ? `Hey, ${name}` : "Welcome back";
-      await boot();
+        onSnapshot(gameRef, (snap) => {
+          const data = snap.exists() ? snap.data() : {};
+          gameData = data;
+          allowedUsers = Array.isArray(data.allowedUsers) ? uniqueByUid(data.allowedUsers) : [];
+          allowedUids = Array.isArray(data.allowedUids) ? [...new Set(data.allowedUids)] : [];
+
+          renderGameInfo();
+          renderAllowedList();
+          renderSuggestions();
+        }, (error) => {
+          console.error(error);
+          showMsg(`Live game listener failed.\n${error.message}`, "error");
+        });
+
+      } catch (error) {
+        console.error(error);
+        showMsg(`Setup failed.\n${error.message}`, "error");
+      }
     });
   </script>
 </body>
