@@ -1,3 +1,4 @@
+<!-- hider.html -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -24,7 +25,6 @@
       --radius:20px;
       --danger:#c6285d;
       --success:#2f9e6f;
-      --warn:#e89a1d;
     }
 
     *{ box-sizing:border-box; }
@@ -292,9 +292,6 @@
 
     .muted{ color:var(--muted); }
     .small{ font-size:12px; }
-    .good{ color:var(--success); font-weight:900; }
-    .warnText{ color:#9b6200; font-weight:900; }
-    .bad{ color:var(--danger); font-weight:900; }
     .hidden{ display:none !important; }
 
     .checkinTop{
@@ -429,7 +426,7 @@
         <div class="checkinTop">
           <div>
             <h1 class="h1">Check in</h1>
-            <div class="sub">You will only be redirected after both your sign-in and the Firestore game doc have finished loading.</div>
+            <div class="sub">The host page controls eliminations and starts each new round automatically.</div>
           </div>
 
           <div class="checkinButtons">
@@ -438,7 +435,7 @@
           </div>
 
           <div class="playerItem">
-            <b>Check in results</b>
+            <b>Round status</b>
 
             <div class="compactStatusWrap">
               <div class="miniStat">
@@ -520,8 +517,7 @@
     const MAP_ID = "f4ab270f6c4fc6deeed4fa00";
 
     const JOIN_REDIRECT_URL = "https://uzone.ca/join";
-    const ELIMINATED_REDIRECT_URL = "https://uzone.ca/found";
-
+    const ELIMINATED_REDIRECT_URL = "https://uzone.ca/eliminated";
     const GAME_DOC_ID = "hideAndSeek";
 
     const app = initializeApp(firebaseConfig);
@@ -557,7 +553,6 @@
     let countdownInterval = null;
     let redirectedToJoin = false;
     let redirectedToEliminated = false;
-    let handledMissForRoundId = null;
 
     let map = null;
     let infoWindow = null;
@@ -781,20 +776,12 @@
         return;
       }
 
-      const tick = async () => {
+      const tick = () => {
         const remaining = deadlineAt - Date.now();
 
         if (remaining <= 0) {
           countdownBig.textContent = "0:00";
-          countdownSub.textContent = "Round ended";
-
-          if (currentUser && isAllowedUser()) {
-            const me = getPlayer(currentUser.uid);
-            if (!isPlayerEliminated(me) && !hasCheckedInThisRound(me) && handledMissForRoundId !== roundId) {
-              handledMissForRoundId = roundId;
-              await eliminateCurrentUserForMissedCheckIn();
-            }
-          }
+          countdownSub.textContent = "Waiting for host to roll next round";
           return;
         }
 
@@ -874,35 +861,6 @@
       });
     }
 
-    async function eliminateCurrentUserForMissedCheckIn() {
-      if (!currentUser) return;
-
-      const me = getPlayer(currentUser.uid);
-      if (isPlayerEliminated(me)) {
-        redirectToEliminated();
-        return;
-      }
-
-      try {
-        await setDoc(doc(db, "gameLists", GAME_DOC_ID, "players", currentUser.uid), {
-          uid: currentUser.uid,
-          name: currentUser.displayName || currentUser.email || "Player",
-          email: currentUser.email || "",
-          eliminated: true,
-          eliminatedAt: Date.now(),
-          eliminatedRoundId: currentRoundId(),
-          checkedInForRound: false,
-          role: "hider"
-        }, { merge: true });
-
-        setCheckInStatus("Check in result", "You missed the check-in and were eliminated.");
-        redirectToEliminated();
-      } catch (error) {
-        console.error(error);
-        setCheckInStatus("Check in result", `Could not mark elimination: ${error.message || error}`);
-      }
-    }
-
     async function checkIn() {
       if (!currentUser) {
         try {
@@ -942,8 +900,7 @@
       }
 
       if (Date.now() > deadlineAt) {
-        setCheckInStatus("Check in result", "Too late.");
-        await eliminateCurrentUserForMissedCheckIn();
+        setCheckInStatus("Check in result", "Too late. Wait for the host to process the deadline.");
         return;
       }
 
@@ -954,8 +911,7 @@
         const coords = await requestLocation();
 
         if (Date.now() > deadlineAt) {
-          setCheckInStatus("Check in result", "Too late.");
-          await eliminateCurrentUserForMissedCheckIn();
+          setCheckInStatus("Check in result", "Too late. Wait for the host to process the deadline.");
           return;
         }
 
@@ -975,7 +931,6 @@
         }, { merge: true });
 
         lastMyLatLng = { lat: coords.lat, lng: coords.lng };
-        handledMissForRoundId = null;
         setCheckInStatus("Check in result", "Check-in saved.");
       } catch (error) {
         console.error(error);
@@ -1051,115 +1006,112 @@
       clearMarkers();
 
       const mapPlayers = getMapPlayers();
-
-      if (!mapPlayers.length) {
-        map.setCenter(lastMyLatLng || { lat: 45.4215, lng: -75.6972 });
-        map.setZoom(lastMyLatLng ? 15 : 12);
-        return;
-      }
-
       const bounds = new google.maps.LatLngBounds();
 
       for (const player of mapPlayers) {
-        const position = { lat: player.lat, lng: player.lng };
         const marker = new google.maps.Marker({
           map,
-          position,
-          title: player.name || player.email || player.uid || "Player"
+          position: { lat: player.lat, lng: player.lng },
+          title: player.name || "Player"
         });
 
         marker.addListener("click", () => {
           infoWindow.setContent(`
-            <div style="min-width:180px;">
-              <div style="font-weight:800; margin-bottom:6px;">${escapeHtml(player.name || "Player")}</div>
-              <div style="font-size:12px; color:#555;">${escapeHtml(player.email || player.uid || "")}</div>
-              <div style="font-size:12px; margin-top:6px;">Last check in: ${player.lastCheckInAt ? new Date(player.lastCheckInAt).toLocaleString() : "—"}</div>
+            <div style="min-width:180px">
+              <div style="font-weight:800;margin-bottom:4px">${escapeHtml(player.name || "Player")}</div>
+              <div style="font-size:12px;color:#555">${escapeHtml(player.email || "")}</div>
+              <div style="font-size:12px;color:#555;margin-top:4px">Last check-in: ${player.lastCheckInAt ? new Date(player.lastCheckInAt).toLocaleString() : "Unknown"}</div>
             </div>
           `);
-          infoWindow.open({ anchor: marker, map });
+          infoWindow.open({ map, anchor: marker });
         });
 
         markers.push(marker);
-        bounds.extend(position);
+        bounds.extend({ lat: player.lat, lng: player.lng });
       }
 
       if (lastMyLatLng) bounds.extend(lastMyLatLng);
 
       if (mapPlayers.length === 1 && !lastMyLatLng) {
-        map.setCenter(bounds.getCenter());
-        map.setZoom(15);
-      } else {
-        map.fitBounds(bounds, 80);
+        map.setCenter({ lat: mapPlayers[0].lat, lng: mapPlayers[0].lng });
+        map.setZoom(14);
+      } else if (mapPlayers.length > 0 || lastMyLatLng) {
+        map.fitBounds(bounds, 60);
       }
     }
 
-    function refreshGameUi() {
-      enforceAccessRules();
-      updateStatsAndInfo();
-      updateCountdown();
-      renderMap().catch(() => {});
+    async function centerOnMe() {
+      if (lastMyLatLng && map) {
+        map.panTo(lastMyLatLng);
+        map.setZoom(15);
+        return;
+      }
+
+      try {
+        const coords = await requestLocation();
+        lastMyLatLng = coords;
+        await renderMap();
+        map.panTo(coords);
+        map.setZoom(15);
+      } catch (error) {
+        console.error(error);
+        setCheckInStatus("Check in result", `Could not center on you: ${error.message || error}`);
+      }
     }
-
-    checkInBtn.addEventListener("click", checkIn);
-
-    centerMeBtn.addEventListener("click", async () => {
-      if (!lastMyLatLng) return;
-      await ensureMap();
-      map.setCenter(lastMyLatLng);
-      map.setZoom(16);
-    });
-
-    refreshMapBtn.addEventListener("click", async () => {
-      await renderMap();
-    });
 
     onAuthStateChanged(auth, async (user) => {
-      authResolved = true;
       currentUser = user || null;
-      redirectedToJoin = false;
-      redirectedToEliminated = false;
+      authResolved = true;
+
+      hello.textContent = currentUser
+        ? (currentUser.displayName || currentUser.email || "Signed in")
+        : "Tap check in to sign in";
 
       if (!currentUser) {
-        try {
-          await signInWithPopup(auth, provider);
-          return;
-        } catch (error) {
-          console.error(error);
-          hello.textContent = "Sign-in failed";
-          setCheckInStatus("Check in result", "Sign in with Google to play.");
-          refreshGameUi();
-          return;
-        }
+        updateStatsAndInfo();
+        enforceAccessRules();
+        return;
       }
 
-      hello.textContent = currentUser.displayName || currentUser.email || "Signed in";
-      refreshGameUi();
+      const me = getPlayer(currentUser.uid);
+      if (me && hasValidCoords(me)) {
+        lastMyLatLng = { lat: me.lat, lng: me.lng };
+      }
+
+      updateStatsAndInfo();
+      enforceAccessRules();
+      renderMap().catch(() => {});
     });
 
     onSnapshot(gameRef, (snap) => {
-      gameLoaded = true;
       gameData = snap.exists() ? (snap.data() || {}) : {};
-      refreshGameUi();
-    }, (error) => {
-      console.error(error);
       gameLoaded = true;
-      gameData = {};
-      setCheckInStatus("Check in result", `Could not load game data: ${error.message || error}`);
-      refreshGameUi();
+      updateCountdown();
+      updateStatsAndInfo();
+      enforceAccessRules();
     });
 
     onSnapshot(playersRef, (snap) => {
+      players = snap.docs.map(d => normalizePlayer(d.data(), d.id));
       playersLoaded = true;
-      players = snap.docs.map(d => normalizePlayer(d.data(), d.id)).filter(p => p.uid);
-      refreshGameUi();
-    }, (error) => {
-      console.error(error);
-      playersLoaded = true;
-      players = [];
-      refreshGameUi();
+
+      if (currentUser) {
+        const me = getPlayer(currentUser.uid);
+        if (me && hasValidCoords(me)) {
+          lastMyLatLng = { lat: me.lat, lng: me.lng };
+        }
+      }
+
+      updateStatsAndInfo();
+      enforceAccessRules();
+      renderMap().catch(() => {});
     });
 
-    ensureMap().catch(() => {});
+    checkInBtn.addEventListener("click", () => checkIn().catch(console.error));
+    centerMeBtn.addEventListener("click", () => centerOnMe().catch(console.error));
+    refreshMapBtn.addEventListener("click", () => renderMap().catch(console.error));
+
+    setCheckInStatus("Check in result", "Waiting for the game to load.");
   </script>
 </body>
 </html>
