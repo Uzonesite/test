@@ -295,7 +295,6 @@
     .good{ color:var(--success); font-weight:900; }
     .warnText{ color:#9b6200; font-weight:900; }
     .bad{ color:var(--danger); font-weight:900; }
-
     .hidden{ display:none !important; }
 
     .checkinTop{
@@ -430,7 +429,7 @@
         <div class="checkinTop">
           <div>
             <h1 class="h1">Check in</h1>
-            <div class="sub">Press the button before the deadline. Your location is saved to <b>gameLists/hideAndSeek/players/{uid}</b>.</div>
+            <div class="sub">This version reads the allow list from <b>gameLists/hidAndSeek</b> first, and also supports <b>allowedUids</b> and <b>allowedUsers</b>.</div>
           </div>
 
           <div class="checkinButtons">
@@ -521,15 +520,17 @@
     const MAP_ID = "f4ab270f6c4fc6deeed4fa00";
 
     const JOIN_REDIRECT_URL = "https://uzone.ca/join";
-    const ELIMINATED_REDIRECT_URL = "https://uzone.ca/found";
+    const ELIMINATED_REDIRECT_URL = "https://uzone.ca/eliminated";
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
 
-    const gameRef = doc(db, "gameLists", "hideAndSeek");
-    const playersRef = collection(db, "gameLists", "hideAndSeek", "players");
+    // Read both possible game docs so the page still works even if one page used the wrong spelling.
+    const GAME_DOC_IDS = ["hidAndSeek", "hideAndSeek"];
+    const gameRefs = GAME_DOC_IDS.map(id => doc(db, "gameLists", id));
+    const playersRefs = GAME_DOC_IDS.map(id => collection(db, "gameLists", id, "players"));
 
     const hello = document.getElementById("hello");
     const liveChip = document.getElementById("liveChip");
@@ -546,8 +547,6 @@
     const mapFallback = document.getElementById("mapFallback");
 
     let currentUser = null;
-    let gameData = {};
-    let allPlayers = [];
     let countdownInterval = null;
 
     let map = null;
@@ -558,6 +557,17 @@
     let handledMissForRoundId = null;
     let redirectedToJoin = false;
     let redirectedToEliminated = false;
+
+    // Store both docs and both player collections, then choose the best active source.
+    let gameDocs = {
+      hidAndSeek: {},
+      hideAndSeek: {}
+    };
+
+    let playersByDoc = {
+      hidAndSeek: [],
+      hideAndSeek: []
+    };
 
     function setCheckInStatus(title, text) {
       checkInStatus.innerHTML = `<b>${title}</b>${text}`;
@@ -584,13 +594,16 @@
       window.location.href = ELIMINATED_REDIRECT_URL;
     }
 
-    function isAllowedUser() {
-      const allowed = Array.isArray(gameData.allowedUids) ? gameData.allowedUids : [];
-      return !!currentUser && allowed.includes(currentUser.uid);
+    function normalizeUid(value) {
+      return String(value || "").trim();
     }
 
-    function currentRoundId() {
-      return gameData?.currentRoundId || null;
+    function normalizeEmail(value) {
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function normalizeName(value) {
+      return String(value || "").trim().toLowerCase();
     }
 
     function normalizePlayer(data, id) {
@@ -610,8 +623,95 @@
       };
     }
 
+    function normalizeAllowedUserEntry(entry) {
+      if (!entry) return null;
+
+      if (typeof entry === "string") {
+        return {
+          uid: normalizeUid(entry),
+          email: "",
+          name: ""
+        };
+      }
+
+      if (typeof entry === "object") {
+        return {
+          uid: normalizeUid(entry.uid || entry.id || entry.userId || entry.userUid || entry.Uid || entry.UID),
+          email: normalizeEmail(entry.email || entry.userEmail || entry.mail),
+          name: normalizeName(entry.name || entry.displayName || entry.fullName || entry.username)
+        };
+      }
+
+      return null;
+    }
+
+    function getMergedAllowedData(docData) {
+      const uidSet = new Set();
+      const emailSet = new Set();
+      const nameSet = new Set();
+
+      const allowedUids = Array.isArray(docData?.allowedUids) ? docData.allowedUids : [];
+      const allowedUsers = Array.isArray(docData?.allowedUsers) ? docData.allowedUsers : [];
+
+      for (const raw of allowedUids) {
+        const uid = normalizeUid(raw);
+        if (uid) uidSet.add(uid);
+      }
+
+      for (const raw of allowedUsers) {
+        const normalized = normalizeAllowedUserEntry(raw);
+        if (!normalized) continue;
+        if (normalized.uid) uidSet.add(normalized.uid);
+        if (normalized.email) emailSet.add(normalized.email);
+        if (normalized.name) nameSet.add(normalized.name);
+      }
+
+      return { uidSet, emailSet, nameSet };
+    }
+
+    function scoreGameDoc(docData, docId) {
+      const allowedUids = Array.isArray(docData?.allowedUids) ? docData.allowedUids.length : 0;
+      const allowedUsers = Array.isArray(docData?.allowedUsers) ? docData.allowedUsers.length : 0;
+      const hasRound = docData?.currentRoundId ? 1 : 0;
+      const hasDeadline = Number(docData?.deadlineAt || 0) > 0 ? 1 : 0;
+      const playerCount = Array.isArray(playersByDoc[docId]) ? playersByDoc[docId].length : 0;
+      return (allowedUids * 5) + (allowedUsers * 5) + (hasRound * 3) + (hasDeadline * 2) + playerCount;
+    }
+
+    function getActiveGameId() {
+      const hidScore = scoreGameDoc(gameDocs.hidAndSeek, "hidAndSeek");
+      const hideScore = scoreGameDoc(gameDocs.hideAndSeek, "hideAndSeek");
+
+      if (hidScore === 0 && hideScore === 0) {
+        return "hidAndSeek";
+      }
+
+      return hidScore >= hideScore ? "hidAndSeek" : "hideAndSeek";
+    }
+
+    function getGameData() {
+      return gameDocs[getActiveGameId()] || {};
+    }
+
+    function getAllPlayers() {
+      const activeId = getActiveGameId();
+      return playersByDoc[activeId] || [];
+    }
+
     function getPlayer(uid) {
-      return allPlayers.find(p => p.uid === uid) || null;
+      return getAllPlayers().find(p => p.uid === uid) || null;
+    }
+
+    function getActivePlayersRefId() {
+      return getActiveGameId();
+    }
+
+    function getActiveGameRef() {
+      return doc(db, "gameLists", getActiveGameId());
+    }
+
+    function getActivePlayerRef(uid) {
+      return doc(db, "gameLists", getActivePlayersRefId(), "players", uid);
     }
 
     function isPlayerEliminated(player) {
@@ -626,6 +726,10 @@
         !Number.isNaN(player.lng);
     }
 
+    function currentRoundId() {
+      return getGameData()?.currentRoundId || null;
+    }
+
     function hasCheckedInThisRound(player) {
       const roundId = currentRoundId();
       return !!player &&
@@ -633,13 +737,45 @@
         player.lastCheckInRoundId === roundId;
     }
 
+    function isAllowedUser() {
+      if (!currentUser) return false;
+
+      const gameData = getGameData();
+      const { uidSet, emailSet, nameSet } = getMergedAllowedData(gameData);
+
+      const uid = normalizeUid(currentUser.uid);
+      const email = normalizeEmail(currentUser.email);
+      const name = normalizeName(currentUser.displayName);
+
+      if (uid && uidSet.has(uid)) return true;
+      if (email && emailSet.has(email)) return true;
+      if (name && nameSet.has(name)) return true;
+
+      return false;
+    }
+
     function getMapPlayers() {
-      return allPlayers.filter(player => !isPlayerEliminated(player) && hasValidCoords(player));
+      return getAllPlayers().filter(player => !isPlayerEliminated(player) && hasValidCoords(player));
     }
 
     function getActiveAllowedPlayers() {
-      const allowed = Array.isArray(gameData.allowedUids) ? gameData.allowedUids : [];
-      return allPlayers.filter(player => allowed.includes(player.uid) && !isPlayerEliminated(player));
+      const gameData = getGameData();
+      const { uidSet, emailSet, nameSet } = getMergedAllowedData(gameData);
+      const allPlayers = getAllPlayers();
+
+      return allPlayers.filter(player => {
+        if (!player || isPlayerEliminated(player)) return false;
+
+        const uid = normalizeUid(player.uid);
+        const email = normalizeEmail(player.email);
+        const name = normalizeName(player.name);
+
+        return (
+          (uid && uidSet.has(uid)) ||
+          (email && emailSet.has(email)) ||
+          (name && nameSet.has(name))
+        );
+      });
     }
 
     function getPlayersRemainingCount() {
@@ -678,7 +814,8 @@
         return;
       }
 
-      const roundId = currentRoundId();
+      const gameData = getGameData();
+      const roundId = gameData?.currentRoundId || null;
       const deadlineAt = Number(gameData?.deadlineAt || 0);
       if (!roundId || !deadlineAt) return;
 
@@ -695,7 +832,7 @@
       handledMissForRoundId = roundId;
 
       try {
-        await setDoc(doc(db, "gameLists", "hideAndSeek", "players", currentUser.uid), {
+        await setDoc(getActivePlayerRef(currentUser.uid), {
           uid: currentUser.uid,
           name: currentUser.displayName || currentUser.email || "Player",
           email: currentUser.email || "",
@@ -716,8 +853,9 @@
       clearInterval(countdownInterval);
 
       const tick = async () => {
+        const gameData = getGameData();
         const deadlineAt = Number(gameData?.deadlineAt || 0);
-        const roundId = currentRoundId();
+        const roundId = gameData?.currentRoundId || null;
         const me = currentUser ? getPlayer(currentUser.uid) : null;
         const meSafe = hasCheckedInThisRound(me);
         const meEliminated = isPlayerEliminated(me);
@@ -784,6 +922,7 @@
       const remaining = getPlayersRemainingCount();
       const activeAllowedCount = getActiveAllowedCount();
       const checkedInCount = getRoundCheckedInCount();
+      const gameData = getGameData();
 
       playerRemainingCount.textContent = String(remaining);
 
@@ -793,7 +932,7 @@
         playerRemainingSub.textContent = "no active players loaded";
       }
 
-      liveChip.textContent = gameData?.status || "live game";
+      liveChip.textContent = gameData?.status || getActiveGameId() || "live game";
 
       if (!currentUser) {
         setCheckInStatus("Check in result", "Sign in required.");
@@ -831,11 +970,7 @@
         return;
       }
 
-      if (!isAllowedUser()) {
-        checkInBtn.disabled = true;
-      } else {
-        checkInBtn.disabled = false;
-      }
+      checkInBtn.disabled = !isAllowedUser();
     }
 
     function loadGoogleMapsScript() {
@@ -1001,8 +1136,9 @@
         return;
       }
 
+      const gameData = getGameData();
       const deadlineAt = Number(gameData?.deadlineAt || 0);
-      const roundId = currentRoundId();
+      const roundId = gameData?.currentRoundId || null;
 
       if (!deadlineAt || !roundId) {
         setCheckInStatus("Check in result", "No active round right now.");
@@ -1027,7 +1163,7 @@
           return;
         }
 
-        await setDoc(doc(db, "gameLists", "hideAndSeek", "players", currentUser.uid), {
+        await setDoc(getActivePlayerRef(currentUser.uid), {
           uid: currentUser.uid,
           name: currentUser.displayName || currentUser.email || "Player",
           email: currentUser.email || "",
@@ -1080,6 +1216,8 @@
 
     onAuthStateChanged(auth, async (user) => {
       currentUser = user || null;
+      redirectedToJoin = false;
+      redirectedToEliminated = false;
 
       if (!currentUser) {
         try {
@@ -1095,25 +1233,28 @@
       }
 
       hello.textContent = currentUser.displayName || currentUser.email || "Signed in";
-      enforceAccessRules();
       refreshGameUi();
     });
 
-    onSnapshot(gameRef, (snap) => {
-      gameData = snap.exists() ? snap.data() : {};
-      enforceAccessRules();
+    onSnapshot(gameRefs[0], (snap) => {
+      gameDocs.hidAndSeek = snap.exists() ? snap.data() : {};
       refreshGameUi();
-    }, (error) => {
-      console.error(error);
-    });
+    }, console.error);
 
-    onSnapshot(playersRef, (snap) => {
-      allPlayers = snap.docs.map(d => normalizePlayer(d.data(), d.id)).filter(p => p.uid);
-      enforceAccessRules();
+    onSnapshot(gameRefs[1], (snap) => {
+      gameDocs.hideAndSeek = snap.exists() ? snap.data() : {};
       refreshGameUi();
-    }, (error) => {
-      console.error(error);
-    });
+    }, console.error);
+
+    onSnapshot(playersRefs[0], (snap) => {
+      playersByDoc.hidAndSeek = snap.docs.map(d => normalizePlayer(d.data(), d.id)).filter(p => p.uid);
+      refreshGameUi();
+    }, console.error);
+
+    onSnapshot(playersRefs[1], (snap) => {
+      playersByDoc.hideAndSeek = snap.docs.map(d => normalizePlayer(d.data(), d.id)).filter(p => p.uid);
+      refreshGameUi();
+    }, console.error);
 
     ensureMap().catch(() => {});
   </script>
